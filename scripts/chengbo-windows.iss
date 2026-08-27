@@ -1,13 +1,13 @@
 ; Chengbo Windows Installer - Inno Setup 7
 #define AppName "澄波"
 #define AppExeName "Chengbo.exe"
-#define AppVersion "1.4.8"
+#define AppVersion "1.5.0"
 #define AppPublisher "Chengbo"
 #define AppURL "https://github.com/yourname/chengbo"
 #define AppDescription "听国内广播与 RSS 播客"
 #define SourceDir "..\build\windows\x64\runner\Release"
 #define OutputDir ".."
-#define OutputBaseFilename "chengbo-windows-1.4.8"
+#define OutputBaseFilename "chengbo-windows-1.5.0"
 
 [Setup]
 ; Basic Application Information
