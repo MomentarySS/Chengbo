@@ -13,6 +13,7 @@ import '../../features/podcast/episode_notes_sheet.dart';
 import '../../features/podcast/podcast_providers.dart';
 import 'now_playing_queue_sheet.dart';
 import 'now_playing_top_bar.dart';
+import 'podcast_skip_sheet.dart';
 import 'podcast_speed_sheet.dart';
 import 'sleep_timer_sheet.dart';
 import 'station_artwork.dart';
@@ -258,6 +259,12 @@ class _EpisodeChips extends ConsumerWidget {
           side: sleepActive ? BorderSide(color: colorScheme.primary) : null,
           onPressed: () => showSleepTimerSheet(context),
         ),
+        if (current.feedId != null)
+          ActionChip(
+            avatar: const Icon(Icons.skip_next_outlined, size: 18),
+            label: const Text('跳过片头/尾'),
+            onPressed: () => showPodcastSkipSheet(context, feedId: current.feedId!),
+          ),
         ActionChip(
           avatar: const Icon(Icons.stop_outlined, size: 18),
           label: const Text('停止'),

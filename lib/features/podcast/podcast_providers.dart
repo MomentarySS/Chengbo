@@ -342,6 +342,30 @@ final podcastDownloadsProvider =
   return PodcastDownloadsNotifier(ref);
 });
 
+final downloadWifiOnlyProvider =
+    StateNotifierProvider<DownloadWifiOnlyNotifier, AsyncValue<bool>>((ref) {
+  return DownloadWifiOnlyNotifier(ref);
+});
+
+class DownloadWifiOnlyNotifier extends StateNotifier<AsyncValue<bool>> {
+  DownloadWifiOnlyNotifier(this._ref) : super(const AsyncLoading()) {
+    _load();
+  }
+
+  final Ref _ref;
+
+  Future<void> _load() async {
+    final storage = await _ref.read(appStorageProvider.future);
+    state = AsyncData(await storage.getDownloadWifiOnly());
+  }
+
+  Future<void> set(bool value) async {
+    state = AsyncData(value);
+    final storage = await _ref.read(appStorageProvider.future);
+    await storage.setDownloadWifiOnly(value);
+  }
+}
+
 class PodcastDownloadsNotifier extends StateNotifier<PodcastDownloadState> {
   PodcastDownloadsNotifier(this._ref) : super(const PodcastDownloadState()) {
     _load();
@@ -359,6 +383,12 @@ class PodcastDownloadsNotifier extends StateNotifier<PodcastDownloadState> {
   Future<void> download(PodcastFeed feed, PodcastEpisode episode) async {
     if (state.statusFor(episode.guid) == EpisodeDownloadStatus.downloading) {
       return;
+    }
+    // WiFi-only guard: skip if on mobile and WiFi-only is enabled.
+    final wifiOnlyAsync = _ref.read(downloadWifiOnlyProvider);
+    if (wifiOnlyAsync.value == true) {
+      final isOffline = _ref.read(isOfflineProvider).value ?? false;
+      if (isOffline) return;
     }
     final progress = Map<String, double>.from(state.progress)..[episode.guid] = 0;
     final failed = Set<String>.from(state.failed)..remove(episode.guid);
@@ -402,6 +432,32 @@ class PodcastDownloadsNotifier extends StateNotifier<PodcastDownloadState> {
           statusFor: state.statusFor,
         );
         for (final episode in pending) {
+          if (!(_ref.read(podcastDownloadAllFeedsProvider).value?.contains(feed.id) ?? false)) {
+            return;
+          }
+          await download(feed, episode);
+        }
+      }
+    } finally {
+      _downloadAllRunning.remove(feed.id);
+    }
+  }
+
+  /// Download the most recent [count] episodes from the feed.
+  Future<void> downloadRecent(PodcastFeed feed, List<PodcastEpisode> episodes, int count) async {
+    _downloadAllRequested.add(feed.id);
+    if (!_downloadAllRunning.add(feed.id)) return;
+    try {
+      while (_downloadAllRequested.remove(feed.id)) {
+        if (!(_ref.read(podcastDownloadAllFeedsProvider).value?.contains(feed.id) ?? false)) {
+          return;
+        }
+        final pending = PodcastDownloadLogic.pendingForDownloadAll(
+          episodes: episodes,
+          statusFor: state.statusFor,
+        );
+        final recent = pending.take(count);
+        for (final episode in recent) {
           if (!(_ref.read(podcastDownloadAllFeedsProvider).value?.contains(feed.id) ?? false)) {
             return;
           }

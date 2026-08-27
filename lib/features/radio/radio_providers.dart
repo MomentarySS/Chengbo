@@ -383,6 +383,52 @@ final stationSearchProvider = StateProvider<String>((ref) => '');
 
 final stationCategoryProvider = StateProvider<String>((ref) => StationCategoryResolver.all);
 
+/// Bitrate floor filter: null = no filter, otherwise only show stations >= this bitrate.
+final stationBitrateFloorProvider = StateProvider<int?>((ref) => null);
+
+/// When true, only show favorited stations.
+final stationFavoritesOnlyProvider = StateProvider<bool>((ref) => false);
+
+/// Recently searched queries, most recent first.
+final radioSearchHistoryProvider =
+    StateNotifierProvider<RadioSearchHistoryNotifier, AsyncValue<List<String>>>((ref) {
+  return RadioSearchHistoryNotifier(ref);
+});
+
+class RadioSearchHistoryNotifier extends StateNotifier<AsyncValue<List<String>>> {
+  RadioSearchHistoryNotifier(this._ref) : super(const AsyncLoading()) {
+    _load();
+  }
+
+  final Ref _ref;
+  static const _maxHistory = 5;
+
+  Future<void> _load() async {
+    final storage = await _ref.read(appStorageProvider.future);
+    state = AsyncData(await storage.getRadioSearchHistory());
+  }
+
+  Future<void> add(String query) async {
+    final trimmed = query.trim();
+    if (trimmed.isEmpty) return;
+    final storage = await _ref.read(appStorageProvider.future);
+    final current = List<String>.from(state.value ?? []);
+    current.remove(trimmed);
+    current.insert(0, trimmed);
+    if (current.length > _maxHistory) {
+      current.removeRange(_maxHistory, current.length);
+    }
+    await storage.setRadioSearchHistory(current);
+    state = AsyncData(current);
+  }
+
+  Future<void> clear() async {
+    final storage = await _ref.read(appStorageProvider.future);
+    await storage.setRadioSearchHistory([]);
+    state = const AsyncData([]);
+  }
+}
+
 final customCategoriesProvider =
     StateNotifierProvider<CustomCategoriesNotifier, AsyncValue<List<String>>>((ref) {
   return CustomCategoriesNotifier(ref);
@@ -591,7 +637,10 @@ final filteredStationsProvider = Provider<AsyncValue<List<RadioStation>>>((ref) 
   final stationsAsync = ref.watch(visibleStationsProvider);
   final query = ref.watch(stationSearchProvider).trim().toLowerCase();
   final category = ref.watch(stationCategoryProvider);
+  final bitrateFloor = ref.watch(stationBitrateFloorProvider);
+  final favoritesOnly = ref.watch(stationFavoritesOnlyProvider);
   final overrides = ref.watch(stationCategoryOverridesProvider).value ?? {};
+  final favoriteIds = ref.watch(favoriteIdsProvider).value ?? [];
 
   return stationsAsync.whenData((stations) {
     return stations.where((station) {
@@ -601,7 +650,10 @@ final filteredStationsProvider = Provider<AsyncValue<List<RadioStation>>>((ref) 
       final matchesQuery = query.isEmpty ||
           station.name.toLowerCase().contains(query) ||
           station.tags.any((tag) => tag.toLowerCase().contains(query));
-      return matchesCategory && matchesQuery;
+      final matchesBitrate =
+          bitrateFloor == null || (station.bitrate ?? 0) >= bitrateFloor;
+      final matchesFavorite = !favoritesOnly || favoriteIds.contains(station.id);
+      return matchesCategory && matchesQuery && matchesBitrate && matchesFavorite;
     }).toList();
   });
 });

@@ -19,8 +19,11 @@ class AppStorage {
   static const _themeKey = 'theme_mode';
   static const _podcastProgressPrefix = 'podcast_progress_';
   static const _podcastSpeedByFeedPrefix = 'podcast_speed_feed_';
+  static const _podcastSkipIntroPrefix = 'podcast_skip_intro_';
+  static const _podcastSkipOutroPrefix = 'podcast_skip_outro_';
   static const _autoCleanupDownloadsKey = 'auto_cleanup_downloads';
   static const _autoCleanupDaysKey = 'auto_cleanup_days';
+  static const _downloadWifiOnlyKey = 'download_wifi_only';
   static const _playQueueKey = 'play_queue_json';
   static const _subscribedFeedsKey = 'subscribed_podcast_feeds';
   static const _customCategoriesKey = 'custom_station_categories';
@@ -58,6 +61,8 @@ class AppStorage {
   static const _reachableStationIdsKey = 'reachable_station_ids';
   static const _hiddenStationIdsKey = 'hidden_station_ids';
   static const _legacyPlaybackFailedStationIdsKey = 'playback_failed_station_ids';
+  static const _radioSearchHistoryKey = 'radio_search_history';
+  static const _lastRadioBitrateFloorKey = 'last_radio_bitrate_floor';
 
   static Future<AppStorage> create() async {
     final prefs = await SharedPreferences.getInstance();
@@ -208,6 +213,26 @@ class AppStorage {
     await _prefs.setBool(_stationProbeCompletedKey, completed);
   }
 
+  Future<List<String>> getRadioSearchHistory() async {
+    return _prefs.getStringList(_radioSearchHistoryKey) ?? [];
+  }
+
+  Future<void> setRadioSearchHistory(List<String> history) async {
+    await _prefs.setStringList(_radioSearchHistoryKey, history);
+  }
+
+  Future<int?> getLastRadioBitrateFloor() async {
+    return _prefs.getInt(_lastRadioBitrateFloorKey);
+  }
+
+  Future<void> setLastRadioBitrateFloor(int? floor) async {
+    if (floor == null) {
+      await _prefs.remove(_lastRadioBitrateFloorKey);
+    } else {
+      await _prefs.setInt(_lastRadioBitrateFloorKey, floor);
+    }
+  }
+
   Future<List<String>> getReachableStationIds() async {
     return _prefs.getStringList(_reachableStationIdsKey) ?? const [];
   }
@@ -346,6 +371,32 @@ class AppStorage {
       '$_podcastSpeedByFeedPrefix$feedId',
       PodcastPlaybackLogic.snapSpeed(speed),
     );
+  }
+
+  /// Returns skip-intro seconds for a feed; 0 means disabled.
+  int getPodcastSkipIntro(String feedId) {
+    return _prefs.getInt('$_podcastSkipIntroPrefix$feedId') ?? 0;
+  }
+
+  Future<void> setPodcastSkipIntro(String feedId, int seconds) async {
+    await _prefs.setInt('$_podcastSkipIntroPrefix$feedId', seconds.clamp(0, 300));
+  }
+
+  /// Returns skip-outro seconds for a feed; 0 means disabled.
+  int getPodcastSkipOutro(String feedId) {
+    return _prefs.getInt('$_podcastSkipOutroPrefix$feedId') ?? 0;
+  }
+
+  Future<void> setPodcastSkipOutro(String feedId, int seconds) async {
+    await _prefs.setInt('$_podcastSkipOutroPrefix$feedId', seconds.clamp(0, 300));
+  }
+
+  Future<bool> getDownloadWifiOnly() async {
+    return _prefs.getBool(_downloadWifiOnlyKey) ?? false;
+  }
+
+  Future<void> setDownloadWifiOnly(bool value) async {
+    await _prefs.setBool(_downloadWifiOnlyKey, value);
   }
 
   Future<bool> getAutoCleanupDownloads() async {

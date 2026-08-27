@@ -1,8 +1,10 @@
 /// 睡眠定时：预设分钟数、自定义范围与倒计时文案。
 abstract final class SleepTimerLogic {
-  static const presetMinutes = [15, 30, 45, 60];
+  static const presetMinutes = [5, 10, 15, 20, 25, 30, 45, 60];
   static const minCustomMinutes = 1;
   static const maxCustomMinutes = 12 * 60;
+  static const fadeOutSeconds = 30;
+  static const snoozeMinutes = 10;
 
   static Duration clampDuration(Duration duration) {
     final seconds = duration.inSeconds.clamp(
@@ -59,6 +61,15 @@ abstract final class SleepTimerLogic {
     if (endsAt == null) return null;
     return formatRemaining(remainingAt(endsAt: endsAt, now: now));
   }
+
+  /// Returns the fade-out label if within fade-out window, otherwise null.
+  static String? fadeOutLabel(SleepTimerState state, {required DateTime now}) {
+    final endsAt = state.endsAt;
+    if (endsAt == null) return null;
+    final remaining = remainingAt(endsAt: endsAt, now: now);
+    if (remaining > Duration(seconds: fadeOutSeconds)) return null;
+    return '淡出 ${formatRemaining(remaining)}';
+  }
 }
 
 class SleepTimerState {
@@ -66,11 +77,15 @@ class SleepTimerState {
     this.endsAt,
     this.untilEpisodeEnd = false,
     this.stoppedByTimer = false,
+    this.snoozedUntil,
   });
 
   final DateTime? endsAt;
   final bool untilEpisodeEnd;
   final bool stoppedByTimer;
+  /// When snoozed, the time until which playback was paused.
+  final DateTime? snoozedUntil;
 
   bool get isActive => endsAt != null || untilEpisodeEnd;
+  bool get isSnoozed => snoozedUntil != null;
 }

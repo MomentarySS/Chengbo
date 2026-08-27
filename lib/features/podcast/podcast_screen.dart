@@ -421,38 +421,110 @@ class _DownloadAllTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final enabled = ref.watch(podcastDownloadAllFeedsProvider).value?.contains(feed.id) ?? false;
     final downloads = ref.watch(podcastDownloadsProvider);
+    final wifiOnly = ref.watch(downloadWifiOnlyProvider).value ?? false;
     final offline = ref.watch(isOfflineProvider).value ?? false;
     final ready = episodes.where((item) => downloads.statusFor(item.guid) == EpisodeDownloadStatus.ready).length;
     final downloading =
         episodes.where((item) => downloads.statusFor(item.guid) == EpisodeDownloadStatus.downloading).length;
-    return SwitchListTile(
-      secondary: const Icon(Icons.download_for_offline_outlined),
-      title: const Text('全部下载'),
-      subtitle: Text(
-        PodcastDownloadLogic.downloadAllSubtitle(
-          total: episodes.length,
-          ready: ready,
-          downloading: downloading,
-          enabled: enabled,
-        ),
-      ),
-      value: enabled,
-      onChanged: (value) async {
-        if (value && offline) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('当前没有网络，无法下载')),
-          );
-          return;
-        }
-        await ref.read(podcastDownloadAllFeedsProvider.notifier).setEnabled(feed.id, value);
-        if (value) {
-          await ref.read(podcastDownloadsProvider.notifier).downloadAll(feed, episodes);
-        } else {
-          await ref.read(podcastDownloadsProvider.notifier).cancelForGuids(
-                episodes.map((item) => item.guid),
+    // Feed download size.
+    int feedBytes = 0;
+    for (final ep in episodes) {
+      final rec = downloads.records[ep.guid];
+      if (rec != null) feedBytes += rec.bytes;
+    }
+
+    return Column(
+      children: [
+        SwitchListTile(
+          secondary: const Icon(Icons.download_for_offline_outlined),
+          title: const Text('全部下载'),
+          subtitle: Text(
+            [
+              PodcastDownloadLogic.downloadAllSubtitle(
+                total: episodes.length,
+                ready: ready,
+                downloading: downloading,
+                enabled: enabled,
+              ),
+              if (feedBytes > 0) PodcastDownloadLogic.formatBytes(feedBytes),
+            ].where((s) => s.isNotEmpty).join(' · '),
+          ),
+          value: enabled,
+          onChanged: (value) async {
+            if (value && offline) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('当前没有网络，无法下载')),
               );
-        }
-      },
+              return;
+            }
+            await ref.read(podcastDownloadAllFeedsProvider.notifier).setEnabled(feed.id, value);
+            if (value) {
+              await ref.read(podcastDownloadsProvider.notifier).downloadAll(feed, episodes);
+            } else {
+              await ref.read(podcastDownloadsProvider.notifier).cancelForGuids(
+                    episodes.map((item) => item.guid),
+                  );
+            }
+          },
+        ),
+        // Secondary row: WiFi-only + download recent N.
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+          child: Row(
+            children: [
+              Expanded(
+                child: Text(
+                  '仅WiFi下载',
+                  style: Theme.of(context).textTheme.bodySmall,
+                ),
+              ),
+              Switch(
+                value: wifiOnly,
+                onChanged: (value) {
+                  ref.read(downloadWifiOnlyProvider.notifier).set(value);
+                },
+              ),
+              const SizedBox(width: 16),
+              PopupMenuButton<int>(
+                tooltip: '下载最近几集',
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Theme.of(context).colorScheme.outline),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        '最近',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                      const Icon(Icons.arrow_drop_down, size: 18),
+                    ],
+                  ),
+                ),
+                onSelected: (count) async {
+                  if (offline) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('当前没有网络，无法下载')),
+                    );
+                    return;
+                  }
+                  await ref.read(podcastDownloadsProvider.notifier).downloadRecent(feed, episodes, count);
+                },
+                itemBuilder: (context) => [
+                  for (final n in [3, 5, 10])
+                    PopupMenuItem(
+                      value: n,
+                      child: Text('最近 $n 集'),
+                    ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
@@ -506,9 +578,10 @@ class _EpisodeTile extends ConsumerWidget {
                 '已听完'
               else if (progress != null && progress > Duration.zero)
                 '已播放 ${_formatDuration(progress)}',
-              if (downloaded) '已下载',
+              if (downloaded)
+                '已下载${_downloadSizeLabel(download, episode.guid)}',
               if (isCurrent) '正在收听',
-            ].join(' · '),
+            ].where((s) => s.isNotEmpty).join(' · '),
           ),
           if (fraction != null && !finished) ...[
             const SizedBox(height: 6),
@@ -541,6 +614,12 @@ class _EpisodeTile extends ConsumerWidget {
     final minutes = duration.inMinutes;
     final seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
     return '$minutes:$seconds';
+  }
+
+  String _downloadSizeLabel(PodcastDownloadState downloads, String guid) {
+    final record = downloads.records[guid];
+    if (record == null || record.bytes <= 0) return '';
+    return ' (${PodcastDownloadLogic.formatBytes(record.bytes)})';
   }
 }
 

@@ -38,6 +38,21 @@ class RadioAudioHandler extends BaseAudioHandler with SeekHandler {
       final item = _currentItem;
       if (item != null) {
         onPositionTick?.call(item, position);
+        // Auto-skip outro: seek forward when within skipOutro of the end.
+        if (item.kind == PlaybackKind.podcast &&
+            item.feedId != null &&
+            _player.duration != null) {
+          final skipOutro = _storage.getPodcastSkipOutro(item.feedId!);
+          if (skipOutro > 0) {
+            final duration = _player.duration!;
+            final remaining = duration - position;
+            if (remaining > Duration.zero &&
+                remaining <= Duration(seconds: skipOutro) &&
+                position < duration - const Duration(milliseconds: 100)) {
+              _player.seek(duration);
+            }
+          }
+        }
       }
     }, onError: (_) {},);
     _player.processingStateStream.listen((processingState) async {
@@ -256,18 +271,31 @@ class RadioAudioHandler extends BaseAudioHandler with SeekHandler {
       }
       if (!_shouldContinueStartup(request)) return;
       if (item.kind == PlaybackKind.podcast) {
-        await _player.setSpeed(_storage.getPodcastSpeedForFeed(item.feedId ?? ''));
+        final feedId = item.feedId ?? '';
+        await _player.setSpeed(_storage.getPodcastSpeedForFeed(feedId));
+        final skipIntro = Duration(seconds: _storage.getPodcastSkipIntro(feedId));
         if (item.episodeGuid != null) {
           final saved = await _storage.getPodcastProgress(item.episodeGuid!);
           // 已听完（≥95% 或剩余 ≤15s）的单集从头播：seek 到结尾会立即触发
           // completed 自动跳到下一集，导致无法重播。
+          Duration? seekTo = saved;
           if (saved != null &&
               saved > Duration.zero &&
               !PodcastPlaybackLogic.isFinished(
                 progress: saved,
                 duration: item.duration,
               )) {
-            await _player.seek(saved);
+            seekTo = saved;
+          }
+          // Apply skip-intro: start after the intro region if enabled.
+          if (skipIntro > Duration.zero) {
+            final effective = seekTo ?? Duration.zero;
+            if (effective < skipIntro) {
+              seekTo = skipIntro;
+            }
+          }
+          if (seekTo != null) {
+            await _player.seek(seekTo);
           }
         }
       } else if (PlaybackLogic.shouldSetSpeedOnLoad(
@@ -436,11 +464,16 @@ class RadioAudioHandler extends BaseAudioHandler with SeekHandler {
 
   Future<void> seekBy(Duration delta) async {
     final duration = _player.duration ?? _currentItem?.duration ?? Duration.zero;
+    Duration skipIntro = Duration.zero;
+    if (_currentItem?.kind == PlaybackKind.podcast && _currentItem?.feedId != null) {
+      skipIntro = Duration(seconds: _storage.getPodcastSkipIntro(_currentItem!.feedId!));
+    }
     await _player.seek(
       PodcastPlaybackLogic.clampSeek(
         position: _player.position,
         delta: delta,
         duration: duration,
+        skipIntro: skipIntro,
       ),
     );
   }

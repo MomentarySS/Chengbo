@@ -36,18 +36,30 @@ class SleepTimerCountdown extends ConsumerWidget {
       ),
       initialData: DateTime.now(),
       builder: (context, snapshot) {
-        final text = SleepTimerLogic.statusLabel(
-              timer,
-              now: snapshot.data ?? DateTime.now(),
-            ) ??
-            '';
+        final now = snapshot.data ?? DateTime.now();
+        final text = SleepTimerLogic.statusLabel(timer, now: now) ?? '';
+        final fadeLabel = SleepTimerLogic.fadeOutLabel(timer, now: now);
+
         if (compact) {
-          return Text(text, style: style);
+          return Text(fadeLabel ?? text, style: style);
         }
-        if (timer.untilEpisodeEnd) {
-          return Text('到$text', style: style);
+
+        String display;
+        Color? textColor;
+        if (fadeLabel != null) {
+          display = '淡出中 $fadeLabel';
+          textColor = Theme.of(context).colorScheme.tertiary;
+        } else if (timer.untilEpisodeEnd) {
+          display = '到$text';
+        } else {
+          display = '剩余 $text';
         }
-        return Text('剩余 $text', style: style);
+
+        return Text(
+          display,
+          style: style?.copyWith(color: textColor) ??
+              TextStyle(color: textColor),
+        );
       },
     );
   }
@@ -82,14 +94,18 @@ class _SleepTimerSheet extends ConsumerWidget {
             ),
             if (timer.isActive) ...[
               const SizedBox(height: 12),
-              SleepTimerCountdown(
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: colorScheme.primary,
-                    ),
+              Center(
+                child: SleepTimerCountdown(
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: colorScheme.primary,
+                      ),
+                ),
               ),
             ],
             const SizedBox(height: 20),
+
+            // Preset duration chips.
             Wrap(
               spacing: 8,
               runSpacing: 8,
@@ -116,14 +132,33 @@ class _SleepTimerSheet extends ConsumerWidget {
                 ),
               ],
             ),
+
+            // Active timer actions: snooze and cancel.
             if (timer.isActive) ...[
-              const SizedBox(height: 12),
-              TextButton(
-                onPressed: () {
-                  ref.read(sleepTimerProvider.notifier).cancel();
-                  Navigator.pop(context);
-                },
-                child: const Text('关闭定时'),
+              const SizedBox(height: 16),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () {
+                        ref.read(sleepTimerProvider.notifier).snooze();
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(Icons.snooze),
+                      label: Text('小睡 ${SleepTimerLogic.snoozeMinutes} 分钟'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: TextButton(
+                      onPressed: () {
+                        ref.read(sleepTimerProvider.notifier).cancel();
+                        Navigator.pop(context);
+                      },
+                      child: const Text('关闭定时'),
+                    ),
+                  ),
+                ],
               ),
             ],
           ],

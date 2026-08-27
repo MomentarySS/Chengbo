@@ -21,14 +21,18 @@ abstract final class PodcastPlaybackLogic {
   static const skipStep = Duration(seconds: 15);
   static const speeds = [0.8, 1.0, 1.25, 1.5, 2.0];
   static const defaultSpeed = 1.0;
+  /// Available skip durations in seconds for intro/outro skip.
+  static const skipDurationOptions = [0, 5, 10, 15, 20, 30, 45, 60, 90, 120];
 
   static Duration clampSeek({
     required Duration position,
     required Duration delta,
     required Duration duration,
+    Duration skipIntro = Duration.zero,
   }) {
     final next = position + delta;
-    if (next < Duration.zero) return Duration.zero;
+    final minPos = skipIntro;
+    if (next < minPos) return minPos;
     if (duration > Duration.zero && next > duration) return duration;
     return next;
   }

@@ -119,24 +119,39 @@ class SleepTimerNotifier extends StateNotifier<SleepTimerState> {
 
   final Ref _ref;
   Timer? _timer;
+  Timer? _fadeTimer;
+  double? _volumeBeforeFade;
 
   void start(Duration duration) {
     _timer?.cancel();
+    _fadeTimer?.cancel();
     final clamped = SleepTimerLogic.clampDuration(duration);
-    state = SleepTimerState(endsAt: DateTime.now().add(clamped));
+    final endsAt = DateTime.now().add(clamped);
+    state = SleepTimerState(endsAt: endsAt);
     _timer = Timer(clamped, () => unawaited(stopBecauseTimer()));
+    // Schedule fade-out.
+    final fadeDelay = clamped - Duration(seconds: SleepTimerLogic.fadeOutSeconds);
+    if (fadeDelay > Duration.zero) {
+      _fadeTimer = Timer(fadeDelay, () => unawaited(_beginFadeOut()));
+    } else if (clamped > Duration.zero) {
+      // Already within fade window.
+      _beginFadeOut();
+    }
   }
 
   void startUntilEpisodeEnd() {
     _timer?.cancel();
+    _fadeTimer?.cancel();
     _timer = null;
     state = const SleepTimerState(untilEpisodeEnd: true);
   }
 
   void cancel() {
     _timer?.cancel();
-    _timer = null;
+    _fadeTimer?.cancel();
+    _fadeTimer = null;
     state = const SleepTimerState();
+    _restoreVolume();
   }
 
   Duration? extend([Duration extra = SleepTimerLogic.extendBy]) {
@@ -150,11 +165,47 @@ class SleepTimerNotifier extends StateNotifier<SleepTimerState> {
     return extra;
   }
 
+  /// Snooze: pause playback, stop timer, and restart with snooze duration.
+  Future<void> snooze() async {
+    _timer?.cancel();
+    _fadeTimer?.cancel();
+    _fadeTimer = null;
+    await _ref.read(playerControllerProvider).pause();
+    state = SleepTimerState(
+      endsAt: DateTime.now().add(Duration(minutes: SleepTimerLogic.snoozeMinutes)),
+      snoozedUntil: DateTime.now(),
+    );
+    _timer = Timer(Duration(minutes: SleepTimerLogic.snoozeMinutes), () => unawaited(stopBecauseTimer()));
+    _restoreVolume();
+  }
+
+  Future<void> _beginFadeOut() async {
+    if (!state.isActive || state.untilEpisodeEnd) return;
+    final handler = await _ref.read(audioHandlerProvider.future);
+    _volumeBeforeFade = _volumeBeforeFade ?? 1.0;
+    const steps = 6;
+    final stepMs = (SleepTimerLogic.fadeOutSeconds * 1000 / steps).round();
+    for (var i = steps; i >= 0; i--) {
+      if (!mounted || !state.isActive) return;
+      await handler.setVolume(_volumeBeforeFade! * i / steps);
+      await Future<void>.delayed(Duration(milliseconds: stepMs));
+    }
+  }
+
+  void _restoreVolume() async {
+    if (_volumeBeforeFade != null) {
+      final handler = await _ref.read(audioHandlerProvider.future);
+      await handler.setVolume(_volumeBeforeFade!);
+      _volumeBeforeFade = null;
+    }
+  }
+
   Future<void> stopBecauseTimer() async {
     _timer?.cancel();
     _timer = null;
     state = const SleepTimerState(stoppedByTimer: true);
     await _ref.read(playerControllerProvider).stop();
+    _volumeBeforeFade = null;
   }
 
   @override
@@ -331,6 +382,13 @@ class PlayerController {
     await storage.setLastPlayback(item.toJson());
     await storage.setResumeOnLaunch(true);
     await handler.playItem(item);
+  }
+
+  Future<void> pause() async {
+    final handler = await _ref.read(audioHandlerProvider.future);
+    final storage = await _ref.read(appStorageProvider.future);
+    await handler.pause();
+    await storage.setResumeOnLaunch(true);
   }
 
   Future<void> togglePlayPause() async {
