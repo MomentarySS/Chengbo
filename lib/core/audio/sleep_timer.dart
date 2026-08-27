@@ -5,6 +5,7 @@ abstract final class SleepTimerLogic {
   static const maxCustomMinutes = 12 * 60;
   static const fadeOutSeconds = 30;
   static const snoozeMinutes = 10;
+  static const snoozeDuration = Duration(minutes: snoozeMinutes);
 
   static Duration clampDuration(Duration duration) {
     final seconds = duration.inSeconds.clamp(
@@ -64,6 +65,7 @@ abstract final class SleepTimerLogic {
 
   /// Returns the fade-out label if within fade-out window, otherwise null.
   static String? fadeOutLabel(SleepTimerState state, {required DateTime now}) {
+    if (state.isSnoozed || state.untilEpisodeEnd) return null;
     final endsAt = state.endsAt;
     if (endsAt == null) return null;
     final remaining = remainingAt(endsAt: endsAt, now: now);

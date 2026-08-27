@@ -57,7 +57,7 @@
 
 ### P0 体验
 
-- [x] **睡眠定时器**：15/30/45/60 分钟倒计时后 `stop()`；Now Playing 入口；支持自定义 1 分钟–12 小时
+- [x] **睡眠定时器**：5/10/15/20/25/30/45/60 分钟倒计时后 `stop()`（到点前 30 秒淡出）；Now Playing 入口；支持自定义 1 分钟–12 小时；小睡 10 分钟暂停后到点续播
 - [x] **ICY / 正在播放曲名**：`just_audio` 的 ICY metadata 显示在迷你条副标题与 Now Playing；HLS 不强制加 ICY 请求头；Windows 不支持 ICY 时回退分类名
 - [x] **记住上次音量**：冷启动恢复音量，不自动播放
 - [x] **境外电台开关**：默认只显示中国大陆；设置「电台管理」里打开「显示境外电台」后才出现港澳台，且境内台排在前面
@@ -76,7 +76,7 @@
 
 ### P1 播客收听
 
-- [x] **±15 秒 / 倍速**：Now Playing 与通知栏快进快退；0.8 / 1 / 1.25 / 1.5 / 2×，本机记住
+- [x] **±15 秒 / 倍速**：Now Playing 与通知栏快进快退；0.5 / 0.6 / 0.8 / 1 / 1.25 / 1.5 / 2×，本机按节目记住
 - [x] **单集简介**：RSS `content:encoded` / `itunes:summary` / `description` 取最长一段，去掉 HTML
 - [x] **订阅管理**：添加时抓取 RSS 标题与封面；删除订阅；不自带默认播客（已安装设备会清掉旧的央广网 / RTHK）；下拉刷新单集
 - [x] **按需下载**：单集保存到应用私有目录，离线可听；设置里可看占用并清除；直播仍不落盘
@@ -122,6 +122,29 @@
 - [x] 订阅节目新一集通知（默认关；最少 6 小时；首次只记 guid）
 - [x] Podcast Index 搜索 → 一键订阅（只在设置里；默认滤 explicit；密钥本机保存）
 - [x] Chromecast（仅 Android；默认接收器 CC1AD845；无 Play Services 时静默失败）
+
+### 1.5.0（2026-08-27）
+
+- [x] 电台搜索：码率过滤（64k+ / 128k+ / 256k+）、只看收藏、最近 5 条搜索历史
+- [x] 睡眠定时：预设 5–60 分钟、到点前 30 秒淡出、小睡 10 分钟（暂停，到点后续播）；淡出不把音量 0 写成上次音量
+- [x] 按节目跳过片头/片尾（0–120 秒）
+- [x] 仅 WiFi 下载：纯移动网络跳过；Wi-Fi / 有线允许
+- [x] 收听历史导出 JSON、单集 Show Notes 入口、下载显示体积与「最近 N 集」
+- [x] `AppBrand.version` 与 `pubspec.yaml` 对齐为 `1.5.0`；User-Agent `Chengbo/1.5.0 (Flutter; chengbo radio)`
+- [x] 版本 `1.5.0+29`（Android `versionCode` 29）
+
+### 1.4.8（2026-08-19）
+
+- [x] 收听统计页移除近 26 周热力图，保留总时长 / 今日本周 / 电台 vs 播客占比 / Top 5
+
+### 1.4.7（2026-08-19）
+
+- [x] 精选目录重建为约 413 台；探测改为普通 GET 优先，Range 仅兜底，支持 gzip
+- [x] 版本 `1.4.7+27`（Android `versionCode` 27）
+
+### 1.2.13（2026-08-18）
+
+- [x] 播客进度跨单集污染、已听完重播、自然排序、进度写盘节流；`AppBrand` 与 pubspec 对齐（当时）
 
 ### 1.1.0（2026-08-16）
 
@@ -292,7 +315,7 @@
 
 ### 仍可排后
 
-- 功能候选与推进计划见 [ROADMAP.md](ROADMAP.md)（收听时长统计、继续收听、跳过片头等，纯本机增强）。源维护仍按 [SOURCES.md](SOURCES.md) 定期测活，不堆未核对的台。
+- 功能候选与推进计划见 [ROADMAP.md](ROADMAP.md)（纯本机增强）。源维护仍按 [SOURCES.md](SOURCES.md) 定期测活，不堆未核对的台。
 
 ---
 
@@ -306,4 +329,4 @@
 6. 本机构建与打包走 `.\scripts\flutter.ps1` / `.\scripts\pack.ps1`，不要直接打国外源；镜像清单见 `scripts/china-mirrors.ps1`。
 7. Android 打包需要 JDK 17（`pack.ps1` 会选用本机 Microsoft OpenJDK 17）。打包前会先 `gradlew --stop`，避免 Groovy DSL 缓存被 daemon 占用后偶发损坏。APK `minSdk` 为 23；release 优先用 `android/key.properties` + `upload-keystore.jks` 正式签名，缺文件时回退 debug。插件钉死：`dynamic_color` 低于 1.9.0（1.9.0 的 Gradle 在 AGP 8.9 上编不过）、`home_widget` 0.8.0；Glance 用 `1.1.1` 强制解析，避免 `1.+` 拉到要 AGP 9 的预览版。子工程 Kotlin/Java 统一 JVM 11。
 8. 摇一摇、桌面小组件、Chromecast 只做 Android；Windows 不显示入口，也不要为它们加 Win11 小组件板。
-9. Windows 编译需要 VS 2022 生成工具的 **C++ ATL**（`atlbase.h`）。只装 C++ 工具、不装 ATL 时，增量 Release 可能还能过，Debug 全量重编会在 `flutter_local_notifications_windows` 上失败。`just_audio_windows` 用仓库内 `third_party/just_audio_windows`（回调切回 UI 线程），不要改回 pub.dev 的 0.2.3。
+9. Windows 编译需要 VS 2022 生成工具的 **C++ ATL**（`atlbase.h`）。只装 C++ 工具、不装 ATL 时，增量 Release 可能还能过，Debug 全量重编会在 `flutter_local_notifications_windows` 上失败。`just_audio_windows` 用仓库内 `third_party/just_audio_windows`：Media Foundation 回调线程直接发 `EventSink`（1.4.6 起；Post 回 UI 线程会导致 Dart 收不到 Playing、卡在缓冲），不要改回 pub.dev 的 0.2.3，也不要把事件再 Post 回 UI 线程。

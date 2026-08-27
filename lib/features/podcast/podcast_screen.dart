@@ -42,6 +42,31 @@ Future<bool> confirmDeletePodcast(BuildContext context, PodcastFeed feed) async 
       false;
 }
 
+Future<bool> _ensureCanDownload(BuildContext context, WidgetRef ref) async {
+  final offline = ref.read(isOfflineProvider).value ?? false;
+  if (offline) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('当前没有网络，无法下载')),
+      );
+    }
+    return false;
+  }
+  final wifiOnly = ref.read(downloadWifiOnlyProvider).value ?? false;
+  if (wifiOnly) {
+    final allowed = await ref.read(networkMonitorProvider).allowsWifiOnlyDownload;
+    if (!allowed) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text(NetworkStatusLogic.wifiOnlyBlocked)),
+        );
+      }
+      return false;
+    }
+  }
+  return true;
+}
+
 class PodcastScreen extends ConsumerStatefulWidget {
   const PodcastScreen({super.key});
 
@@ -422,7 +447,6 @@ class _DownloadAllTile extends ConsumerWidget {
     final enabled = ref.watch(podcastDownloadAllFeedsProvider).value?.contains(feed.id) ?? false;
     final downloads = ref.watch(podcastDownloadsProvider);
     final wifiOnly = ref.watch(downloadWifiOnlyProvider).value ?? false;
-    final offline = ref.watch(isOfflineProvider).value ?? false;
     final ready = episodes.where((item) => downloads.statusFor(item.guid) == EpisodeDownloadStatus.ready).length;
     final downloading =
         episodes.where((item) => downloads.statusFor(item.guid) == EpisodeDownloadStatus.downloading).length;
@@ -451,12 +475,7 @@ class _DownloadAllTile extends ConsumerWidget {
           ),
           value: enabled,
           onChanged: (value) async {
-            if (value && offline) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('当前没有网络，无法下载')),
-              );
-              return;
-            }
+            if (value && !await _ensureCanDownload(context, ref)) return;
             await ref.read(podcastDownloadAllFeedsProvider.notifier).setEnabled(feed.id, value);
             if (value) {
               await ref.read(podcastDownloadsProvider.notifier).downloadAll(feed, episodes);
@@ -505,12 +524,7 @@ class _DownloadAllTile extends ConsumerWidget {
                   ),
                 ),
                 onSelected: (count) async {
-                  if (offline) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('当前没有网络，无法下载')),
-                    );
-                    return;
-                  }
+                  if (!await _ensureCanDownload(context, ref)) return;
                   await ref.read(podcastDownloadsProvider.notifier).downloadRecent(feed, episodes, count);
                 },
                 itemBuilder: (context) => [
@@ -691,12 +705,10 @@ void _showEpisodeMenu(BuildContext context, WidgetRef ref, PodcastFeed feed, Pod
               ListTile(
                 leading: const Icon(Icons.download_outlined),
                 title: const Text('下载到本机'),
-                onTap: () {
+                onTap: () async {
                   Navigator.pop(sheetContext);
-                  final offline = ref.read(isOfflineProvider).value ?? false;
-                  if (!offline) {
-                    ref.read(podcastDownloadsProvider.notifier).download(feed, episode);
-                  }
+                  if (!await _ensureCanDownload(context, ref)) return;
+                  await ref.read(podcastDownloadsProvider.notifier).download(feed, episode);
                 },
               ),
             ListTile(

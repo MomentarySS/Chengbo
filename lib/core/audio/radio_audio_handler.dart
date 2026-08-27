@@ -158,6 +158,15 @@ class RadioAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   double? _volumeBeforeMute;
+  bool _persistVolume = true;
+
+  /// 睡眠淡出期间不要把中间音量（含 0）写进「上次音量」。
+  void setPersistVolume(bool persist) {
+    _persistVolume = persist;
+    if (!persist) {
+      _volumeSaveTimer?.cancel();
+    }
+  }
 
   void _listenVolume() {
     if (_volumeListenAttached) return;
@@ -166,6 +175,7 @@ class RadioAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   void _scheduleVolumeSave(double volume) {
+    if (!_persistVolume) return;
     _volumeSaveTimer?.cancel();
     _volumeSaveTimer = Timer(const Duration(milliseconds: 250), () {
       unawaited(_storage.setLastVolume(volume));

@@ -85,9 +85,11 @@ class _SleepTimerSheet extends ConsumerWidget {
             Text(
               timer.untilEpisodeEnd
                   ? '当前单集播完后停止'
-                  : timer.isActive
-                      ? '到点后停止播放'
-                      : '选择时长，或播完当前单集后停止',
+                  : timer.isSnoozed
+                      ? '小睡中，到点后继续播放'
+                      : timer.isActive
+                          ? '到点后停止播放'
+                          : '选择时长，或播完当前单集后停止',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),

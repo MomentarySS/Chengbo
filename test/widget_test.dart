@@ -578,6 +578,37 @@ void main() {
     expect(NetworkStatusLogic.fromDio(badRequest), isNot(contains('DioException')));
   });
 
+  test('NetworkStatusLogic allows WiFi-only download on wifi/ethernet, not mobile', () {
+    expect(NetworkStatusLogic.allowsWifiOnlyDownload([]), isFalse);
+    expect(
+      NetworkStatusLogic.allowsWifiOnlyDownload([ConnectivityResult.none]),
+      isFalse,
+    );
+    expect(
+      NetworkStatusLogic.allowsWifiOnlyDownload([ConnectivityResult.wifi]),
+      isTrue,
+    );
+    expect(
+      NetworkStatusLogic.allowsWifiOnlyDownload([ConnectivityResult.ethernet]),
+      isTrue,
+    );
+    expect(
+      NetworkStatusLogic.allowsWifiOnlyDownload([ConnectivityResult.mobile]),
+      isFalse,
+    );
+    expect(
+      NetworkStatusLogic.allowsWifiOnlyDownload([
+        ConnectivityResult.wifi,
+        ConnectivityResult.mobile,
+      ]),
+      isTrue,
+    );
+    expect(
+      NetworkStatusLogic.allowsWifiOnlyDownload([ConnectivityResult.vpn]),
+      isTrue,
+    );
+  });
+
   test('StationSkipLogic wraps within filtered queue', () {
     const a = RadioStation(id: 'a', name: 'A', streamUrl: 'https://a.example/a.m3u8');
     const b = RadioStation(id: 'b', name: 'B', streamUrl: 'https://b.example/b.m3u8');
@@ -786,7 +817,7 @@ Length1=-1
   });
 
   test('SleepTimerLogic presets and custom range', () {
-    expect(SleepTimerLogic.presetMinutes, [15, 30, 45, 60]);
+    expect(SleepTimerLogic.presetMinutes, [5, 10, 15, 20, 25, 30, 45, 60]);
     expect(SleepTimerLogic.clampCustomMinutes(0), 1);
     expect(SleepTimerLogic.clampCustomMinutes(800), 720);
     expect(

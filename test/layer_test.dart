@@ -609,8 +609,11 @@ void main() {
       const Duration(minutes: 10),
     );
     expect(PodcastPlaybackLogic.snapSpeed(1.3), 1.25);
+    expect(PodcastPlaybackLogic.snapSpeed(0.55), 0.5);
+    expect(PodcastPlaybackLogic.speedLabel(0.6), '0.6×');
     expect(PodcastPlaybackLogic.speedLabel(1.5), '1.5×');
     expect(PodcastPlaybackLogic.speedLabel(2), '2×');
+    expect(PodcastPlaybackLogic.speeds, containsAll([0.5, 0.6, 0.8, 1.0, 1.25, 1.5, 2.0]));
     expect(
       PodcastPlaybackLogic.stripHtml('<p>你好&nbsp;<b>澄波</b></p>'),
       '你好 澄波',
@@ -1081,6 +1084,27 @@ void main() {
         now: now,
       ),
       const Duration(minutes: 15),
+    );
+  });
+
+  test('SleepTimerLogic hides fade-out while snoozed and keeps remaining label', () {
+    final now = DateTime(2026, 8, 27, 22);
+    final snoozed = SleepTimerState(
+      endsAt: now.add(SleepTimerLogic.snoozeDuration),
+      snoozedUntil: now,
+    );
+    expect(snoozed.isSnoozed, isTrue);
+    expect(SleepTimerLogic.fadeOutLabel(snoozed, now: now.add(const Duration(seconds: 9 * 60 + 50))), isNull);
+    expect(
+      SleepTimerLogic.statusLabel(snoozed, now: now),
+      SleepTimerLogic.formatRemaining(SleepTimerLogic.snoozeDuration),
+    );
+    expect(
+      SleepTimerLogic.fadeOutLabel(
+        SleepTimerState(endsAt: now.add(const Duration(seconds: 10))),
+        now: now,
+      ),
+      isNotNull,
     );
   });
 

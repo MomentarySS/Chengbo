@@ -13,10 +13,23 @@ abstract final class NetworkStatusLogic {
   static const playFailed = '当前没有网络，无法播放';
   static const testFailed = '当前没有网络，无法测试连接';
   static const skipProbeHint = '当前没有网络，已显示本地电台，未检测直播源';
+  static const wifiOnlyBlocked = '当前是移动网络，已跳过下载';
 
   static bool isOffline(List<ConnectivityResult> results) {
     if (results.isEmpty) return true;
     return results.length == 1 && results.first == ConnectivityResult.none;
+  }
+
+  /// 「仅 WiFi 下载」：Wi-Fi / 有线允许；纯移动网络跳过。
+  /// 同时有 Wi-Fi 和蜂窝时允许。仅 VPN / other（常见于桌面 Clash TUN）且没有蜂窝时允许。
+  static bool allowsWifiOnlyDownload(List<ConnectivityResult> results) {
+    if (isOffline(results)) return false;
+    if (results.contains(ConnectivityResult.wifi) ||
+        results.contains(ConnectivityResult.ethernet)) {
+      return true;
+    }
+    if (results.contains(ConnectivityResult.mobile)) return false;
+    return true;
   }
 
   static String loadFailureMessage(String onlineMessage, {required bool offline}) {
@@ -79,6 +92,22 @@ class NetworkMonitor {
     } catch (error, stackTrace) {
       AppLog.e('NetworkMonitor', 'checkConnectivity failed', error: error, stackTrace: stackTrace);
       return true;
+    }
+  }
+
+  Future<bool> get allowsWifiOnlyDownload async {
+    try {
+      return NetworkStatusLogic.allowsWifiOnlyDownload(
+        await _connectivity.checkConnectivity(),
+      );
+    } catch (error, stackTrace) {
+      AppLog.e(
+        'NetworkMonitor',
+        'allowsWifiOnlyDownload failed',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      return false;
     }
   }
 

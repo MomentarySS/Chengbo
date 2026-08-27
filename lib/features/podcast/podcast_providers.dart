@@ -384,11 +384,10 @@ class PodcastDownloadsNotifier extends StateNotifier<PodcastDownloadState> {
     if (state.statusFor(episode.guid) == EpisodeDownloadStatus.downloading) {
       return;
     }
-    // WiFi-only guard: skip if on mobile and WiFi-only is enabled.
     final wifiOnlyAsync = _ref.read(downloadWifiOnlyProvider);
     if (wifiOnlyAsync.value == true) {
-      final isOffline = _ref.read(isOfflineProvider).value ?? false;
-      if (isOffline) return;
+      final allowed = await _ref.read(networkMonitorProvider).allowsWifiOnlyDownload;
+      if (!allowed) return;
     }
     final progress = Map<String, double>.from(state.progress)..[episode.guid] = 0;
     final failed = Set<String>.from(state.failed)..remove(episode.guid);
