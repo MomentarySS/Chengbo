@@ -592,6 +592,18 @@ class _EpisodeTile extends ConsumerWidget {
           ],
         ],
       ),
+      trailing: hasNotes
+          ? IconButton(
+              tooltip: '查看备注',
+              icon: const Icon(Icons.notes_outlined, size: 20),
+              onPressed: () => showEpisodeNotesSheet(
+                context: context,
+                ref: ref,
+                feed: feed,
+                episode: episode,
+              ),
+            )
+          : null,
       onTap: () async {
         await ref.read(playerControllerProvider).play(
               PlaybackItem.fromPodcastEpisode(

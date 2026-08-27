@@ -1,9 +1,16 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../core/network/network_status.dart';
 import '../../core/providers/app_providers.dart';
+import '../../core/providers/listening_stats_provider.dart';
 import '../../core/providers/podcast_history_provider.dart';
+import '../../core/stats/listening_stats.dart';
 import '../../core/theme.dart';
 import '../../shared/widgets/empty_state.dart';
 import '../../shared/widgets/station_list_tile.dart';
@@ -95,6 +102,41 @@ class _FavoritesTab extends ConsumerWidget {
   }
 }
 
+Future<void> _exportListeningData(BuildContext context, WidgetRef ref) async {
+  final history = ref.read(podcastHistoryProvider).value ?? const [];
+  final stats = ref.read(listeningStatsProvider).value ?? const ListeningStats();
+
+  final exportData = {
+    'exportedAt': DateTime.now().toUtc().toIso8601String(),
+    'app': '澄波 Chengbo',
+    'podcastHistory': [for (final e in history) e.toJson()],
+    'listeningStats': stats.toJson(),
+  };
+
+  final json = const JsonEncoder.withIndent('  ').convert(exportData);
+
+  try {
+    final tempDir = await getTemporaryDirectory();
+    final timestamp = DateTime.now().toIso8601String().replaceAll(RegExp(r'[:.]'), '-');
+    final file = File('${tempDir.path}/chengbo-listening-export-$timestamp.json');
+    await file.writeAsString(json, flush: true);
+
+    if (context.mounted) {
+      await Share.shareXFiles(
+        [XFile(file.path)],
+        text: '澄波收听数据导出',
+        subject: 'chengbo-listening-export-$timestamp.json',
+      );
+    }
+  } catch (e) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('导出失败: $e')),
+      );
+    }
+  }
+}
+
 class _RecentTab extends ConsumerWidget {
   const _RecentTab();
 
@@ -110,12 +152,21 @@ class _RecentTab extends ConsumerWidget {
         _SectionHeader(
           title: '播客',
           icon: Icons.podcasts_outlined,
-          trailing: (historyAsync.value?.isNotEmpty ?? false)
-              ? TextButton(
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (historyAsync.value?.isNotEmpty ?? false)
+                TextButton(
+                  onPressed: () => _exportListeningData(context, ref),
+                  child: const Text('导出'),
+                ),
+              if (historyAsync.value?.isNotEmpty ?? false)
+                TextButton(
                   onPressed: () => _clearPodcastHistory(context, ref),
                   child: const Text('清除'),
-                )
-              : null,
+                ),
+            ],
+          ),
         ),
         historyAsync.when(
           loading: () => const LinearProgressIndicator(),

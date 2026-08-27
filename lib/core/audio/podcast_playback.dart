@@ -19,7 +19,7 @@ enum PodcastEpisodeSort {
 /// 播客播放：跳转、倍速、简介清洗。不负责下载或缓存音频。
 abstract final class PodcastPlaybackLogic {
   static const skipStep = Duration(seconds: 15);
-  static const speeds = [0.8, 1.0, 1.25, 1.5, 2.0];
+  static const speeds = [0.5, 0.6, 0.8, 1.0, 1.25, 1.5, 2.0];
   static const defaultSpeed = 1.0;
   /// Available skip durations in seconds for intro/outro skip.
   static const skipDurationOptions = [0, 5, 10, 15, 20, 30, 45, 60, 90, 120];
