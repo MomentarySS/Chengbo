@@ -1,0 +1,48 @@
+{
+  "schemaVersion": "mimosa-finding-ledger-batch/v1",
+  "batchId": "pretooluse-59dc584d8dc472bc8aa39c3d5809b29d",
+  "runId": null,
+  "runStatus": "completed",
+  "coverage": {
+    "status": "complete",
+    "reasons": []
+  },
+  "source": {
+    "component": "zcode-hook",
+    "operationId": "PreToolUse"
+  },
+  "revision": null,
+  "diffHash": null,
+  "rulesVersion": null,
+  "sessionHash": "201bde7b090b9d644cdaa55ce1720701009059ac0aa4bf1c9db6c481d5674ec8",
+  "reportRef": null,
+  "events": [
+    {
+      "eventId": "hook-069e09459ca8384d17b52fc3ad6370e9",
+      "findingId": "mimosa-cc05246c24c22ef53d0e1d32",
+      "type": "finding_blocked",
+      "at": "2026-08-18T16:32:40.185Z",
+      "identity": {
+        "projectRelativeFile": "prune_dead_stations.py",
+        "ruleId": "security",
+        "codeEvidenceHash": "933b978a6409188b07ff2186513b533f50fd11ce96630b537ef249ef76ec0c93",
+        "confidence": "stable"
+      },
+      "scope": "direct",
+      "line": 44,
+      "endLine": 44,
+      "reasonCode": "deny",
+      "reportedToAgent": true,
+      "evidence": {
+        "kind": "source",
+        "boundary": "candidate",
+        "producer": "deterministic",
+        "evidenceHash": "933b978a6409188b07ff2186513b533f50fd11ce96630b537ef249ef76ec0c93"
+      },
+      "sequence": 0
+    }
+  ],
+  "observedFindingIds": [],
+  "verifiedFiles": [],
+  "recordedAt": "2026-08-18T16:32:40.602Z"
+}

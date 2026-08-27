@@ -1,0 +1,381 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-08-16T11:46:00+08:00",
+  "title": "Design System: 澄波",
+  "extensions": {
+    "colorMeta": {
+      "chengbo-blue": {
+        "role": "primary",
+        "displayName": "澄波蓝",
+        "canonical": "#1565C0",
+        "tonalRamp": [
+          "#082445",
+          "#0D3C73",
+          "#1255A1",
+          "#176DCF",
+          "#3086E8",
+          "#75AFF0",
+          "#BAD7F7",
+          "#E8F2FC"
+        ]
+      },
+      "deep-chengbo": {
+        "role": "primary",
+        "displayName": "深澄蓝",
+        "canonical": "#0D4F8C",
+        "tonalRamp": [
+          "#072746",
+          "#0B4275",
+          "#0F5CA3",
+          "#1476D2",
+          "#2D90EC",
+          "#73B5F2",
+          "#B9DAF8",
+          "#E8F3FD"
+        ]
+      },
+      "primary": {
+        "role": "primary",
+        "displayName": "浅色 Primary",
+        "canonical": "#405F90",
+        "tonalRamp": [
+          "#182335",
+          "#273A58",
+          "#37527C",
+          "#47699F",
+          "#6082B8",
+          "#95ACD0",
+          "#CAD5E7",
+          "#EDF1F7"
+        ]
+      },
+      "primary-dark": {
+        "role": "primary",
+        "displayName": "深色 Primary",
+        "canonical": "#A9C7FF",
+        "tonalRamp": [
+          "#001B4C",
+          "#002C80",
+          "#003EB2",
+          "#0050E6",
+          "#1A6AFF",
+          "#669BFF",
+          "#B2CDFF",
+          "#E5EEFF"
+        ]
+      },
+      "inverse-primary": {
+        "role": "primary",
+        "displayName": "深色 Inverse Primary",
+        "canonical": "#A9C7FF",
+        "tonalRamp": [
+          "#001B4C",
+          "#002C80",
+          "#003EB2",
+          "#0050E6",
+          "#1A6AFF",
+          "#669BFF",
+          "#B2CDFF",
+          "#E5EEFF"
+        ]
+      },
+      "secondary": {
+        "role": "secondary",
+        "displayName": "灰蓝 Secondary",
+        "canonical": "#555F71",
+        "tonalRamp": [
+          "#121C2B",
+          "#283141",
+          "#3E4758",
+          "#555F71",
+          "#6F7A8C",
+          "#9AA3B3",
+          "#DAE2F9",
+          "#F3F6FC"
+        ]
+      },
+      "secondary-container": {
+        "role": "secondary",
+        "displayName": "灰蓝 Secondary Container",
+        "canonical": "#DAE2F9",
+        "tonalRamp": [
+          "#121C2B",
+          "#283141",
+          "#3E4758",
+          "#555F71",
+          "#6F7A8C",
+          "#9AA3B3",
+          "#DAE2F9",
+          "#F3F6FC"
+        ]
+      },
+      "surface": {
+        "role": "neutral",
+        "displayName": "浅色 Surface",
+        "canonical": "#F9F9FF",
+        "tonalRamp": [
+          "#111318",
+          "#191C20",
+          "#282A2F",
+          "#33353A",
+          "#44474E",
+          "#C4C6CF",
+          "#E2E2E9",
+          "#F9F9FF"
+        ]
+      },
+      "surface-dark": {
+        "role": "neutral",
+        "displayName": "深色 Surface",
+        "canonical": "#111318",
+        "tonalRamp": [
+          "#111318",
+          "#191C20",
+          "#282A2F",
+          "#33353A",
+          "#44474E",
+          "#C4C6CF",
+          "#E2E2E9",
+          "#F9F9FF"
+        ]
+      },
+      "surface-container-high": {
+        "role": "neutral",
+        "displayName": "迷你条石面",
+        "canonical": "#E7E8EE",
+        "tonalRamp": [
+          "#111318",
+          "#191C20",
+          "#282A2F",
+          "#33353A",
+          "#44474E",
+          "#C4C6CF",
+          "#E7E8EE",
+          "#F9F9FF"
+        ]
+      },
+      "outline-variant": {
+        "role": "neutral",
+        "displayName": "分割线 / 描边弱",
+        "canonical": "#C4C6CF",
+        "tonalRamp": [
+          "#191C20",
+          "#33353A",
+          "#44474E",
+          "#74777F",
+          "#C4C6CF",
+          "#E2E2E9",
+          "#E7E8EE",
+          "#F9F9FF"
+        ]
+      },
+      "error": {
+        "role": "primary",
+        "displayName": "Error",
+        "canonical": "#BA1A1A",
+        "tonalRamp": [
+          "#430909",
+          "#701010",
+          "#9D1616",
+          "#C91C1C",
+          "#E33636",
+          "#EC7979",
+          "#F6BCBC",
+          "#FCE9E9"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Now Playing 台名与睡眠倒计时，App 内最大字。"
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "分区头、表单小节、迷你条台名。"
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "列表副文、说明、Now Playing 副标题。"
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "芯片、按钮、音量数字；倒计时加等宽数字。"
+      }
+    },
+    "shadows": [
+      {
+        "name": "mini-player-lift",
+        "value": "0 4px 12px rgba(0,0,0,0.22)",
+        "purpose": "底部迷你条的结构抬起（Material elevation 6，shadow @ 22%）。"
+      },
+      {
+        "name": "artwork-glow",
+        "value": "0 16px 32px <artwork-primary-at-35%>",
+        "purpose": "Now Playing 大封面的有色光晕。"
+      }
+    ],
+    "motion": [
+      {
+        "name": "artwork-fade-in",
+        "value": "200ms",
+        "purpose": "台标网络图淡入。"
+      },
+      {
+        "name": "icy-marquee",
+        "value": "6s + overflow/40s, linear repeat",
+        "purpose": "ICY 曲名一行放不下才横向慢滚；分类名不滚。"
+      },
+      {
+        "name": "material-standard",
+        "value": "cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "控件状态与页面转场跟随 Material 默认。"
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "compact",
+        "value": "<900px"
+      },
+      {
+        "name": "expanded",
+        "value": ">=900px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "主操作：添加、重试、收听直播、保存、检测。",
+      "html": "<button class=\"ds-btn-primary\" type=\"button\">添加</button>",
+      "css": ".ds-btn-primary { background: #405F90; color: #FFFFFF; padding: 10px 24px; height: 40px; border: none; border-radius: 999px; font-family: Roboto, \"Segoe UI\", sans-serif; font-size: 14px; font-weight: 500; letter-spacing: 0.1px; cursor: pointer; transition: background 0.2s cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-primary:hover { background: #37527C; } .ds-btn-primary:focus-visible { outline: 2px solid #405F90; outline-offset: 3px; } .ds-btn-primary:active { background: #273A58; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "取消、关闭定时、列表内清除 / 检测 / 刷新。",
+      "html": "<button class=\"ds-btn-secondary\" type=\"button\">取消</button>",
+      "css": ".ds-btn-secondary { background: transparent; color: #405F90; padding: 10px 24px; height: 40px; border: none; border-radius: 999px; font-family: Roboto, \"Segoe UI\", sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 0.2s cubic-bezier(0.4, 0, 0.2, 1); } .ds-btn-secondary:hover { background: rgba(64, 95, 144, 0.08); } .ds-btn-secondary:focus-visible { outline: 2px solid #405F90; outline-offset: 3px; }"
+    },
+    {
+      "name": "Filter Chip",
+      "kind": "chip",
+      "refersTo": "chip-filter-selected",
+      "description": "电台分类。选中走灰蓝容器，不走主色高亮。",
+      "html": "<div class=\"ds-chip-row\"><button class=\"ds-chip\" type=\"button\">全部</button><button class=\"ds-chip ds-chip-selected\" type=\"button\">音乐</button><button class=\"ds-chip\" type=\"button\">新闻</button></div>",
+      "css": ".ds-chip-row { display: flex; gap: 8px; } .ds-chip { height: 32px; padding: 0 16px; border: 1px solid #C4C6CF; border-radius: 8px; background: #F9F9FF; color: #44474E; font-family: Roboto, \"Segoe UI\", sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; } .ds-chip:hover { background: #E7E8EE; } .ds-chip:focus-visible { outline: 2px solid #405F90; outline-offset: 2px; } .ds-chip-selected { background: #DAE2F9; color: #121C2B; border-color: transparent; }"
+    },
+    {
+      "name": "Outlined Field",
+      "kind": "input",
+      "refersTo": "input-outlined",
+      "description": "搜索与添加电台的描边输入框。",
+      "html": "<label class=\"ds-field\"><span class=\"ds-field-label\">搜索电台名称或标签</span><input class=\"ds-input\" type=\"search\" placeholder=\"搜索电台名称或标签\" /></label>",
+      "css": ".ds-field { display: flex; flex-direction: column; gap: 6px; font-family: Roboto, \"Segoe UI\", sans-serif; } .ds-field-label { font-size: 12px; font-weight: 500; color: #44474E; } .ds-input { height: 56px; padding: 16px; border: 1px solid #C4C6CF; border-radius: 4px; background: rgba(226, 226, 233, 0.55); color: #191C20; font-size: 14px; line-height: 1.43; } .ds-input:hover { border-color: #191C20; } .ds-input:focus { outline: none; border: 2px solid #405F90; padding: 15px; } .ds-input:focus-visible { border: 2px solid #405F90; }"
+    },
+    {
+      "name": "Navigation Bar",
+      "kind": "nav",
+      "refersTo": "nav-bar",
+      "description": "紧凑宽度四目的底栏。选中指示走 secondary-container。宽屏改为 NavigationRail。",
+      "html": "<nav class=\"ds-nav\"><button class=\"ds-nav-item ds-nav-item-active\" type=\"button\"><span class=\"ds-nav-indicator\"><svg class=\"ds-nav-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M3.24 6.15C2.51 6.43 2 7.17 2 8v12c0 1.1.9 2 2 2h16c1.11 0 2-.9 2-2V8c0-1.1-.9-2-2-2H8.3l8.26-3.34L15.88 1 3.24 6.15zM7 20c-1.66 0-3-1.34-3-3s1.34-3 3-3 3 1.34 3 3-1.34 3-3 3zm13-8h-2v-2h-2v2H8V8h12v4z\"/></svg></span>电台</button><button class=\"ds-nav-item\" type=\"button\"><svg class=\"ds-nav-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M14 12c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-2-8c-4.97 0-9 4.03-9 9v7c0 1.66 1.34 3 3 3h3v-8H5v-2c0-3.87 3.13-7 7-7s7 3.13 7 7v2h-3v8h3c1.66 0 3-1.34 3-3v-7c0-4.97-4.03-9-9-9z\"/></svg>播客</button><button class=\"ds-nav-item\" type=\"button\"><svg class=\"ds-nav-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z\"/></svg>收藏</button><button class=\"ds-nav-item\" type=\"button\"><svg class=\"ds-nav-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M19.14 12.94c.04-.31.06-.63.06-.94s-.02-.63-.06-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.49.49 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54A.49.49 0 0 0 13.9 2h-3.8a.49.49 0 0 0-.48.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96a.49.49 0 0 0-.59.22L2.74 8.87a.49.49 0 0 0 .12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94L2.86 14.5a.49.49 0 0 0-.12.61l1.92 3.32c.13.23.4.32.64.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.25.41.48.41h3.8c.24 0 .44-.17.48-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.24.1.51 0 .64-.22l1.92-3.32a.49.49 0 0 0-.12-.61l-2.03-1.58zM12 15.6A3.6 3.6 0 1 1 12 8.4a3.6 3.6 0 0 1 0 7.2z\"/></svg>设置</button></nav>",
+      "css": ".ds-nav { display: flex; height: 80px; background: #F9F9FF; } .ds-nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border: none; background: transparent; color: #44474E; font-family: Roboto, \"Segoe UI\", sans-serif; font-size: 12px; font-weight: 500; cursor: pointer; } .ds-nav-item:hover { background: rgba(68, 71, 78, 0.08); } .ds-nav-item:focus-visible { outline: 2px solid #405F90; outline-offset: -4px; } .ds-nav-item-active { color: #191C20; font-weight: 600; } .ds-nav-indicator { display: grid; place-items: center; width: 56px; height: 32px; border-radius: 16px; background: #DAE2F9; color: #121C2B; } .ds-nav-item-active .ds-nav-icon { color: #121C2B; } .ds-nav-icon { width: 24px; height: 24px; }"
+    },
+    {
+      "name": "Mini Player",
+      "kind": "custom",
+      "refersTo": "mini-player",
+      "description": "签名组件：底部圆角石，未播放时整条消失。",
+      "html": "<div class=\"ds-mini\"><div class=\"ds-mini-art\" aria-hidden=\"true\">佛</div><div class=\"ds-mini-copy\"><div class=\"ds-mini-title\">佛山音乐广播</div><div class=\"ds-mini-sub\">音乐 · 广东</div></div><button class=\"ds-play\" type=\"button\" aria-label=\"暂停\"><svg viewBox=\"0 0 24 24\" width=\"22\" height=\"22\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M6 19h4V5H6v14zm8-14v14h4V5h-4z\"/></svg></button><div class=\"ds-mini-live\"></div></div>",
+      "css": ".ds-mini { position: relative; display: flex; align-items: center; gap: 12px; padding: 8px 4px 8px 10px; background: #E7E8EE; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.22); overflow: hidden; font-family: Roboto, \"Segoe UI\", sans-serif; } .ds-mini-art { width: 48px; height: 48px; border-radius: 8px; background: linear-gradient(135deg, #6A1B9A, #AB47BC); color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 16px; flex-shrink: 0; } .ds-mini-copy { flex: 1; min-width: 0; } .ds-mini-title { font-size: 14px; font-weight: 600; color: #191C20; line-height: 1.43; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .ds-mini-sub { margin-top: 2px; font-size: 12px; color: #44474E; } .ds-play { width: 44px; height: 44px; border: none; border-radius: 50%; background: #405F90; color: #fff; display: grid; place-items: center; cursor: pointer; flex-shrink: 0; } .ds-play:hover { background: #37527C; } .ds-play:focus-visible { outline: 2px solid #405F90; outline-offset: 3px; } .ds-mini-live { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: rgba(64, 95, 144, 0.85); }"
+    },
+    {
+      "name": "Station Artwork",
+      "kind": "custom",
+      "refersTo": "mini-player",
+      "description": "无台标时的二字渐变占位；颜色按分类，不进品牌主色。",
+      "html": "<div class=\"ds-art-row\"><div class=\"ds-art ds-art-cnr\">央</div><div class=\"ds-art ds-art-gd\">广</div><div class=\"ds-art ds-art-music\">音</div></div>",
+      "css": ".ds-art-row { display: flex; gap: 12px; } .ds-art { width: 48px; height: 48px; border-radius: 8px; color: #fff; display: grid; place-items: center; font-family: Roboto, \"Segoe UI\", sans-serif; font-weight: 700; font-size: 16px; } .ds-art-cnr { background: linear-gradient(135deg, #B71C1C, #E53935); } .ds-art-gd { background: linear-gradient(135deg, #00695C, #26A69A); } .ds-art-music { background: linear-gradient(135deg, #6A1B9A, #AB47BC); }"
+    },
+    {
+      "name": "Now Playing Play Button",
+      "kind": "button",
+      "refersTo": "play-button",
+      "description": "Now Playing 中央正圆播放键，72px。",
+      "html": "<button class=\"ds-play-lg\" type=\"button\" aria-label=\"播放\"><svg viewBox=\"0 0 24 24\" width=\"40\" height=\"40\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M8 5v14l11-7z\"/></svg></button>",
+      "css": ".ds-play-lg { width: 72px; height: 72px; border: none; border-radius: 50%; background: #405F90; color: #FFFFFF; display: grid; place-items: center; cursor: pointer; box-shadow: none; transition: background 0.2s cubic-bezier(0.4, 0, 0.2, 1); } .ds-play-lg:hover { background: #37527C; } .ds-play-lg:focus-visible { outline: 2px solid #405F90; outline-offset: 4px; } .ds-play-lg:active { background: #273A58; }"
+    },
+    {
+      "name": "Empty State",
+      "kind": "custom",
+      "refersTo": "button-primary",
+      "description": "居中短句加一句说明，需要时一个主操作；不要插画英雄区。",
+      "html": "<div class=\"ds-empty\"><svg class=\"ds-empty-icon\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path fill=\"currentColor\" d=\"M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h2v-2h-2v2zm2.07-7.75l-.9.92C11.45 10.9 11 11.5 11 13h2c0-1.1.45-1.79 1.17-2.58l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2h2c0-.55.45-1 1-1s1 .45 1 1c0 .28-.11.52-.29.71z\"/></svg><div class=\"ds-empty-title\">当前没有连不上的台</div><div class=\"ds-empty-detail\">检测源后仍失败的精选台会出现在这里，可直接更换流地址。</div><button class=\"ds-empty-action\" type=\"button\">检测可播放的源</button></div>",
+      "css": ".ds-empty { max-width: 320px; margin: 0 auto; padding: 24px; text-align: center; font-family: Roboto, \"Segoe UI\", sans-serif; } .ds-empty-icon { width: 40px; height: 40px; color: #44474E; } .ds-empty-title { margin-top: 12px; font-size: 16px; font-weight: 500; color: #191C20; line-height: 1.5; } .ds-empty-detail { margin-top: 4px; font-size: 12px; color: #44474E; line-height: 1.33; } .ds-empty-action { margin-top: 16px; background: #405F90; color: #FFFFFF; padding: 10px 24px; height: 40px; border: none; border-radius: 999px; font-size: 14px; font-weight: 500; cursor: pointer; } .ds-empty-action:hover { background: #37527C; } .ds-empty-action:focus-visible { outline: 2px solid #405F90; outline-offset: 3px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "静水电波",
+    "overview": "澄波把整座应用铺成一盆静水。电台、播客、收藏、设置都在同一层冷蓝表面上滑动，没有卡片堆、没有装饰插画、没有第二套皮肤。水纹只出现在正在听的东西上：底部迷你条是一块被抬起的圆角石；Now Playing 从封面色里渗出一层暖水面。品牌名里的「澄」是透亮与安静，「波」既是水纹也是电波。气质是温暖的伴听，不是冷工具说明书，也不是舞台灯光秀。\n\n密度跟一份认真的 Material 3 应用走。目的地是可扫的列表：顶上搜索、横滑 FilterChip、行间 1px 分割。设置仍是同一套 ListTile，用主色分组标题切开「关于与外观 / 存储 / 播客 / 源 / 分类」；「源」里检测与刷新是带 TextButton 的操作行，不是另一套控制台。个性只靠三件事：种子色生成的蓝调表面、无台标时的二字渐变封面、以及那条始终在听的迷你条。深色模式是一等公民，由同一颗种子生成，不是浅色取反。\n\n明确拒绝：复古全屏收音机、调频刻度、旋钮拟物、Cupertino 控件、Windows Fluent 分叉、以及把省份/类型渐变刷到导航和按钮上。",
+    "keyCharacteristics": [
+      "列表是静水，播放器是唯一浮起的波",
+      "Material 3 组件与类型角色，不自造字体",
+      "种子色生成角色色；启动器保留更深的澄蓝",
+      "温暖伴听：封面取色、圆形主播放键、睡眠定时用主色倒计时",
+      "Android 与 Windows 同一语言；≥900px 改 NavigationRail"
+    ],
+    "rules": [
+      {
+        "name": "The Seed-Is-Not-the-Paint Rule",
+        "body": "澄波蓝是种子，不是按钮填色。组件必须用 ColorScheme 角色（浅色 `primary`，深色 `primary-dark`）。把种子 hex 直接刷上控件，浅色会过饱和、深色会过暗。",
+        "section": "colors"
+      },
+      {
+        "name": "The Placeholder-Not-Brand Rule",
+        "body": "央广红、广东青绿、北京紫、交通橙等渐变只填无台标封面。导航、按钮、芯片、列表底禁止借用这些色。",
+        "section": "colors"
+      },
+      {
+        "name": "The Platform Face Rule",
+        "body": "禁止引入独立 Display 字体或装饰性中文字库。品牌识别走颜色与封面，不走字标。",
+        "section": "typography"
+      },
+      {
+        "name": "The Shell Holds the Player Rule",
+        "body": "播放器占位由 HomeShell 负责。目的地列表只留 16px 底边。空状态居中短句加一句说明，需要时给一个主操作，不要插画英雄区。",
+        "section": "elevation"
+      },
+      {
+        "name": "The Listening Surface Rule",
+        "body": "没在播放，就不要抬。新屏幕默认平坦；只有播放中的对象可以有 elevation 或有色光晕。",
+        "section": "elevation"
+      },
+      {
+        "name": "The Warm Stone Rule",
+        "body": "12px 半径留给听的物件（迷你条、大封面、错误提示条）。不要把卡片半径改成 24 去「更时尚」，也不要把播放键改成方的。",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do 用 ColorScheme 角色色（种子或壁纸动态色），并同时交付浅色与深色；默认 `ThemeMode.system`。",
+      "Do 把迷你条当持久控制；新目的地是列表，不是新的播放器皮肤。",
+      "Do 列表底留 16（迷你条已在 shell 占位），宽屏用 NavigationRail。",
+      "Do 正在收听的电台/单集用 `primaryContainer` 选中底，不要用分类芯片的 secondary。",
+      "Do 主操作 Filled、取消 Text、播放正圆；设置里的检测/刷新/清除用同一套 TextButton。",
+      "Do 倒计时用主色 + 等宽数字。",
+      "Do ICY 曲名一行放不下再跑马灯；分类名、错误、缓冲状态保持静止省略。"
+    ],
+    "donts": [
+      "Don't 做复古收音机、调频刻度、旋钮、天线或拟物机身。",
+      "Don't 为 Windows 换成 Fluent，为「更苹果」换成 Cupertino。",
+      "Don't 引入 Display 字体或把澄波两字做成字标标题。",
+      "Don't 把省份/类型占位渐变用到导航、FAB 或按钮。",
+      "Don't 给普通列表行加阴影或大圆角卡片化整页。",
+      "Don't 在未播放时仍显示空迷你条。",
+      "Don't 把设置「源」做成独立仪表盘，或让不能点的说明行看起来像可点入口。"
+    ]
+  }
+}

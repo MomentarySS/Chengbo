@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "mimosa-hook-status/v1",
+  "recordedAt": "2026-08-19T00:34:51.511Z",
+  "sessionId": "sess_5bd88389-1b8b-439a-b3b3-c70f4f831d8d",
+  "event": "PostToolUse",
+  "toolName": "Edit",
+  "file": "lib/features/radio/station_catalog_setup_screen.dart",
+  "outcome": "clear",
+  "coverage": "complete",
+  "findingCount": 0,
+  "durationMs": 3,
+  "hostState": "hook_complete",
+  "reportHint": ".mimosa/reports/"
+}

@@ -1,0 +1,50 @@
+name: chengbo
+description: 澄波 - 听国内广播与 RSS 播客
+publish_to: 'none'
+version: 1.4.8+28
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.8
+  flutter_riverpod: ^2.6.1
+  just_audio: ^0.9.46
+  just_audio_windows:
+    path: third_party/just_audio_windows
+  audio_service: ^0.18.17
+  audio_session: ^0.1.25
+  dio: ^5.8.0+1
+  shared_preferences: ^2.5.3
+  cached_network_image: ^3.4.1
+  flutter_cache_manager: ^3.4.1
+  intl: ^0.20.2
+  uuid: ^4.5.1
+  path_provider: ^2.1.5
+  xml: ^6.5.0
+  connectivity_plus: ^7.3.1
+  url_launcher: ^6.3.2
+  permission_handler: ^12.0.0
+  share_plus: ^10.1.4
+  crypto: ^3.0.6
+  # 1.9.0 的 android/build.gradle.kts 在 AGP 8.9 上编不过（kotlin compilerOptions 未应用插件）
+  dynamic_color: '>=1.7.0 <1.9.0'
+  system_theme: ^3.1.2
+  sensors_plus: ^6.1.1
+  home_widget: 0.8.0
+  workmanager: ^0.7.0
+  flutter_local_notifications: ^19.4.0
+  flutter_chrome_cast: ^1.4.1
+  window_manager: ^0.4.3
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/stations_cn.json

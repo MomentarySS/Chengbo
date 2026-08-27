@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "mimosa-hook-status/v1",
+  "recordedAt": "2026-08-19T01:22:17.679Z",
+  "sessionId": "sess_d65e7f2d-74be-4b96-b255-7f2e38348387",
+  "event": "PostToolUse",
+  "toolName": "Edit",
+  "file": "D:/AI/work/Chengbo/SOURCES.md",
+  "outcome": "clear",
+  "coverage": "complete",
+  "findingCount": 0,
+  "durationMs": 4,
+  "hostState": "hook_complete",
+  "reportHint": ".mimosa/reports/"
+}

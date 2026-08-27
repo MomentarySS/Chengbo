@@ -1,0 +1,17 @@
+{
+  "added_gd_count": 58,
+  "failed_count": 2,
+  "failed": [
+    {
+      "id": "fs-2",
+      "name": "佛山南海广播",
+      "url": "https://radiopull.radiofoshan.com.cn/live/1400820947_BSID_42_audio.m3u8"
+    },
+    {
+      "id": "jm-3",
+      "name": "江门新会电台",
+      "url": "https://lhttp-hw.qtfm.cn/live/5061/64k.mp3"
+    }
+  ],
+  "total_stations": 413
+}

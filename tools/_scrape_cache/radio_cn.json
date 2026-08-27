@@ -1,0 +1,116 @@
+[
+ {
+  "name": "中国之声",
+  "url": "http://ytlive.radio.cn/130/radios/10639/index_10639.m3u8?type=1&key=af21652e540fac9925604401922da114&time=6a849113",
+  "source": "radio_cn",
+  "region": ""
+ },
+ {
+  "name": "经济之声",
+  "url": "http://ytlive.radio.cn/130/radios/10640/index_10640.m3u8?type=1&key=215de8eaba1a762679ebfe5091eecb26&time=6a849113",
+  "source": "radio_cn",
+  "region": ""
+ },
+ {
+  "name": "环球资讯广播",
+  "url": "http://ytlive.radio.cn/130/radios/10692/index_10692.m3u8?type=1&key=ac92b944bc7544e1e94ea2bf38db2559&time=6a849113",
+  "source": "radio_cn",
+  "region": ""
+ },
+ {
+  "name": "音乐之声",
+  "url": "http://ytlive.radio.cn/130/radios/10641/index_10641.m3u8?type=1&key=1756658667ff0d32755d46f33b2212e6&time=6a849113",
+  "source": "radio_cn",
+  "region": ""
+ },
+ {
+  "name": "中国交通广播",
+  "url": "http://ytlive.radio.cn/130/radios/10653/index_10653.m3u8?type=1&key=539045a8ee2a1cc430951ca12283da33&time=6a849113",
+  "source": "radio_cn",
+  "region": ""
+ },
+ {
+  "name": "文艺之声",
+  "url": "http://ytlive.radio.cn/130/radios/10648/index_10648.m3u8?type=1&key=e3eecf1db150af278cb7e730c6644c6a&time=6a849113",
+  "source": "radio_cn",
+  "region": ""
+ },
+ {
+  "name": "大湾区之声",
+  "url": "http://ytlive.radio.cn/130/radios/10645/index_10645.m3u8?type=1&key=dcaa76f5eeb2d0aea455e72d0e840c10&time=6a849113",
+  "source": "radio_cn",
+  "region": ""
+ },
+ {
+  "name": "经典音乐广播",
+  "url": "http://ytlive.radio.cn/130/radios/10642/index_10642.m3u8?type=1&key=a9d5b2713d4a9d3ca02bcb20fc2b46cc&time=6a849113",
+  "source": "radio_cn",
+  "region": ""
+ },
+ {
+  "name": "台海之声",
+  "url": "http://ytlive.radio.cn/130/radios/10643/index_10643.m3u8?type=1&key=104de1d7a2442c7dd7fb0f17d0b6c509&time=6a849113",
+  "source": "radio_cn",
+  "region": ""
+ },
+ {
+  "name": "神州之声",
+  "url": "http://ytlive.radio.cn/130/radios/10644/index_10644.m3u8?type=1&key=8231c010163731dcc032b02bf12f6b0c&time=6a849113",
+  "source": "radio_cn",
+  "region": ""
+ },
+ {
+  "name": "香港之声",
+  "url": "http://ytlive.radio.cn/130/radios/10646/index_10646.m3u8?type=1&key=007b088f9e9a0168b0bc94e998cd9cdc&time=6a849113",
+  "source": "radio_cn",
+  "region": ""
+ },
+ {
+  "name": "民族之声",
+  "url": "http://ytlive.radio.cn/130/radios/10647/index_10647.m3u8?type=1&key=07134bb06e00044200e1967f3e65c4ae&time=6a849113",
+  "source": "radio_cn",
+  "region": ""
+ },
+ {
+  "name": "老年之声",
+  "url": "http://ytlive.radio.cn/130/radios/10649/index_10649.m3u8?type=1&key=0527840e1d54a2e8d57cea34b1f9b5b3&time=6a849113",
+  "source": "radio_cn",
+  "region": ""
+ },
+ {
+  "name": "藏语广播",
+  "url": "http://ytlive.radio.cn/130/radios/10650/index_10650.m3u8?type=1&key=f105a9b5b6d61b08274132367a042784&time=6a849113",
+  "source": "radio_cn",
+  "region": ""
+ },
+ {
+  "name": "维吾尔语广播",
+  "url": "http://ytlive.radio.cn/130/radios/10651/index_10651.m3u8?type=1&key=9283cfb7bb419abb701862cfedeca2bb&time=6a849113",
+  "source": "radio_cn",
+  "region": ""
+ },
+ {
+  "name": "中国乡村之声",
+  "url": "http://ytlive.radio.cn/130/radios/10654/index_10654.m3u8?type=1&key=c67efa5dd57be121d6f83b1f190fc2f6&time=6a849113",
+  "source": "radio_cn",
+  "region": ""
+ },
+ {
+  "name": "哈萨克语广播",
+  "url": "http://ytlive.radio.cn/130/radios/10655/index_10655.m3u8?type=1&key=8dc1aed9eb78271610cfd028896cf178&time=6a849113",
+  "source": "radio_cn",
+  "region": ""
+ },
+ {
+  "name": "南海之声",
+  "url": "http://ytlive.radio.cn/130/radios/10664/index_10664.m3u8?type=1&key=ecba1da0419ca7d7613541d29a7292d1&time=6a849113",
+  "source": "radio_cn",
+  "region": ""
+ },
+ {
+  "name": "英语资讯广播 CGTN Radio",
+  "url": "http://ytlive.radio.cn/130/radios/10734/index_10734.m3u8?type=1&key=9411cf01bfda3b1dca1e95d801894507&time=6a849113",
+  "source": "radio_cn",
+  "region": ""
+ }
+]

@@ -1,0 +1,176 @@
+{
+  "schema_version": "mimosa-task-review/v2",
+  "run_id": "20260818T162943737Z-16264-835ebcd8240b",
+  "run_status": "inconclusive",
+  "errors": [
+    {
+      "stage": "baseline-read",
+      "target": "tools/prune_dead_stations.py",
+      "reason": "baseline_snapshot_unreadable: file is missing from task baseline"
+    }
+  ],
+  "coverage": {
+    "schema_version": "mimosa-hook-coverage/v1",
+    "status": "partial",
+    "scope": "hook_observed_diff",
+    "baseline": {
+      "complete": true,
+      "captured_files": 87,
+      "candidate_limit": 5000,
+      "truncated": false,
+      "enumeration_error_count": 0,
+      "snapshot_error_count": 0,
+      "compensated_target_count": 1
+    },
+    "change_tracking": {
+      "touched_observed": 1,
+      "touched_retained": 1,
+      "truncated": false,
+      "bash_mutation": true,
+      "bash_discovered": 2,
+      "bash_discovery_limit": 80,
+      "bash_discovery_truncated": false
+    },
+    "candidates": {
+      "eligible_files": 2,
+      "selected_files": 2,
+      "limit": 20,
+      "truncated": false
+    },
+    "scanning": {
+      "required_files": 2,
+      "scanned_files": 2,
+      "skipped_files": 0,
+      "failed_files": 0,
+      "project_checks_required": 0,
+      "project_checks_completed": 0
+    },
+    "notification": {
+      "eligible_findings": 0,
+      "detailed_findings": 0,
+      "detail_limit": 3,
+      "truncated": false
+    },
+    "reason_counts": {
+      "baseline_snapshot_unreadable": 1,
+      "project_check_failed": 1
+    },
+    "reasons": [
+      {
+        "code": "baseline_snapshot_unreadable",
+        "stage": "baseline-read",
+        "target": "tools/prune_dead_stations.py",
+        "detail": "file is missing from task baseline",
+        "affects_completion": true
+      },
+      {
+        "code": "project_check_failed",
+        "stage": "baseline-read",
+        "target": "tools/prune_dead_stations.py",
+        "detail": "baseline_snapshot_unreadable: file is missing from task baseline",
+        "affects_completion": true
+      }
+    ],
+    "reasons_truncated": false
+  },
+  "generated_at": "2026-08-18T16:29:43.737Z",
+  "session_id": "sess_699b946e-1ea4-408e-9a92-394113e4b656",
+  "target": ".",
+  "revision": null,
+  "rules_version": "unavailable",
+  "diff_hash": "7e8712b1715a9ffa38ebec584d416285aeb75452b890c663bb705190a1a0a39c",
+  "diff": {
+    "algorithm": "sha256",
+    "changed_file_count": 2,
+    "changed_files": [
+      {
+        "file": "third_party/just_audio_windows/windows/player.hpp",
+        "ranges": [
+          {
+            "start": 196,
+            "end": 201
+          },
+          {
+            "start": 224,
+            "end": 228
+          },
+          {
+            "start": 234,
+            "end": 236
+          },
+          {
+            "start": 260,
+            "end": 263
+          },
+          {
+            "start": 310,
+            "end": 312
+          }
+        ],
+        "before_hash": "7e4a6a451bac9db7b1ebac51ff6c514f685cbae9fcf185b655bb63c1e9043232",
+        "after_hash": "253cdac68c2bc6b9aa1663c1c4a2324ef06798a3cd8d9da423b2eaa4c5d63a38"
+      },
+      {
+        "file": "tools/prune_dead_stations.py",
+        "ranges": [
+          {
+            "start": 1,
+            "end": 81
+          }
+        ],
+        "before_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "after_hash": "8c0a6aa749c598ef6e7f70b5ef1e00ece1b9738bddd96208a6e1ef2a39cc48ac"
+      }
+    ]
+  },
+  "timing": {
+    "started_at": "2026-08-18T16:29:42.738Z",
+    "completed_at": "2026-08-18T16:29:43.737Z",
+    "duration_ms": 999,
+    "measurement": "hook_wall_clock"
+  },
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "total": 0,
+    "model_calls": 0,
+    "measurement": "known-zero"
+  },
+  "telemetry": {
+    "schemaVersion": "mimosa-gate-telemetry/v1",
+    "profile": "gate",
+    "operation": "Stop",
+    "outcome": "partial/INCONCLUSIVE",
+    "latencyMs": 999,
+    "peakMemoryBytes": 142725120,
+    "memoryMeasurement": "max-observed-process-rss",
+    "scannedFiles": 2,
+    "cache": {
+      "hits": 0,
+      "misses": 0,
+      "measurement": "not-applicable"
+    },
+    "denyCount": 0,
+    "tokens": {
+      "input": 0,
+      "output": 0,
+      "total": 0,
+      "modelCalls": 0,
+      "measurement": "known-zero"
+    }
+  },
+  "finding_count": 0,
+  "rewake_finding_count": 0,
+  "evidence_boundary": {
+    "scan": "candidate",
+    "static_fix_verification": "observed_static_only",
+    "runtime_verification": "not_performed"
+  },
+  "finding_events": [],
+  "findings": [],
+  "artifacts": {
+    "immutable_report": ".mimosa/reports/task-review-sess_699b946e-1ea4-408e-9a92-394113e4b656-20260818T162943737Z-16264-835ebcd8240b.json",
+    "latest_report": ".mimosa/reports/task-review-sess_699b946e-1ea4-408e-9a92-394113e4b656.json",
+    "history_summary": ".mimosa/history/run-20260818T162943737Z-16264-835ebcd8240b.json"
+  }
+}
