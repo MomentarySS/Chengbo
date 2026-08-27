@@ -74,11 +74,16 @@ $zipPath = "dist\chengbo-windows-$version.zip"
 if (Test-Path $zipPath) { Remove-Item $zipPath -Force }
 Compress-Archive -Path "$winDir\*" -DestinationPath $zipPath -Force
 
-Write-Host "Building Windows SFX installer (no extra tools needed)..."
-& (Join-Path $PSScriptRoot "windows-sfx.ps1") -FlutterPath $FlutterPath
+Write-Host "Building Windows installer with Inno Setup..."
+$iscc = "D:\PF\Inno Setup 7\ISCC.exe"
+if (-not (Test-Path $iscc)) {
+    $iscc = "ISCC.exe"
+}
+& $iscc (Join-Path $PSScriptRoot "chengbo-windows.iss")
+if ($LASTEXITCODE -ne 0) { throw "Inno Setup build failed" }
 
 Write-Host "Done."
 Write-Host "  Android: dist\chengbo-$version.apk"
 Write-Host "  Windows zip: $zipPath"
-$exePath = "dist\chengbo-windows-$version.exe"
+$exePath = "chengbo-windows-$version.exe"
 if (Test-Path $exePath) { Write-Host "  Windows installer: $exePath" }
