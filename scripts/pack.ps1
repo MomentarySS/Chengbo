@@ -85,5 +85,5 @@ if ($LASTEXITCODE -ne 0) { throw "Inno Setup build failed" }
 Write-Host "Done."
 Write-Host "  Android: dist\chengbo-$version.apk"
 Write-Host "  Windows zip: $zipPath"
-$exePath = "chengbo-windows-$version.exe"
+$exePath = "dist\chengbo-windows-$version.exe"
 if (Test-Path $exePath) { Write-Host "  Windows installer: $exePath" }

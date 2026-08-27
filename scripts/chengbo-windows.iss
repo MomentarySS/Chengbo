@@ -6,7 +6,7 @@
 #define AppURL "https://github.com/yourname/chengbo"
 #define AppDescription "听国内广播与 RSS 播客"
 #define SourceDir "..\build\windows\x64\runner\Release"
-#define OutputDir ".."
+#define OutputDir "..\dist"
 #define OutputBaseFilename "chengbo-windows-1.5.0"
 
 [Setup]
