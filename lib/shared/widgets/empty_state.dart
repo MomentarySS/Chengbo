@@ -11,6 +11,8 @@ class AppEmptyState extends StatelessWidget {
     this.onAction,
     this.secondaryActionLabel,
     this.onSecondaryAction,
+    this.tertiaryActionLabel,
+    this.onTertiaryAction,
   });
 
   final IconData icon;
@@ -20,6 +22,8 @@ class AppEmptyState extends StatelessWidget {
   final VoidCallback? onAction;
   final String? secondaryActionLabel;
   final VoidCallback? onSecondaryAction;
+  final String? tertiaryActionLabel;
+  final VoidCallback? onTertiaryAction;
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +62,10 @@ class AppEmptyState extends StatelessWidget {
               if (onSecondaryAction != null && secondaryActionLabel != null) ...[
                 const SizedBox(height: 8),
                 TextButton(onPressed: onSecondaryAction, child: Text(secondaryActionLabel!)),
+              ],
+              if (onTertiaryAction != null && tertiaryActionLabel != null) ...[
+                const SizedBox(height: 4),
+                TextButton(onPressed: onTertiaryAction, child: Text(tertiaryActionLabel!)),
               ],
             ],
           ),

@@ -55,7 +55,7 @@
 - 镜像发现：`https://all.api.radio-browser.info/json/servers`
 - 回退：`de1` / `fi1` / `nl1`
 - 现用查询：投票 / 新闻 / 音乐 / 交通 / `language=chinese|mandarin` / 约 20 个省份 / `countrycode=TW|HK|MO`；`hidebroken=true&order=votes`。语言结果只保留 CN/TW/HK/MO。
-- User-Agent：`Chengbo/1.5.3 (Flutter; chengbo radio)`
+- User-Agent：`Chengbo/1.5.4 (Flutter; chengbo radio)`
 - 数据许可：目录元数据按 Radio Browser 声明为公共域；音频版权仍在各台
 
 后续可加、但不要写进默认精选：
@@ -90,7 +90,7 @@
 测流必须看正文，不能只看 HTTP 200：
 
 ```powershell
-curl.exe -sL --compressed --max-time 12 -A "Chengbo/1.5.3 (Flutter; chengbo radio)" "流地址"
+curl.exe -sL --compressed --max-time 12 -A "Chengbo/1.5.4 (Flutter; chengbo radio)" "流地址"
 ```
 
 探测语义与 App 一致：普通 GET 优先（等价真实播放），Range 仅兜底；响应带 gzip 压缩先解压再判断。HLS 正文要有 `#EXTM3U` 和至少一条非注释地址。JSON / HTML 即使 200 也不入库。精选 JSON **宁缺毋滥**：坏台删除，不要用未核对的源凑数量。批量导入脚本只用于找替换，不用于把目录堆大。
@@ -195,7 +195,7 @@ Listen Notes 适合做备选搜索，注意 API 配额和商标展示要求。
 
 给维护者和听众抄进播客页用。**不预装、不做应用内推荐榜。**
 
-核对：2026-08-18。User-Agent `Chengbo/1.5.3` 拉取 Feed，要求 HTTP 200、至少 1 条 `<enclosure>` 音频。来源是 iTunes `feedUrl`、节目官网，以及创作者自己打开的 `feed.xyzfm.fm`。Windows 拉境外 Feed 走系统代理，并探测本机 Clash 常见端口。
+核对：2026-08-18。User-Agent `Chengbo/1.5.4` 拉取 Feed，要求 HTTP 200、至少 1 条 `<enclosure>` 音频。来源是 iTunes `feedUrl`、节目官网，以及创作者自己打开的 `feed.xyzfm.fm`。Windows 拉境外 Feed 走系统代理，并探测本机 Clash 常见端口。
 
 没写进表的：`rsshub.app`、喜马拉雅 `album/*.xml`、荔枝 `rss.lizhi.fm`（版权库转接，不是作者公开 Feed）。《读首诗再睡觉》《睡前消息》《试当真》当时找不到稳定公开 RSS，故不收录。港台电台空壳（如 RTHK《視點31》《Naked Cantonese》items=0）也不写。
 

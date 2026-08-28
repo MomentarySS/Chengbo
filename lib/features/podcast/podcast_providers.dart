@@ -8,6 +8,7 @@ import '../../core/audio/podcast_download.dart';
 import '../../core/audio/play_queue.dart';
 import '../../core/audio/podcast_playback.dart';
 import '../../core/audio/radio_audio_handler.dart';
+import '../../core/audio/sleep_timer.dart';
 import '../../core/models/podcast.dart';
 import '../../core/podcast/podcast_history.dart';
 import '../../core/podcast/podcast_opml.dart';
@@ -307,6 +308,28 @@ final podcastDetailProvider =
   final detail = await ref.watch(podcastServiceProvider).fetchFeed(feed);
   await ref.read(subscribedFeedsProvider.notifier).updateFeedMeta(detail.feed);
   return detail;
+});
+
+/// 当前播客单集章节：有 JSON 地址时才现拉，失败则用 Feed 里的 Podlove 章节。
+final playingEpisodeChaptersProvider = FutureProvider<List<PodcastChapter>>((ref) async {
+  final current = ref.watch(currentPlaybackProvider);
+  if (current == null || current.kind != PlaybackKind.podcast) return const [];
+  final guid = current.episodeGuid;
+  if (guid == null || guid.isEmpty) return const [];
+  final feed = PodcastQueueLogic.resolveFeed(
+    subscribed: ref.watch(subscribedFeedsProvider).value ?? const [],
+    feedId: current.feedId,
+    podcastTitle: current.subtitle,
+  );
+  if (feed == null) return const [];
+  try {
+    final detail = await ref.watch(podcastDetailProvider(feed).future);
+    final episode = detail.episodes.where((item) => item.guid == guid).firstOrNull;
+    if (episode == null) return const [];
+    return ref.watch(podcastServiceProvider).resolveChapters(episode);
+  } catch (_) {
+    return const [];
+  }
 });
 
 final podcastProgressProvider =
@@ -635,6 +658,14 @@ final podcastQueueSyncProvider = Provider<void>((ref) {
         await ref.read(playerControllerProvider).stop();
         return;
       }
+      final remaining = SleepTimerLogic.afterEpisodeCompleted(sleep.remainingEpisodes);
+      if (sleep.remainingEpisodes != null) {
+        if (remaining == null || remaining <= 0) {
+          await ref.read(sleepTimerProvider.notifier).stopBecauseTimer();
+          return;
+        }
+        ref.read(sleepTimerProvider.notifier).setRemainingEpisodes(remaining);
+      }
       final queue = ref.read(playQueueProvider).value ?? const PlayQueue();
       if (queue.items.isNotEmpty) {
         final next = queue.items.first;
@@ -658,6 +689,10 @@ final podcastQueueSyncProvider = Provider<void>((ref) {
 
 /// 播客搜索：by feed title + episode title。
 final podcastSearchProvider = StateProvider<String>((ref) => '');
+
+/// 节目详情单集筛选：会话内有效，不持久化。
+final episodeListFilterProvider =
+    StateProvider<EpisodeListFilter>((ref) => EpisodeListFilter.all);
 
 /// 渐进式搜索索引：后台逐 feed 加载单集标题，搜索时不触发网络请求。
 final podcastSearchIndexProvider =

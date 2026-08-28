@@ -4,7 +4,7 @@
 
 工程包名为 `chengbo`，Windows 可执行文件为 `Chengbo.exe`，Android 应用 ID 为 `com.chengbo.chengbo`。
 
-当前版本：`1.5.3+32`（2026-08-28）。相对 1.5.2：下载自动清理不再冲掉进行中进度；删除订阅会取消正在下载的任务。
+当前版本：`1.5.4+33`（2026-08-28）。相对 1.5.3：空订阅可搜索节目；收听 tab 也有继续收听；电台收藏置顶；单集可标已听/收藏并筛选；± 秒数可调；睡眠记住上次并可再听 N 集；有章节的单集会显示目录。
 
 功能清单见 [DEVELOPMENT.md](DEVELOPMENT.md)：P0–P5 已完成。源扩充仍可排后的项见 [SOURCES.md](SOURCES.md)。成人向公开 RSS 的人工清单见 [ADULT_SOURCES.md](ADULT_SOURCES.md)（不预装）。
 
@@ -81,7 +81,7 @@ flutter pub get
 | Android SDK 目录表与 NDK     | 腾讯云 `mirrors.cloud.tencent.com/AndroidSDK` |
 | Windows NuGet                | 华为云 NuGet                                  |
 
-产物在 `dist/`，文件名跟 `pubspec.yaml` 的 `x.y.z` 走（当前为 `chengbo-1.5.3.apk`、`chengbo-windows-1.5.3.zip`、`chengbo-windows-1.5.3.exe`）。改版本后需重新 `.\scripts\pack.ps1`。本机有 `android/key.properties` 时 APK 用正式密钥签名；没有则回退 debug 签名。`minSdk` 23。Windows 双击 `.exe` 安装包安装，安装后从开始菜单启动；安装包支持卸载（控制面板 / 设置 → 应用）。
+产物在 `dist/`，文件名跟 `pubspec.yaml` 的 `x.y.z` 走（当前为 `chengbo-1.5.4.apk`、`chengbo-windows-1.5.4.zip`、`chengbo-windows-1.5.4.exe`）。改版本后需重新 `.\scripts\pack.ps1`。本机有 `android/key.properties` 时 APK 用正式密钥签名；没有则回退 debug 签名。`minSdk` 23。Windows 双击 `.exe` 安装包安装，安装后从开始菜单启动；安装包支持卸载（控制面板 / 设置 → 应用）。
 
 正式密钥在 `android/upload-keystore.jks`，密码在 `android/key.properties`，两份都已被 git 忽略。请复制到仓库外备份；丢了就无法再发「同一个 App」的更新。以前用 debug 签名装过的手机，不能直接覆盖安装，需先卸载（收藏等本机数据会清掉）。
 
@@ -193,7 +193,7 @@ tools/                  # 广东台测流、合并脚本
 ## 注意事项
 
 - 部分第三方流会失效，优先改 JSON 或在 App 内手动添加替代源
-- Radio Browser 会动态解析镜像；User-Agent 为 `Chengbo/1.5.3 (Flutter; chengbo radio)`
+- Radio Browser 会动态解析镜像；User-Agent 为 `Chengbo/1.5.4 (Flutter; chengbo radio)`
 - Windows 订阅境外 RSS（如 SoundOn）会走系统代理，并探测本机 Clash 常见端口；手机请用 Clash / NekoBox 的 VPN/TUN，并把澄波加入代理名单
 - Android 后台播放需通知权限（Android 13+）；系统要求 `minSdk` 23
 - Windows 需 `just_audio_windows`；中文路径编译已在 CMake 加 `/utf-8`

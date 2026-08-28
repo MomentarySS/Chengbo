@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:xml/xml.dart';
 
 import 'package:chengbo/core/audio/auto_browse.dart';
 import 'package:chengbo/core/audio/cast_session.dart';
@@ -13,6 +14,7 @@ import 'package:chengbo/core/audio/desk_widget.dart';
 import 'package:chengbo/core/audio/last_session.dart';
 import 'package:chengbo/core/audio/now_playing_hero.dart';
 import 'package:chengbo/core/audio/playback_logic.dart';
+import 'package:chengbo/core/audio/podcast_chapters.dart';
 import 'package:chengbo/core/audio/podcast_download.dart';
 import 'package:chengbo/core/audio/podcast_playback.dart';
 import 'package:chengbo/core/audio/play_queue.dart';
@@ -26,8 +28,10 @@ import 'package:chengbo/core/network/catalog_fetch_logic.dart';
 import 'package:chengbo/core/network/station_probe.dart';
 import 'package:chengbo/core/station/station_catalog_selection.dart';
 import 'package:chengbo/core/station/station_hide.dart';
+import 'package:chengbo/core/station/station_skip.dart';
 import 'package:chengbo/core/network/podcast_feed_logic.dart';
 import 'package:chengbo/core/podcast/podcast_history.dart';
+import 'package:chengbo/core/podcast/podcast_listened.dart';
 import 'package:chengbo/core/stats/listening_stats.dart';
 import 'package:chengbo/core/network/podcast_index.dart';
 import 'package:chengbo/core/network/network_status.dart';
@@ -1774,5 +1778,239 @@ void main() {
       })?.title,
       'T',
     );
+  });
+
+  test('StationSkipLogic.favoritesFirst puts favoriteIds order first', () {
+    const a = RadioStation(id: 'a', name: 'A', streamUrl: 'https://a.example/a');
+    const b = RadioStation(id: 'b', name: 'B', streamUrl: 'https://b.example/b');
+    const c = RadioStation(id: 'c', name: 'C', streamUrl: 'https://c.example/c');
+    const d = RadioStation(id: 'd', name: 'D', streamUrl: 'https://d.example/d');
+    final stations = [a, b, c, d];
+
+    expect(
+      StationSkipLogic.favoritesFirst(
+        stations: stations,
+        favoriteIds: const ['c', 'a'],
+        favoritesOnly: false,
+      ).map((s) => s.id),
+      ['c', 'a', 'b', 'd'],
+    );
+    expect(
+      StationSkipLogic.favoritesFirst(
+        stations: stations,
+        favoriteIds: const ['c', 'a'],
+        favoritesOnly: true,
+      ).map((s) => s.id),
+      ['a', 'b', 'c', 'd'],
+    );
+    expect(
+      StationSkipLogic.favoritesFirst(
+        stations: [b, d],
+        favoriteIds: const ['c', 'a'],
+        favoritesOnly: false,
+      ).map((s) => s.id),
+      ['b', 'd'],
+    );
+    expect(
+      StationSkipLogic.favoritesFirst(
+        stations: stations,
+        favoriteIds: const [],
+        favoritesOnly: false,
+      ).map((s) => s.id),
+      ['a', 'b', 'c', 'd'],
+    );
+  });
+
+  test('PodcastListenedLogic markAsNotPlayed and starred set cap', () {
+    expect(
+      PodcastListenedLogic.markAsNotPlayed({'a', 'b'}, episodeGuid: 'a'),
+      {'b'},
+    );
+    expect(
+      PodcastListenedLogic.markAsNotPlayed({'a'}, episodeGuid: ''),
+      {'a'},
+    );
+    expect(
+      PodcastListenedLogic.markAsPlayed({'a'}, episodeGuid: 'a'),
+      {'a'},
+    );
+
+    var starred = <String>{};
+    for (var i = 0; i < PodcastStarredLogic.maxStarred + 10; i++) {
+      starred = PodcastStarredLogic.star(starred, episodeGuid: 'e$i');
+    }
+    expect(starred.length, PodcastStarredLogic.maxStarred);
+    expect(starred.contains('e0'), isFalse);
+    expect(starred.contains('e${PodcastStarredLogic.maxStarred + 9}'), isTrue);
+    expect(
+      PodcastStarredLogic.unstar({'a', 'b'}, episodeGuid: 'a'),
+      {'b'},
+    );
+  });
+
+  test('PodcastPlaybackLogic.filterEpisodes splits all/unlistened/downloaded/starred', () {
+    const a = PodcastEpisode(guid: 'a', title: 'A', audioUrl: 'https://a');
+    const b = PodcastEpisode(guid: 'b', title: 'B', audioUrl: 'https://b');
+    const c = PodcastEpisode(guid: 'c', title: 'C', audioUrl: 'https://c');
+    final episodes = [a, b, c];
+    bool downloaded(String guid) => guid == 'b';
+
+    expect(
+      PodcastPlaybackLogic.filterEpisodes(
+        episodes: episodes,
+        filter: EpisodeListFilter.all,
+        listened: const {'a'},
+        starred: const {'c'},
+        isDownloaded: downloaded,
+      ).map((e) => e.guid),
+      ['a', 'b', 'c'],
+    );
+    expect(
+      PodcastPlaybackLogic.filterEpisodes(
+        episodes: episodes,
+        filter: EpisodeListFilter.unlistened,
+        listened: const {'a'},
+        starred: const {'c'},
+        isDownloaded: downloaded,
+      ).map((e) => e.guid),
+      ['b', 'c'],
+    );
+    expect(
+      PodcastPlaybackLogic.filterEpisodes(
+        episodes: episodes,
+        filter: EpisodeListFilter.downloaded,
+        listened: const {'a'},
+        starred: const {'c'},
+        isDownloaded: downloaded,
+      ).map((e) => e.guid),
+      ['b'],
+    );
+    expect(
+      PodcastPlaybackLogic.filterEpisodes(
+        episodes: episodes,
+        filter: EpisodeListFilter.starred,
+        listened: const {'a'},
+        starred: const {'c'},
+        isDownloaded: downloaded,
+      ).map((e) => e.guid),
+      ['c'],
+    );
+  });
+
+  test('PodcastPlaybackLogic.skipStepFromSeconds only allows 10/15/30/60', () {
+    expect(PodcastPlaybackLogic.skipStepFromSeconds(null), 15);
+    expect(PodcastPlaybackLogic.skipStepFromSeconds(15), 15);
+    expect(PodcastPlaybackLogic.skipStepFromSeconds(10), 10);
+    expect(PodcastPlaybackLogic.skipStepFromSeconds(30), 30);
+    expect(PodcastPlaybackLogic.skipStepFromSeconds(60), 60);
+    expect(PodcastPlaybackLogic.skipStepFromSeconds(20), 15);
+    expect(PodcastPlaybackLogic.skipStepFromSeconds(0), 15);
+    expect(PodcastPlaybackLogic.nextSkipStep(15), 30);
+    expect(PodcastPlaybackLogic.nextSkipStep(60), 10);
+    expect(PodcastPlaybackLogic.skipStepButtonLabel(15, forward: false), '−15');
+    expect(PodcastPlaybackLogic.skipStepButtonLabel(30, forward: true), '+30');
+  });
+
+  test('SleepLastValue json roundtrip and remaining episode countdown', () {
+    expect(
+      SleepTimerLogic.parseLastValue(SleepLastValue.minutes(25).toJson())?.minutes,
+      25,
+    );
+    expect(
+      SleepTimerLogic.parseLastValue(SleepLastValue.untilEnd.toJson())?.isUntilEnd,
+      isTrue,
+    );
+    expect(
+      SleepTimerLogic.parseLastValue(SleepLastValue.episodes(2).toJson())?.count,
+      2,
+    );
+    expect(SleepTimerLogic.parseLastValue({'kind': 'nope'}), isNull);
+    expect(SleepTimerLogic.parseLastValue({'kind': 'minutes', 'minutes': 0}), isNull);
+    expect(SleepTimerLogic.afterEpisodeCompleted(null), isNull);
+    expect(SleepTimerLogic.afterEpisodeCompleted(2), 1);
+    expect(SleepTimerLogic.afterEpisodeCompleted(1), 0);
+    final remaining = const SleepTimerState(remainingEpisodes: 2);
+    expect(remaining.isActive, isTrue);
+    expect(
+      SleepTimerLogic.statusLabel(remaining, now: DateTime(2026, 8, 28)),
+      '还剩 2 集',
+    );
+    expect(
+      SleepTimerLogic.fadeOutLabel(remaining, now: DateTime(2026, 8, 28)),
+      isNull,
+    );
+  });
+
+  test('AppStorage persists skip step and last sleep timer', () async {
+    SharedPreferences.setMockInitialValues({});
+    final storage = await AppStorage.create();
+    expect(storage.getPodcastSkipStepSeconds(), 15);
+    await storage.setPodcastSkipStepSeconds(30);
+    expect(storage.getPodcastSkipStepSeconds(), 30);
+    await storage.setPodcastSkipStepSeconds(12);
+    expect(storage.getPodcastSkipStepSeconds(), 15);
+    expect(storage.getSleepTimerLast(), isNull);
+    await storage.setSleepTimerLast(SleepLastValue.untilEnd);
+    expect(storage.getSleepTimerLast()?.isUntilEnd, isTrue);
+    await storage.setSleepTimerLast(SleepLastValue.episodes(3));
+    expect(storage.getSleepTimerLast()?.count, 3);
+  });
+
+  test('PodcastChapterLogic parses Podlove, JSON, and prefers JSON', () {
+    final item = XmlDocument.parse('''
+<item>
+  <psc:chapters xmlns:psc="http://podlove.org/simple-chapters">
+    <psc:chapter start="00:00:00" title="开场"/>
+    <psc:chapter start="00:01:30.5" title="正题" toc="false"/>
+    <psc:chapter start="90" title="秒数"/>
+  </psc:chapters>
+  <podcast:chapters xmlns:podcast="https://podcastindex.org/namespace/1.0"
+    url="https://example.com/chapters.json" type="application/json+chapters"/>
+</item>
+''').rootElement;
+
+    expect(PodcastChapterLogic.chaptersUrlFromItem(item), 'https://example.com/chapters.json');
+    final podlove = PodcastChapterLogic.parsePodloveChapters(item);
+    expect(podlove.map((c) => c.title), ['开场', '秒数', '正题']);
+    expect(podlove[1].start, const Duration(seconds: 90));
+    expect(podlove[2].toc, isFalse);
+    expect(PodcastChapterLogic.tocOf(podlove).map((c) => c.title), ['开场', '秒数']);
+
+    final json = PodcastChapterLogic.parseJsonChapters('''
+{"chapters":[
+  {"startTime":0,"title":"JSON开场"},
+  {"startTime":12.5,"title":"JSON中段","toc":false}
+]}
+''');
+    expect(json.map((c) => c.title), ['JSON开场', 'JSON中段']);
+    expect(json[1].start, const Duration(milliseconds: 12500));
+    expect(
+      PodcastChapterLogic.merge(jsonChapters: json, podlove: podlove).map((c) => c.title),
+      ['JSON开场', 'JSON中段'],
+    );
+    expect(
+      PodcastChapterLogic.merge(jsonChapters: const [], podlove: podlove),
+      isEmpty,
+    );
+    expect(
+      PodcastChapterLogic.merge(jsonChapters: null, podlove: podlove).map((c) => c.title),
+      ['开场', '秒数', '正题'],
+    );
+    expect(
+      PodcastChapterLogic.atPosition(
+        chapters: json,
+        position: const Duration(seconds: 12),
+      )?.title,
+      'JSON开场',
+    );
+    expect(
+      PodcastChapterLogic.atPosition(
+        chapters: json,
+        position: const Duration(seconds: 13),
+      )?.title,
+      'JSON中段',
+    );
+    expect(PodcastChapterLogic.parseStart('1:02:03'), const Duration(hours: 1, minutes: 2, seconds: 3));
+    expect(PodcastChapterLogic.parseJsonChapters('not-json'), isEmpty);
   });
 }

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:xml/xml.dart';
 
+import '../audio/podcast_chapters.dart';
 import '../audio/podcast_playback.dart';
 import '../brand.dart';
 import '../models/podcast.dart';
@@ -54,6 +55,28 @@ class PodcastService {
     } on XmlException {
       throw const PodcastFeedException('源站返回的不是 RSS，请检查地址');
     }
+  }
+
+  /// 仅在播放或打开章节时请求。失败返回 `null`，由调用方回退到 Feed 内章节。
+  Future<List<PodcastChapter>?> fetchJsonChapters(String url) async {
+    try {
+      final body = await _getBody(url, AppBrand.podcastUserAgent);
+      return PodcastChapterLogic.parseJsonChapters(body);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<List<PodcastChapter>> resolveChapters(PodcastEpisode episode) async {
+    final url = episode.chaptersUrl?.trim() ?? '';
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      final jsonChapters = await fetchJsonChapters(url);
+      return PodcastChapterLogic.merge(
+        jsonChapters: jsonChapters,
+        podlove: episode.chapters,
+      );
+    }
+    return episode.chapters;
   }
 
   Future<String> _getBody(String url, String userAgent) async {
@@ -114,6 +137,8 @@ class PodcastService {
           publishedAt: _parseDate(_textOf(item, 'pubDate')),
           duration: _parseDuration(_textOf(item, 'itunes:duration')),
           imageUrl: _itemImage(item) ?? imageUrl,
+          chaptersUrl: PodcastChapterLogic.chaptersUrlFromItem(item),
+          chapters: PodcastChapterLogic.parsePodloveChapters(item),
         ),
       );
     }

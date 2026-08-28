@@ -49,6 +49,8 @@ class SleepTimerCountdown extends ConsumerWidget {
         if (fadeLabel != null) {
           display = '淡出中 $fadeLabel';
           textColor = Theme.of(context).colorScheme.tertiary;
+        } else if (timer.remainingEpisodes != null) {
+          display = SleepTimerLogic.remainingEpisodesText(timer.remainingEpisodes!);
         } else if (timer.untilEpisodeEnd) {
           display = '到$text';
         } else {
@@ -71,6 +73,7 @@ class _SleepTimerSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final timer = ref.watch(sleepTimerProvider);
+    final last = ref.watch(lastSleepValueProvider);
     final colorScheme = Theme.of(context).colorScheme;
 
     return SafeArea(
@@ -83,13 +86,15 @@ class _SleepTimerSheet extends ConsumerWidget {
             Text('睡眠定时', style: Theme.of(context).textTheme.titleLarge),
             const SizedBox(height: 4),
             Text(
-              timer.untilEpisodeEnd
-                  ? '当前单集播完后停止'
-                  : timer.isSnoozed
-                      ? '小睡中，到点后继续播放'
-                      : timer.isActive
-                          ? '到点后停止播放'
-                          : '选择时长，或播完当前单集后停止',
+              timer.remainingEpisodes != null
+                  ? '再听 ${timer.remainingEpisodes} 集后停止'
+                  : timer.untilEpisodeEnd
+                      ? '当前单集播完后停止'
+                      : timer.isSnoozed
+                          ? '小睡中，到点后继续播放'
+                          : timer.isActive
+                              ? '到点后停止播放'
+                              : '选择时长，或播完当前单集后停止',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),
@@ -115,6 +120,9 @@ class _SleepTimerSheet extends ConsumerWidget {
                 for (final minutes in SleepTimerLogic.presetMinutes)
                   ActionChip(
                     label: Text('$minutes 分钟'),
+                    side: last?.matchesMinutes(minutes) == true
+                        ? BorderSide(color: colorScheme.primary)
+                        : null,
                     onPressed: () {
                       ref.read(sleepTimerProvider.notifier).start(
                             Duration(minutes: minutes),
@@ -125,13 +133,30 @@ class _SleepTimerSheet extends ConsumerWidget {
                 ActionChip(
                   avatar: const Icon(Icons.tune, size: 18),
                   label: const Text('自定义'),
-                  onPressed: () => _pickCustom(context, ref),
+                  side: last?.kind == SleepLastKind.minutes &&
+                          last?.minutes != null &&
+                          !SleepTimerLogic.presetMinutes.contains(last!.minutes)
+                      ? BorderSide(color: colorScheme.primary)
+                      : null,
+                  onPressed: () => _pickCustom(context, ref, last),
                 ),
                 ActionChip(
                   avatar: const Icon(Icons.skip_next_outlined, size: 18),
                   label: const Text('本集结束'),
+                  side: last?.isUntilEnd == true
+                      ? BorderSide(color: colorScheme.primary)
+                      : null,
                   onPressed: () => _startUntilEpisodeEnd(context, ref),
                 ),
+                for (final count in SleepTimerLogic.episodeCountOptions)
+                  ActionChip(
+                    avatar: const Icon(Icons.queue_music_outlined, size: 18),
+                    label: Text('再听 $count 集'),
+                    side: last?.matchesEpisodes(count) == true
+                        ? BorderSide(color: colorScheme.primary)
+                        : null,
+                    onPressed: () => _startRemainingEpisodes(context, ref, count),
+                  ),
               ],
             ),
 
@@ -183,10 +208,30 @@ class _SleepTimerSheet extends ConsumerWidget {
     Navigator.pop(context);
   }
 
-  Future<void> _pickCustom(BuildContext context, WidgetRef ref) async {
+  void _startRemainingEpisodes(BuildContext context, WidgetRef ref, int count) {
+    final current = ref.read(currentPlaybackProvider);
+    if (!SleepTimerLogic.canStartUntilEpisodeEnd(
+      isPodcast: current?.kind == PlaybackKind.podcast,
+    )) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('请先播放一集播客，直播没有「再听 N 集」')),
+      );
+      return;
+    }
+    ref.read(sleepTimerProvider.notifier).startRemainingEpisodes(count);
+    Navigator.pop(context);
+  }
+
+  Future<void> _pickCustom(
+    BuildContext context,
+    WidgetRef ref,
+    SleepLastValue? last,
+  ) async {
     final duration = await showDialog<Duration>(
       context: context,
-      builder: (dialogContext) => const _CustomSleepTimerDialog(),
+      builder: (dialogContext) => _CustomSleepTimerDialog(
+        initialMinutes: last?.kind == SleepLastKind.minutes ? last?.minutes : null,
+      ),
     );
     if (duration == null || !context.mounted) return;
     ref.read(sleepTimerProvider.notifier).start(duration);
@@ -195,16 +240,26 @@ class _SleepTimerSheet extends ConsumerWidget {
 }
 
 class _CustomSleepTimerDialog extends StatefulWidget {
-  const _CustomSleepTimerDialog();
+  const _CustomSleepTimerDialog({this.initialMinutes});
+
+  final int? initialMinutes;
 
   @override
   State<_CustomSleepTimerDialog> createState() => _CustomSleepTimerDialogState();
 }
 
 class _CustomSleepTimerDialogState extends State<_CustomSleepTimerDialog> {
-  final _hoursController = TextEditingController(text: '0');
-  final _minutesController = TextEditingController(text: '30');
+  late final TextEditingController _hoursController;
+  late final TextEditingController _minutesController;
   String? _error;
+
+  @override
+  void initState() {
+    super.initState();
+    final total = widget.initialMinutes ?? 30;
+    _hoursController = TextEditingController(text: '${total ~/ 60}');
+    _minutesController = TextEditingController(text: '${total % 60}');
+  }
 
   @override
   void dispose() {

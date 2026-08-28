@@ -1,6 +1,20 @@
 import '../models/podcast.dart';
 import '../models/radio_station.dart';
 
+enum EpisodeListFilter {
+  all,
+  unlistened,
+  downloaded,
+  starred;
+
+  String get label => switch (this) {
+        EpisodeListFilter.all => '全部',
+        EpisodeListFilter.unlistened => '未听',
+        EpisodeListFilter.downloaded => '已下载',
+        EpisodeListFilter.starred => '收藏',
+      };
+}
+
 enum PodcastEpisodeSort {
   newestFirst,
   oldestFirst;
@@ -18,11 +32,32 @@ enum PodcastEpisodeSort {
 
 /// 播客播放：跳转、倍速、简介清洗。不负责下载或缓存音频。
 abstract final class PodcastPlaybackLogic {
-  static const skipStep = Duration(seconds: 15);
+  static const skipStep = Duration(seconds: defaultSkipStepSeconds);
+  static const defaultSkipStepSeconds = 15;
+  static const skipStepOptions = [10, 15, 30, 60];
   static const speeds = [0.5, 0.6, 0.8, 1.0, 1.25, 1.5, 2.0];
   static const defaultSpeed = 1.0;
   /// Available skip durations in seconds for intro/outro skip.
   static const skipDurationOptions = [0, 5, 10, 15, 20, 30, 45, 60, 90, 120];
+
+  static int skipStepFromSeconds(int? seconds) {
+    if (seconds == null) return defaultSkipStepSeconds;
+    return skipStepOptions.contains(seconds) ? seconds : defaultSkipStepSeconds;
+  }
+
+  static Duration skipStepDuration(int? seconds) =>
+      Duration(seconds: skipStepFromSeconds(seconds));
+
+  static String skipStepButtonLabel(int seconds, {required bool forward}) {
+    final n = skipStepFromSeconds(seconds);
+    return forward ? '+$n' : '−$n';
+  }
+
+  static int nextSkipStep(int seconds) {
+    final current = skipStepFromSeconds(seconds);
+    final index = skipStepOptions.indexOf(current);
+    return skipStepOptions[(index + 1) % skipStepOptions.length];
+  }
 
   static Duration clampSeek({
     required Duration position,
@@ -184,6 +219,24 @@ abstract final class PodcastPlaybackLogic {
       return newestFirst ? -byTitle : byTitle;
     });
     return copy;
+  }
+
+  static List<PodcastEpisode> filterEpisodes({
+    required List<PodcastEpisode> episodes,
+    required EpisodeListFilter filter,
+    required Set<String> listened,
+    required Set<String> starred,
+    required bool Function(String guid) isDownloaded,
+  }) {
+    return switch (filter) {
+      EpisodeListFilter.all => episodes,
+      EpisodeListFilter.unlistened =>
+        [for (final episode in episodes) if (!listened.contains(episode.guid)) episode],
+      EpisodeListFilter.downloaded =>
+        [for (final episode in episodes) if (isDownloaded(episode.guid)) episode],
+      EpisodeListFilter.starred =>
+        [for (final episode in episodes) if (starred.contains(episode.guid)) episode],
+    };
   }
 }
 

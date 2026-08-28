@@ -13,8 +13,10 @@ import '../../core/providers/podcast_history_provider.dart';
 import '../../core/stats/listening_stats.dart';
 import '../../core/theme.dart';
 import '../../shared/widgets/empty_state.dart';
+import '../../shared/widgets/resume_listening_card.dart';
 import '../../shared/widgets/station_list_tile.dart';
 import '../../shared/widgets/station_probe_status.dart';
+import '../podcast/podcast_providers.dart';
 import '../radio/radio_providers.dart';
 import 'listening_stats_view.dart';
 import 'podcast_history_tile.dart';
@@ -145,10 +147,19 @@ class _RecentTab extends ConsumerWidget {
     final current = ref.watch(currentPlaybackProvider);
     final historyAsync = ref.watch(podcastHistoryProvider);
     final recent = ref.watch(recentStationsProvider);
+    final resumeAsync = ref.watch(resumeListeningProvider);
 
     return ListView(
       padding: const EdgeInsets.only(bottom: ChengboTheme.listBottomPadding),
       children: [
+        resumeAsync.when(
+          data: (entry) {
+            if (entry == null) return const SizedBox.shrink();
+            return ResumeListeningCard(entry: entry);
+          },
+          loading: () => const SizedBox.shrink(),
+          error: (_, __) => const SizedBox.shrink(),
+        ),
         _SectionHeader(
           title: '播客',
           icon: Icons.podcasts_outlined,

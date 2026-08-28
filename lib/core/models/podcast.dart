@@ -1,3 +1,7 @@
+import '../audio/podcast_chapters.dart';
+
+export '../audio/podcast_chapters.dart' show PodcastChapter;
+
 /// 播客与 RSS 单集模型。
 class PodcastFeed {
 
@@ -37,6 +41,8 @@ class PodcastEpisode {
     this.publishedAt,
     this.duration,
     this.imageUrl,
+    this.chaptersUrl,
+    this.chapters = const [],
   });
 
   final String guid;
@@ -46,6 +52,8 @@ class PodcastEpisode {
   final DateTime? publishedAt;
   final Duration? duration;
   final String? imageUrl;
+  final String? chaptersUrl;
+  final List<PodcastChapter> chapters;
 }
 
 class PodcastDetail {

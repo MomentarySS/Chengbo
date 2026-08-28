@@ -3,7 +3,7 @@
 后续功能按本文开发，做完一项就把状态勾成完成。  
 产品名：**澄波**。定位：**国内精选流 + 可开关的 Radio Browser + 手动添加**；播放器保持 Spotify 式迷你条，不再做复古全屏收音机。
 
-**当前：** P0–P5 已完成。P5 含睡眠到本集结束、摇一摇延长睡眠、ICY 跑马灯、Android 小组件、新一集通知、Podcast Index 搜索、Chromecast。1.5.3 修下载 reload 冲进度、删订阅停 inflight，并补关键测试。
+**当前：** P0–P5 已完成。P5 含睡眠到本集结束、摇一摇延长睡眠、ICY 跑马灯、Android 小组件、新一集通知、Podcast Index 搜索、Chromecast。1.5.4 露出搜索/续播/收藏置顶，单集已听与收藏筛选，±秒与睡眠记忆，以及单集章节。
 
 ---
 
@@ -38,7 +38,7 @@
 ## 二、已完成（排查修复）
 
 - [x] Radio Browser 启动时请求 `all.api.radio-browser.info/json/servers`，失败回退 de1/fi1/nl1
-- [x] User-Agent 为可识别的 `Chengbo/<version> (Flutter; chengbo radio)`，随 `AppBrand` / pubspec 对齐（当前 `1.5.3`）
+- [x] User-Agent 为可识别的 `Chengbo/<version> (Flutter; chengbo radio)`，随 `AppBrand` / pubspec 对齐（当前 `1.5.4`）
 - [x] 手动添加与精选/已加载列表查重（同名、同 URL）
 - [x] `StationSource.custom`；旧数据靠 tag「自定义」兼容
 - [x] 设置页拆到 `lib/features/settings/settings_screen.dart`
@@ -122,6 +122,15 @@
 - [x] 订阅节目新一集通知（默认关；最少 6 小时；首次只记 guid）
 - [x] Podcast Index 搜索 → 一键订阅（只在设置里；默认滤 explicit；密钥本机保存）
 - [x] Chromecast（仅 Android；默认接收器 CC1AD845；无 Play Services 时静默失败）
+
+### 1.5.4（2026-08-28）
+
+- [x] 空订阅主按钮搜索节目；收听 tab 继续收听；电台收藏置顶
+- [x] 长按标已听/未听、收藏单集；节目详情全部 / 未听 / 已下载 / 收藏
+- [x] ± 秒数 10/15/30/60；睡眠记住上次；再听 2/3 集
+- [x] Podlove 随 Feed 解析；Podcasting 2.0 JSON 仅播放或点开时请求
+- [x] 文档与 `AppBrand` / 产物名对齐为 `1.5.4`
+- [x] 版本 `1.5.4+33`（Android `versionCode` 33）
 
 ### 1.5.3（2026-08-28）
 

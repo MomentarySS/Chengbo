@@ -121,6 +121,7 @@ class RadioAudioHandler extends BaseAudioHandler with SeekHandler {
     userAgent: AppBrand.userAgent,
     useProxyForRequestHeaders: false,
   );
+  Duration skipStep = PodcastPlaybackLogic.skipStep;
   PlaybackItem? _currentItem;
   AutoBrowseCatalog _browseCatalog = const AutoBrowseCatalog();
   Future<void> Function(int delta)? onSkipNeighbor;
@@ -487,10 +488,10 @@ class RadioAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   @override
-  Future<void> fastForward() => seekBy(PodcastPlaybackLogic.skipStep);
+  Future<void> fastForward() => seekBy(skipStep);
 
   @override
-  Future<void> rewind() => seekBy(-PodcastPlaybackLogic.skipStep);
+  Future<void> rewind() => seekBy(-skipStep);
 
   @override
   Future<void> skipToNext() async {

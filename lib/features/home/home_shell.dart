@@ -116,6 +116,8 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     ref.watch(autoBrowseSyncProvider);
     ref.watch(podcastQueueSyncProvider);
     ref.watch(deskWidgetSyncProvider);
+    ref.watch(podcastSkipStepProvider);
+    ref.watch(lastSleepValueProvider);
     final deskCompact = ref.watch(deskCompactProvider).value ?? false;
     final useRail = MediaQuery.sizeOf(context).width >= ChengboTheme.railBreakpoint;
 

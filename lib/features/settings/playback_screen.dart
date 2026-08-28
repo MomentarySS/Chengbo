@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/audio/podcast_playback.dart';
 import '../../core/network/new_episode_checker.dart';
 import '../../core/platform/desk_compact.dart';
 import '../../core/platform/notification_permission.dart';
@@ -81,6 +84,25 @@ class PlaybackSettingsScreen extends ConsumerWidget {
                   ),
                 ),
           PlaybackSettingsScreen.sectionLabel('播客', context),
+          ListTile(
+            leading: const Icon(Icons.fast_forward_outlined),
+            title: const Text('快进 / 快退秒数'),
+            subtitle: const Text('播放页长按 ± 按钮也可切换'),
+            trailing: DropdownButton<int>(
+              value: ref.watch(podcastSkipStepProvider),
+              onChanged: (value) {
+                if (value == null) return;
+                unawaited(ref.read(podcastSkipStepProvider.notifier).setSeconds(value));
+              },
+              items: [
+                for (final seconds in PodcastPlaybackLogic.skipStepOptions)
+                  DropdownMenuItem(
+                    value: seconds,
+                    child: Text('$seconds 秒'),
+                  ),
+              ],
+            ),
+          ),
           ref.watch(newEpisodeNotificationsProvider).when(
                 data: (enabled) => SwitchListTile(
                   secondary: const Icon(Icons.notifications_active_outlined),

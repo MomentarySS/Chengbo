@@ -66,6 +66,8 @@ class DeskMiniBar extends ConsumerWidget {
                     ) !=
                     null;
             final sleepActive = ref.watch(sleepTimerProvider).isActive;
+            final skipSeconds = ref.watch(podcastSkipStepProvider);
+            final skipStep = PodcastPlaybackLogic.skipStepDuration(skipSeconds);
 
             return SizedBox(
               width: DeskCompactLogic.compactWidth,
@@ -166,7 +168,7 @@ class DeskMiniBar extends ConsumerWidget {
                                       : () => ref.read(favoriteIdsProvider.notifier).toggle(stationId),
                                 ),
                               IconButton(
-                                tooltip: isPodcast ? '后退 15 秒' : '上一台',
+                                tooltip: isPodcast ? '后退 $skipSeconds 秒，长按改档' : '上一台',
                                 visualDensity: VisualDensity.compact,
                                 icon: Icon(
                                   isPodcast ? Icons.replay : Icons.skip_previous_rounded,
@@ -176,13 +178,14 @@ class DeskMiniBar extends ConsumerWidget {
                                     ? null
                                     : () {
                                         if (isPodcast) {
-                                          ref
-                                              .read(playerControllerProvider)
-                                              .seekBy(-PodcastPlaybackLogic.skipStep);
+                                          ref.read(playerControllerProvider).seekBy(-skipStep);
                                         } else if (canSkipRadio) {
                                           ref.read(stationSkipProvider).skip(-1);
                                         }
                                       },
+                                onLongPress: isPodcast
+                                    ? () => ref.read(podcastSkipStepProvider.notifier).cycle()
+                                    : null,
                               ),
                               if (loading)
                                 const SizedBox(
@@ -214,7 +217,7 @@ class DeskMiniBar extends ConsumerWidget {
                                       : () => ref.read(playerControllerProvider).togglePlayPause(),
                                 ),
                               IconButton(
-                                tooltip: isPodcast ? '前进 15 秒' : '下一台',
+                                tooltip: isPodcast ? '前进 $skipSeconds 秒，长按改档' : '下一台',
                                 visualDensity: VisualDensity.compact,
                                 icon: Icon(
                                   isPodcast ? Icons.forward : Icons.skip_next_rounded,
@@ -224,13 +227,14 @@ class DeskMiniBar extends ConsumerWidget {
                                     ? null
                                     : () {
                                         if (isPodcast) {
-                                          ref
-                                              .read(playerControllerProvider)
-                                              .seekBy(PodcastPlaybackLogic.skipStep);
+                                          ref.read(playerControllerProvider).seekBy(skipStep);
                                         } else if (canSkipRadio) {
                                           ref.read(stationSkipProvider).skip(1);
                                         }
                                       },
+                                onLongPress: isPodcast
+                                    ? () => ref.read(podcastSkipStepProvider.notifier).cycle()
+                                    : null,
                               ),
                               IconButton(
                                 tooltip: '回到完整窗口',

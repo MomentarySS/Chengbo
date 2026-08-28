@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../audio/play_queue.dart';
 import '../audio/podcast_playback.dart';
+import '../audio/sleep_timer.dart';
 import '../podcast/podcast_history.dart';
 import '../stats/listening_stats.dart';
 import '../station/station_catalog_selection.dart';
@@ -36,6 +37,8 @@ class AppStorage {
   static const _lastUnmuteVolumeKey = 'last_unmute_volume';
   static const _resumeOnLaunchKey = 'resume_on_launch';
   static const _podcastSpeedKey = 'podcast_playback_speed';
+  static const _podcastSkipStepKey = 'podcast_skip_step_seconds';
+  static const _sleepTimerLastKey = 'sleep_timer_last_json';
   static const _podcastDownloadsKey = 'podcast_downloads_json';
   static const _podcastHistoryKey = 'podcast_history_json';
   static const _listeningStatsKey = 'listening_stats_json';
@@ -53,6 +56,7 @@ class AppStorage {
   static const _newEpisodeLastCheckKey = 'new_episode_last_check_ms';
   static const _newEpisodeGuidsKey = 'new_episode_last_guids_json';
   static const _listenedEpisodeGuidsKey = 'listened_episode_guids';
+  static const _favoriteEpisodeGuidsKey = 'favorite_episode_guids';
   static const _hideListenedKey = 'hide_listened_episodes';
   static const _stationPatchesKey = 'station_patches_json';
   static const _stationProbeCompletedKey = 'station_probe_completed';
@@ -374,6 +378,28 @@ class AppStorage {
     );
   }
 
+  int getPodcastSkipStepSeconds() {
+    return PodcastPlaybackLogic.skipStepFromSeconds(_prefs.getInt(_podcastSkipStepKey));
+  }
+
+  Future<void> setPodcastSkipStepSeconds(int seconds) async {
+    await _prefs.setInt(_podcastSkipStepKey, PodcastPlaybackLogic.skipStepFromSeconds(seconds));
+  }
+
+  SleepLastValue? getSleepTimerLast() {
+    final raw = _prefs.getString(_sleepTimerLastKey);
+    if (raw == null || raw.isEmpty) return null;
+    try {
+      return SleepTimerLogic.parseLastValue(jsonDecode(raw));
+    } catch (_) {
+      return null;
+    }
+  }
+
+  Future<void> setSleepTimerLast(SleepLastValue value) async {
+    await _prefs.setString(_sleepTimerLastKey, jsonEncode(value.toJson()));
+  }
+
   /// Returns skip-intro seconds for a feed; 0 means disabled.
   int getPodcastSkipIntro(String feedId) {
     return _prefs.getInt('$_podcastSkipIntroPrefix$feedId') ?? 0;
@@ -485,6 +511,15 @@ class AppStorage {
 
   Future<void> setListenedEpisodeGuids(Set<String> guids) async {
     await _prefs.setStringList(_listenedEpisodeGuidsKey, guids.toList());
+  }
+
+  Future<Set<String>> getFavoriteEpisodeGuids() async {
+    final list = _prefs.getStringList(_favoriteEpisodeGuidsKey);
+    return list != null ? list.toSet() : <String>{};
+  }
+
+  Future<void> setFavoriteEpisodeGuids(Set<String> guids) async {
+    await _prefs.setStringList(_favoriteEpisodeGuidsKey, guids.toList());
   }
 
   Future<bool> getHideListenedEpisodes() async {

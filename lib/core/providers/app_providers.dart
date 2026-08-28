@@ -50,6 +50,7 @@ final audioHandlerProvider = FutureProvider<RadioAudioHandler>((ref) async {
       androidStopForegroundOnPause: true,
     ),
   );
+  handler.skipStep = Duration(seconds: storage.getPodcastSkipStepSeconds());
   ref.onDispose(handler.dispose);
   // 播放真正出声时才记收听历史，播放失败的尝试不记录。
   handler.onPlaybackStarted = (item) {
@@ -138,6 +139,7 @@ class SleepTimerNotifier extends StateNotifier<SleepTimerState> {
     final clamped = SleepTimerLogic.clampDuration(duration);
     final endsAt = DateTime.now().add(clamped);
     state = SleepTimerState(endsAt: endsAt);
+    unawaited(_remember(SleepLastValue.minutes(clamped.inMinutes)));
     _timer = Timer(clamped, () => unawaited(stopBecauseTimer()));
     final fadeDelay = clamped - Duration(seconds: SleepTimerLogic.fadeOutSeconds);
     if (fadeDelay > Duration.zero) {
@@ -153,6 +155,32 @@ class SleepTimerNotifier extends StateNotifier<SleepTimerState> {
     _timer = null;
     unawaited(_restoreVolume());
     state = const SleepTimerState(untilEpisodeEnd: true);
+    unawaited(_remember(SleepLastValue.untilEnd));
+  }
+
+  void startRemainingEpisodes(int count) {
+    if (count <= 1) {
+      startUntilEpisodeEnd();
+      return;
+    }
+    _timer?.cancel();
+    _fadeTimer?.cancel();
+    _timer = null;
+    unawaited(_restoreVolume());
+    state = SleepTimerState(remainingEpisodes: count);
+    unawaited(_remember(SleepLastValue.episodes(count)));
+  }
+
+  void setRemainingEpisodes(int count) {
+    if (count <= 0) {
+      unawaited(stopBecauseTimer());
+      return;
+    }
+    state = SleepTimerState(remainingEpisodes: count);
+  }
+
+  Future<void> _remember(SleepLastValue value) async {
+    await _ref.read(lastSleepValueProvider.notifier).remember(value);
   }
 
   void cancel() {
@@ -198,7 +226,12 @@ class SleepTimerNotifier extends StateNotifier<SleepTimerState> {
   }
 
   Future<void> _beginFadeOut() async {
-    if (!state.isActive || state.untilEpisodeEnd || state.isSnoozed) return;
+    if (!state.isActive ||
+        state.untilEpisodeEnd ||
+        (state.remainingEpisodes ?? 0) > 0 ||
+        state.isSnoozed) {
+      return;
+    }
     final handler = await _ref.read(audioHandlerProvider.future);
     final current = handler.player.volume;
     if (current > 0.001) {
@@ -249,6 +282,66 @@ class SleepTimerNotifier extends StateNotifier<SleepTimerState> {
 }
 
 final playerControllerProvider = Provider<PlayerController>(PlayerController.new);
+
+final lastSleepValueProvider =
+    StateNotifierProvider<LastSleepValueNotifier, SleepLastValue?>((ref) {
+  return LastSleepValueNotifier(ref);
+});
+
+class LastSleepValueNotifier extends StateNotifier<SleepLastValue?> {
+  LastSleepValueNotifier(this._ref) : super(null) {
+    _load();
+  }
+
+  final Ref _ref;
+
+  Future<void> _load() async {
+    final storage = await _ref.read(appStorageProvider.future);
+    if (!mounted) return;
+    state = storage.getSleepTimerLast();
+  }
+
+  Future<void> remember(SleepLastValue value) async {
+    state = value;
+    final storage = await _ref.read(appStorageProvider.future);
+    await storage.setSleepTimerLast(value);
+  }
+}
+
+final podcastSkipStepProvider =
+    StateNotifierProvider<PodcastSkipStepNotifier, int>((ref) {
+  return PodcastSkipStepNotifier(ref);
+});
+
+class PodcastSkipStepNotifier extends StateNotifier<int> {
+  PodcastSkipStepNotifier(this._ref) : super(PodcastPlaybackLogic.defaultSkipStepSeconds) {
+    _load();
+  }
+
+  final Ref _ref;
+
+  Future<void> _load() async {
+    final storage = await _ref.read(appStorageProvider.future);
+    final seconds = storage.getPodcastSkipStepSeconds();
+    state = seconds;
+    await _applyToHandler(seconds);
+  }
+
+  Future<void> setSeconds(int seconds) async {
+    final next = PodcastPlaybackLogic.skipStepFromSeconds(seconds);
+    state = next;
+    final storage = await _ref.read(appStorageProvider.future);
+    await storage.setPodcastSkipStepSeconds(next);
+    await _applyToHandler(next);
+  }
+
+  Future<void> cycle() => setSeconds(PodcastPlaybackLogic.nextSkipStep(state));
+
+  Future<void> _applyToHandler(int seconds) async {
+    final handler = await _ref.read(audioHandlerProvider.future);
+    handler.skipStep = Duration(seconds: seconds);
+  }
+}
 
 final podcastSpeedProvider = StateNotifierProvider<PodcastSpeedNotifier, double>((ref) {
   return PodcastSpeedNotifier(ref);
@@ -745,4 +838,37 @@ class HideListenedNotifier extends StateNotifier<AsyncValue<bool>> {
 
 final listenedEpisodeGuidsSetProvider = Provider<Set<String>>((ref) {
   return ref.watch(listenedEpisodeGuidsProvider).value ?? <String>{};
+});
+
+final favoriteEpisodeGuidsProvider =
+    StateNotifierProvider<FavoriteEpisodeGuidsNotifier, AsyncValue<Set<String>>>((ref) {
+  return FavoriteEpisodeGuidsNotifier(ref);
+});
+
+class FavoriteEpisodeGuidsNotifier extends StateNotifier<AsyncValue<Set<String>>> {
+  FavoriteEpisodeGuidsNotifier(this._ref) : super(const AsyncLoading()) {
+    _load();
+  }
+
+  final Ref _ref;
+
+  Future<void> _load() async {
+    final storage = await _ref.read(appStorageProvider.future);
+    state = AsyncData(await storage.getFavoriteEpisodeGuids());
+  }
+
+  Future<void> toggle(String episodeGuid) async {
+    if (episodeGuid.isEmpty) return;
+    final current = state.value ?? <String>{};
+    final next = current.contains(episodeGuid)
+        ? PodcastStarredLogic.unstar(current, episodeGuid: episodeGuid)
+        : PodcastStarredLogic.star(current, episodeGuid: episodeGuid);
+    state = AsyncData(next);
+    final storage = await _ref.read(appStorageProvider.future);
+    await storage.setFavoriteEpisodeGuids(next);
+  }
+}
+
+final favoriteEpisodeGuidsSetProvider = Provider<Set<String>>((ref) {
+  return ref.watch(favoriteEpisodeGuidsProvider).value ?? <String>{};
 });

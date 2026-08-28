@@ -643,7 +643,7 @@ final filteredStationsProvider = Provider<AsyncValue<List<RadioStation>>>((ref) 
   final favoriteIds = ref.watch(favoriteIdsProvider).value ?? [];
 
   return stationsAsync.whenData((stations) {
-    return stations.where((station) {
+    final filtered = stations.where((station) {
       final effective = effectiveStationCategory(station, overrides);
       final matchesCategory =
           category == StationCategoryResolver.all || effective == category;
@@ -655,6 +655,11 @@ final filteredStationsProvider = Provider<AsyncValue<List<RadioStation>>>((ref) 
       final matchesFavorite = !favoritesOnly || favoriteIds.contains(station.id);
       return matchesCategory && matchesQuery && matchesBitrate && matchesFavorite;
     }).toList();
+    return StationSkipLogic.favoritesFirst(
+      stations: filtered,
+      favoriteIds: favoriteIds,
+      favoritesOnly: favoritesOnly,
+    );
   });
 });
 

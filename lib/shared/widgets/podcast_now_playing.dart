@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/audio/now_playing_hero.dart';
+import '../../core/audio/podcast_chapters.dart';
 import '../../core/audio/podcast_download.dart';
 import '../../core/audio/podcast_playback.dart';
 import '../../core/audio/radio_audio_handler.dart';
@@ -14,6 +15,7 @@ import '../../core/providers/app_providers.dart';
 import '../../features/podcast/episode_notes_sheet.dart';
 import '../../features/podcast/podcast_providers.dart';
 import '../../features/podcast/podcast_screen.dart';
+import 'chapter_list_sheet.dart';
 import 'now_playing_queue_sheet.dart';
 import 'now_playing_top_bar.dart';
 import 'podcast_skip_sheet.dart';
@@ -80,7 +82,7 @@ class PodcastNowPlayingSheet extends ConsumerWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  _EpisodeHeader(current: current),
+                  _EpisodeHeader(current: current, handler: handler),
                   const SizedBox(height: 14),
                   _EpisodeChips(current: current),
                   const SizedBox(height: 16),
@@ -188,16 +190,18 @@ class _Cover extends StatelessWidget {
   }
 }
 
-/// 居中标题 + 副标题（播客名）。
-class _EpisodeHeader extends StatelessWidget {
-  const _EpisodeHeader({required this.current});
+/// 居中标题 + 副标题（播客名）。有章节时封面下显示当前章名，点开列表。
+class _EpisodeHeader extends ConsumerWidget {
+  const _EpisodeHeader({required this.current, required this.handler});
 
   final PlaybackItem current;
+  final RadioAudioHandler handler;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final textTheme = Theme.of(context).textTheme;
     final colorScheme = Theme.of(context).colorScheme;
+    final chapters = ref.watch(playingEpisodeChaptersProvider).value ?? const <PodcastChapter>[];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -214,6 +218,34 @@ class _EpisodeHeader extends StatelessWidget {
           overflow: TextOverflow.ellipsis,
           style: textTheme.bodyMedium?.copyWith(color: colorScheme.onSurfaceVariant),
         ),
+        if (chapters.isNotEmpty)
+          StreamBuilder<Duration>(
+            stream: handler.player.positionStream,
+            builder: (context, snapshot) {
+              final position = snapshot.data ?? Duration.zero;
+              final chapter = PodcastChapterLogic.atPosition(
+                chapters: chapters,
+                position: position,
+              );
+              if (chapter == null) return const SizedBox.shrink();
+              return Padding(
+                padding: const EdgeInsets.only(top: 8),
+                child: TextButton(
+                  onPressed: () => showChapterListSheet(
+                    context: context,
+                    handler: handler,
+                    chapters: chapters,
+                    position: position,
+                  ),
+                  child: Text(
+                    chapter.title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              );
+            },
+          ),
       ],
     );
   }
@@ -318,16 +350,17 @@ class _EpisodeChips extends ConsumerWidget {
   }
 }
 
-/// 细进度条：已播放高亮 + 圆点滑块 + 两端时间戳。
-class _PodcastSeekBar extends StatelessWidget {
+/// 细进度条：已播放高亮 + 圆点滑块 + 两端时间戳。有章节时在轨道上打点。
+class _PodcastSeekBar extends ConsumerWidget {
   const _PodcastSeekBar({required this.handler, required this.current});
 
   final RadioAudioHandler handler;
   final PlaybackItem current;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
+    final chapters = ref.watch(playingEpisodeChaptersProvider).value ?? const <PodcastChapter>[];
     return StreamBuilder<Duration>(
       stream: handler.player.positionStream,
       builder: (context, positionSnapshot) {
@@ -348,12 +381,34 @@ class _PodcastSeekBar extends StatelessWidget {
                 thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
                 overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
               ),
-              child: Slider(
-                value: hasDuration ? position.inMilliseconds.toDouble().clamp(0.0, max) : 0,
-                max: max,
-                onChanged: hasDuration
-                    ? (value) => handler.seek(Duration(milliseconds: value.toInt()))
-                    : null,
+              child: Stack(
+                alignment: Alignment.center,
+                children: [
+                  if (chapters.isNotEmpty && hasDuration)
+                    Positioned.fill(
+                      child: IgnorePointer(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                          child: CustomPaint(
+                            painter: _ChapterMarksPainter(
+                              fractions: [
+                                for (final chapter in chapters)
+                                  (chapter.start.inMilliseconds / maxMs).clamp(0.0, 1.0),
+                              ],
+                              color: colorScheme.primary,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  Slider(
+                    value: hasDuration ? position.inMilliseconds.toDouble().clamp(0.0, max) : 0,
+                    max: max,
+                    onChanged: hasDuration
+                        ? (value) => handler.seek(Duration(milliseconds: value.toInt()))
+                        : null,
+                  ),
+                ],
               ),
             ),
             Padding(
@@ -392,8 +447,29 @@ class _PodcastSeekBar extends StatelessWidget {
   }
 }
 
-/// 底部控制行：倍速、后退 15 秒、大播放键、前进 15 秒、播放列表。
-/// 白色线性图标、无描边，主播放键最大。
+class _ChapterMarksPainter extends CustomPainter {
+  const _ChapterMarksPainter({required this.fractions, required this.color});
+
+  final List<double> fractions;
+  final Color color;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()..color = color;
+    for (final fraction in fractions) {
+      final x = fraction * size.width;
+      canvas.drawCircle(Offset(x, size.height / 2), 2.5, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant _ChapterMarksPainter oldDelegate) {
+    return oldDelegate.fractions != fractions || oldDelegate.color != color;
+  }
+}
+
+/// 底部控制行：倍速、后退、大播放键、前进、播放列表。
+/// 白色线性图标、无描边，主播放键最大。长按 ± 切换 10/15/30/60 秒。
 class _TransportRow extends ConsumerWidget {
   const _TransportRow({
     required this.playing,
@@ -411,6 +487,8 @@ class _TransportRow extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
     final iconColor = colorScheme.onSurface;
+    final skipSeconds = ref.watch(podcastSkipStepProvider);
+    final skipStep = PodcastPlaybackLogic.skipStepDuration(skipSeconds);
     final auxiliary = IconButton.styleFrom(
       minimumSize: const Size(60, 60),
       maximumSize: const Size(60, 60),
@@ -435,12 +513,14 @@ class _TransportRow extends ConsumerWidget {
               onPressed: () => showPodcastSpeedSheet(context, feedId: current.feedId),
             ),
             IconButton(
-              tooltip: '后退 15 秒',
+              tooltip: '后退 $skipSeconds 秒，长按改档',
               style: auxiliary,
-              icon: Text('−15', style: stepStyle),
-              onPressed: () => ref
-                  .read(playerControllerProvider)
-                  .seekBy(-PodcastPlaybackLogic.skipStep),
+              icon: Text(
+                PodcastPlaybackLogic.skipStepButtonLabel(skipSeconds, forward: false),
+                style: stepStyle,
+              ),
+              onPressed: () => ref.read(playerControllerProvider).seekBy(-skipStep),
+              onLongPress: () => ref.read(podcastSkipStepProvider.notifier).cycle(),
             ),
             if (loading)
               const SizedBox(
@@ -463,12 +543,14 @@ class _TransportRow extends ConsumerWidget {
                 onPressed: onToggle,
               ),
             IconButton(
-              tooltip: '前进 15 秒',
+              tooltip: '前进 $skipSeconds 秒，长按改档',
               style: auxiliary,
-              icon: Text('+15', style: stepStyle),
-              onPressed: () => ref
-                  .read(playerControllerProvider)
-                  .seekBy(PodcastPlaybackLogic.skipStep),
+              icon: Text(
+                PodcastPlaybackLogic.skipStepButtonLabel(skipSeconds, forward: true),
+                style: stepStyle,
+              ),
+              onPressed: () => ref.read(playerControllerProvider).seekBy(skipStep),
+              onLongPress: () => ref.read(podcastSkipStepProvider.notifier).cycle(),
             ),
             IconButton(
               tooltip: '播放列表',
