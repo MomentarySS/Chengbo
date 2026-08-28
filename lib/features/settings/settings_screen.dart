@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme.dart';
+import '../../core/audio/cast_session.dart';
 import 'about_screen.dart';
 import 'appearance_screen.dart';
 import 'category_screen.dart';
@@ -46,7 +47,7 @@ class SettingsScreen extends ConsumerWidget {
         _Entry(
           icon: Icons.contrast,
           title: '外观',
-          subtitle: '主题、配色、投屏',
+          subtitle: CastSessionLogic.offered ? '主题、配色、投屏' : '主题、配色',
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute<void>(builder: (_) => const AppearanceScreen()),
           ),

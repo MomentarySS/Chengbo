@@ -86,21 +86,24 @@ final audioHandlerProvider = FutureProvider<RadioAudioHandler>((ref) async {
   return handler;
 });
 
+/// 自动清理跑完后递增，播客下载列表据此重载。
+final downloadCleanupEpochProvider = StateProvider<int>((ref) => 0);
+
 Future<void> _runAutoCleanup(Ref ref) async {
   try {
     final storage = await ref.read(appStorageProvider.future);
     final enabled = await storage.getAutoCleanupDownloads();
     if (!enabled) return;
     final days = await storage.getAutoCleanupDays();
-    final listened = ref.read(listenedEpisodeGuidsSetProvider);
+    final listened = await storage.getListenedEpisodeGuids();
     final downloadStore = await ref.read(podcastDownloadStoreProvider.future);
     final count = await downloadStore.autoCleanup(
       listenedGuids: listened,
       olderThanDays: days,
     );
     if (count > 0) {
-      // 刷新下载列表
       ref.invalidate(podcastDownloadStoreProvider);
+      ref.read(downloadCleanupEpochProvider.notifier).state++;
     }
   } catch (_) {
     // 静默失败，不影响启动
@@ -358,6 +361,7 @@ class AutoCleanupNotifier extends StateNotifier<AsyncValue<bool>> {
     state = AsyncData(enabled);
     final storage = await _ref.read(appStorageProvider.future);
     await storage.setAutoCleanupDownloads(enabled);
+    if (enabled) unawaited(_runAutoCleanup(_ref));
   }
 }
 
@@ -377,6 +381,7 @@ class AutoCleanupDaysNotifier extends StateNotifier<AsyncValue<int>> {
     state = AsyncData(days);
     final storage = await _ref.read(appStorageProvider.future);
     await storage.setAutoCleanupDays(days);
+    unawaited(_runAutoCleanup(_ref));
   }
 }
 
@@ -482,12 +487,19 @@ class PlayerController {
     await handler.seekBy(delta);
   }
 
-  Future<void> setPodcastSpeed(double speed) async {
+  Future<void> setPodcastSpeed(double speed, {String? feedId}) async {
     final snapped = PodcastPlaybackLogic.snapSpeed(speed);
     final storage = await _ref.read(appStorageProvider.future);
     await storage.setPodcastSpeed(snapped);
     _ref.read(podcastSpeedProvider.notifier).apply(snapped);
     final current = _ref.read(currentPlaybackProvider);
+    final targetFeed = (feedId != null && feedId.isNotEmpty)
+        ? feedId
+        : (current?.kind == PlaybackKind.podcast ? current?.feedId : null);
+    if (targetFeed != null && targetFeed.isNotEmpty) {
+      await storage.setPodcastSpeedForFeed(targetFeed, snapped);
+      _ref.invalidate(podcastSpeedForFeedProvider(targetFeed));
+    }
     if (current?.kind != PlaybackKind.podcast) return;
     final handler = await _ref.read(audioHandlerProvider.future);
     await handler.setSpeed(snapped);

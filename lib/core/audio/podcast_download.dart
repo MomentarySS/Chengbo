@@ -1,4 +1,5 @@
 import '../models/podcast.dart';
+import 'podcast_playback.dart';
 
 /// 播客下载：文件名、状态与占用格式。不负责网络或磁盘 IO。
 abstract final class PodcastDownloadLogic {
@@ -43,6 +44,86 @@ abstract final class PodcastDownloadLogic {
     ];
   }
 
+  /// 按最新在前取未就绪、未在下的前 [count] 集，与当前列表排序无关。
+  static List<PodcastEpisode> recentPendingForDownload({
+    required List<PodcastEpisode> episodes,
+    required EpisodeDownloadStatus Function(String guid) statusFor,
+    required int count,
+  }) {
+    if (count <= 0) return const [];
+    final newest = PodcastPlaybackLogic.sortedEpisodes(
+      episodes,
+      PodcastEpisodeSort.newestFirst,
+    );
+    return pendingForDownloadAll(
+      episodes: newest,
+      statusFor: statusFor,
+    ).take(count).toList();
+  }
+
+  static const maxConcurrentDownloads = 2;
+
+  static int workerCount(int pending, {int max = maxConcurrentDownloads}) {
+    if (pending <= 0 || max <= 0) return 0;
+    return pending < max ? pending : max;
+  }
+
+  static bool shouldShowFailureNotice({
+    required int? previousSeq,
+    required int nextSeq,
+    required String? title,
+  }) {
+    if (previousSeq == null) return false;
+    return nextSeq > previousSeq && (title ?? '').isNotEmpty;
+  }
+
+  static List<PodcastEpisode> selectedPendingForDownload({
+    required List<PodcastEpisode> episodes,
+    required Set<String> selectedGuids,
+    required EpisodeDownloadStatus Function(String guid) statusFor,
+  }) {
+    final chosen = [
+      for (final episode in episodes)
+        if (selectedGuids.contains(episode.guid)) episode,
+    ];
+    return pendingForDownloadAll(episodes: chosen, statusFor: statusFor);
+  }
+
+  static PodcastDownloadState afterDeleteForFeed({
+    required PodcastDownloadState state,
+    required String feedId,
+    Iterable<String> extraGuids = const [],
+  }) {
+    final drop = <String>{
+      for (final entry in state.records.entries)
+        if (entry.value.feedId == feedId) entry.key,
+      ...extraGuids,
+    };
+    final records = Map<String, PodcastDownloadRecord>.from(state.records)
+      ..removeWhere((guid, _) => drop.contains(guid));
+    final progress = Map<String, double>.from(state.progress)
+      ..removeWhere((guid, _) => drop.contains(guid));
+    final failed = Set<String>.from(state.failed)..removeAll(drop);
+    return state.copyWith(records: records, progress: progress, failed: failed);
+  }
+
+  static int downloadPercent(double? progress) {
+    return ((progress ?? 0) * 100).clamp(0, 100).round();
+  }
+
+  static String? episodeDownloadLabel({
+    required EpisodeDownloadStatus status,
+    double? progress,
+    int bytes = 0,
+  }) {
+    return switch (status) {
+      EpisodeDownloadStatus.downloading => '正在下载 ${downloadPercent(progress)}%',
+      EpisodeDownloadStatus.failed => '下载失败',
+      EpisodeDownloadStatus.ready => bytes > 0 ? '已下载 (${formatBytes(bytes)})' : '已下载',
+      EpisodeDownloadStatus.none => null,
+    };
+  }
+
   static String downloadAllSubtitle({
     required int total,
     required int ready,
@@ -55,6 +136,27 @@ abstract final class PodcastDownloadLogic {
     if (downloading > 0) return '正在下载 $ready/$total';
     final remain = total - ready;
     return '将下载未保存的单集 · 还剩 $remain 集';
+  }
+
+  /// 已听完且超过保留天数的下载。缺 `completedAtMs` 的旧记录视为已到期。
+  static Set<String> guidsDueForCleanup({
+    required Iterable<PodcastDownloadRecord> records,
+    required Set<String> listenedGuids,
+    required DateTime now,
+    required int olderThanDays,
+  }) {
+    final cutoff = now.subtract(Duration(days: olderThanDays));
+    final toDelete = <String>{};
+    for (final record in records) {
+      if (!listenedGuids.contains(record.guid)) continue;
+      final completedAt = record.completedAtMs == null
+          ? DateTime.fromMillisecondsSinceEpoch(0)
+          : DateTime.fromMillisecondsSinceEpoch(record.completedAtMs!);
+      if (completedAt.isBefore(cutoff)) {
+        toDelete.add(record.guid);
+      }
+    }
+    return toDelete;
   }
 
   static String formatBytes(int bytes) {
@@ -112,6 +214,21 @@ class PodcastDownloadRecord {
   }
 }
 
+class DownloadWorkQueue {
+  DownloadWorkQueue(Iterable<PodcastEpisode> episodes)
+      : _items = List<PodcastEpisode>.from(episodes);
+
+  final List<PodcastEpisode> _items;
+  var _cursor = 0;
+
+  int get remaining => _items.length - _cursor;
+
+  PodcastEpisode? next() {
+    if (_cursor >= _items.length) return null;
+    return _items[_cursor++];
+  }
+}
+
 enum EpisodeDownloadStatus { none, downloading, ready, failed }
 
 class PodcastDownloadState {
@@ -119,11 +236,15 @@ class PodcastDownloadState {
     this.records = const {},
     this.progress = const {},
     this.failed = const {},
+    this.failureSeq = 0,
+    this.lastFailureTitle,
   });
 
   final Map<String, PodcastDownloadRecord> records;
   final Map<String, double> progress;
   final Set<String> failed;
+  final int failureSeq;
+  final String? lastFailureTitle;
 
   EpisodeDownloadStatus statusFor(String guid) {
     if (progress.containsKey(guid)) return EpisodeDownloadStatus.downloading;
@@ -134,15 +255,29 @@ class PodcastDownloadState {
 
   int get totalBytes => records.values.fold<int>(0, (sum, item) => sum + item.bytes);
 
+  List<PodcastDownloadRecord> get recordsNewestFirst {
+    final items = records.values.toList();
+    items.sort((a, b) {
+      final byTime = (b.completedAtMs ?? 0).compareTo(a.completedAtMs ?? 0);
+      if (byTime != 0) return byTime;
+      return a.title.compareTo(b.title);
+    });
+    return items;
+  }
+
   PodcastDownloadState copyWith({
     Map<String, PodcastDownloadRecord>? records,
     Map<String, double>? progress,
     Set<String>? failed,
+    int? failureSeq,
+    String? lastFailureTitle,
   }) {
     return PodcastDownloadState(
       records: records ?? this.records,
       progress: progress ?? this.progress,
       failed: failed ?? this.failed,
+      failureSeq: failureSeq ?? this.failureSeq,
+      lastFailureTitle: lastFailureTitle ?? this.lastFailureTitle,
     );
   }
 }

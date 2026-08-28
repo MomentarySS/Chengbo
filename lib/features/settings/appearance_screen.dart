@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/providers/app_providers.dart';
 import '../../core/theme.dart';
+import '../../core/audio/cast_session.dart';
 
 /// 外观设置：主题切换 + 动态色。
 class AppearanceScreen extends ConsumerWidget {
@@ -64,26 +65,27 @@ class AppearanceScreen extends ConsumerWidget {
                   subtitle: Text('加载失败: $error'),
                 ),
               ),
-          ref.watch(castEnabledProvider).when(
-                data: (enabled) => SwitchListTile(
-                  secondary: const Icon(Icons.cast_outlined),
-                  title: const Text('Chromecast 投屏'),
-                  subtitle: const Text('Now Playing 右上角显示投屏按钮；需要 Google Play 服务'),
-                  value: enabled,
-                  onChanged: (value) =>
-                      ref.read(castEnabledProvider.notifier).setEnabled(value),
+          if (CastSessionLogic.offered)
+            ref.watch(castEnabledProvider).when(
+                  data: (enabled) => SwitchListTile(
+                    secondary: const Icon(Icons.cast_outlined),
+                    title: const Text('Chromecast 投屏'),
+                    subtitle: const Text('Now Playing 右上角显示投屏按钮；需要 Google Play 服务'),
+                    value: enabled,
+                    onChanged: (value) =>
+                        ref.read(castEnabledProvider.notifier).setEnabled(value),
+                  ),
+                  loading: () => const ListTile(
+                    leading: Icon(Icons.cast_outlined),
+                    title: Text('Chromecast 投屏'),
+                    trailing: SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2)),
+                  ),
+                  error: (error, _) => ListTile(
+                    leading: const Icon(Icons.cast_outlined),
+                    title: const Text('Chromecast 投屏'),
+                    subtitle: Text('加载失败: $error'),
+                  ),
                 ),
-                loading: () => const ListTile(
-                  leading: Icon(Icons.cast_outlined),
-                  title: Text('Chromecast 投屏'),
-                  trailing: SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2)),
-                ),
-                error: (error, _) => ListTile(
-                  leading: const Icon(Icons.cast_outlined),
-                  title: const Text('Chromecast 投屏'),
-                  subtitle: Text('加载失败: $error'),
-                ),
-              ),
         ],
       ),
     );

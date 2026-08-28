@@ -47,34 +47,38 @@ class StationListTile extends ConsumerWidget {
     final isCurrent = current?.kind == PlaybackKind.radio &&
         (current?.stationId == station.id || current?.id == station.id);
 
-    return ListTile(
-      selected: isCurrent,
-      leading: StationArtwork(
-        url: station.favicon,
-        name: station.name,
-        tags: station.tags,
+    void openMenu() => _showStationMenu(context, ref, station);
+    return GestureDetector(
+      onSecondaryTap: openMenu,
+      child: ListTile(
+        selected: isCurrent,
+        leading: StationArtwork(
+          url: station.favicon,
+          name: station.name,
+          tags: station.tags,
+        ),
+        title: Text(
+          station.name,
+          style: isCurrent ? const TextStyle(fontWeight: FontWeight.w600) : null,
+        ),
+        subtitle: Text(
+          [
+            if (isCurrent) '正在收听',
+            effectiveCategory,
+            stationSourceLabel(station),
+            if (station.bitrate != null) '${station.bitrate} kbps',
+          ].whereType<String>().where((part) => part.isNotEmpty).join(' · '),
+        ),
+        onTap: onTap ??
+            () async {
+              await ref.read(recentIdsProvider.notifier).add(station.id);
+              if (station.source == StationSource.api) {
+                unawaited(ref.read(radioBrowserClientProvider).reportClick(station.id));
+              }
+              await ref.read(playerControllerProvider).play(PlaybackItem.fromStation(station));
+            },
+        onLongPress: openMenu,
       ),
-      title: Text(
-        station.name,
-        style: isCurrent ? const TextStyle(fontWeight: FontWeight.w600) : null,
-      ),
-      subtitle: Text(
-        [
-          if (isCurrent) '正在收听',
-          effectiveCategory,
-          stationSourceLabel(station),
-          if (station.bitrate != null) '${station.bitrate} kbps',
-        ].whereType<String>().where((part) => part.isNotEmpty).join(' · '),
-      ),
-      onTap: onTap ??
-          () async {
-            await ref.read(recentIdsProvider.notifier).add(station.id);
-            if (station.source == StationSource.api) {
-              unawaited(ref.read(radioBrowserClientProvider).reportClick(station.id));
-            }
-            await ref.read(playerControllerProvider).play(PlaybackItem.fromStation(station));
-          },
-      onLongPress: () => _showStationMenu(context, ref, station),
     );
   }
 

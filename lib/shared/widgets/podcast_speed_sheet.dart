@@ -53,7 +53,9 @@ class _PodcastSpeedSheet extends ConsumerWidget {
                     label: Text(PodcastPlaybackLogic.speedLabel(speed)),
                     selected: current == speed,
                     onSelected: (_) async {
-                      await ref.read(playerControllerProvider).setPodcastSpeed(speed);
+                      await ref
+                          .read(playerControllerProvider)
+                          .setPodcastSpeed(speed, feedId: feedId);
                       if (context.mounted) Navigator.of(context).pop();
                     },
                   ),

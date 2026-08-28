@@ -15,6 +15,7 @@ import 'package:chengbo/core/audio/now_playing_hero.dart';
 import 'package:chengbo/core/audio/playback_logic.dart';
 import 'package:chengbo/core/audio/podcast_download.dart';
 import 'package:chengbo/core/audio/podcast_playback.dart';
+import 'package:chengbo/core/audio/play_queue.dart';
 import 'package:chengbo/core/audio/shake_sleep.dart';
 import 'package:chengbo/core/audio/sleep_timer.dart';
 import 'package:chengbo/core/network/new_episode.dart';
@@ -550,6 +551,10 @@ void main() {
     expect(PrivacyCopy.paragraphs.join(), contains('常见端口'));
     expect(PrivacyCopy.paragraphs.join(), contains('中文语言'));
     expect(PrivacyCopy.paragraphs.join(), contains('港澳台'));
+    expect(PrivacyCopy.paragraphs.join(), contains('收听范围'));
+    expect(PrivacyCopy.paragraphs.join(), contains('NekoBox'));
+    expect(PrivacyCopy.paragraphs.join(), contains('权限（Android）'));
+    expect(PrivacyCopy.paragraphs.join(), contains(AppBrand.userAgent));
   });
 
   test('AppBrand version matches pubspec and user agents', () {
@@ -609,7 +614,7 @@ void main() {
       const Duration(minutes: 10),
     );
     expect(PodcastPlaybackLogic.snapSpeed(1.3), 1.25);
-    expect(PodcastPlaybackLogic.snapSpeed(0.55), 0.5);
+    expect(PodcastPlaybackLogic.snapSpeed(0.52), 0.5);
     expect(PodcastPlaybackLogic.speedLabel(0.6), '0.6×');
     expect(PodcastPlaybackLogic.speedLabel(1.5), '1.5×');
     expect(PodcastPlaybackLogic.speedLabel(2), '2×');
@@ -629,6 +634,38 @@ void main() {
       ),
       isTrue,
     );
+    expect(
+      PodcastPlaybackLogic.resumeSeek(
+        saved: const Duration(minutes: 29, seconds: 50),
+        duration: const Duration(minutes: 30),
+      ),
+      isNull,
+    );
+    expect(
+      PodcastPlaybackLogic.resumeSeek(
+        saved: const Duration(minutes: 10),
+        duration: const Duration(minutes: 30),
+      ),
+      const Duration(minutes: 10),
+    );
+    expect(
+      PodcastPlaybackLogic.resumeSeek(
+        saved: const Duration(seconds: 5),
+        duration: const Duration(minutes: 30),
+        skipIntro: const Duration(seconds: 15),
+      ),
+      const Duration(seconds: 15),
+    );
+    expect(
+      PodcastPlaybackLogic.resumeSeek(
+        saved: const Duration(minutes: 29, seconds: 50),
+        duration: const Duration(minutes: 30),
+        skipIntro: const Duration(seconds: 15),
+      ),
+      const Duration(seconds: 15),
+    );
+    expect(PodcastPlaybackLogic.speedForFeed(stored: 1.5, fallback: 1.0), 1.5);
+    expect(PodcastPlaybackLogic.speedForFeed(stored: null, fallback: 1.25), 1.25);
     expect(
       PodcastPlaybackLogic.progressFraction(
         progress: const Duration(minutes: 5),
@@ -905,6 +942,10 @@ void main() {
     expect(storage.getPodcastSpeed(), 1.0);
     await storage.setPodcastSpeed(1.5);
     expect(storage.getPodcastSpeed(), 1.5);
+    expect(storage.getPodcastSpeedForFeed('feed-a'), 1.5);
+    await storage.setPodcastSpeedForFeed('feed-a', 0.8);
+    expect(storage.getPodcastSpeedForFeed('feed-a'), 0.8);
+    expect(storage.getPodcastSpeedForFeed('feed-b'), 1.5);
   });
 
   test('Bundled default podcasts are identified and not kept', () {
@@ -940,6 +981,42 @@ void main() {
       'ep_1___.m4a',
     );
     expect(PodcastDownloadLogic.formatBytes(2048), '2.0 KB');
+    final now = DateTime(2026, 8, 27);
+    const old = PodcastDownloadRecord(
+      guid: 'old',
+      feedId: 'f',
+      title: '旧',
+      audioUrl: 'https://example.com/a.mp3',
+      fileName: 'old.mp3',
+      bytes: 1,
+    );
+    final recent = PodcastDownloadRecord(
+      guid: 'recent',
+      feedId: 'f',
+      title: '新',
+      audioUrl: 'https://example.com/b.mp3',
+      fileName: 'recent.mp3',
+      bytes: 1,
+      completedAtMs: now.subtract(const Duration(days: 3)).millisecondsSinceEpoch,
+    );
+    expect(
+      PodcastDownloadLogic.guidsDueForCleanup(
+        records: [old, recent],
+        listenedGuids: {'old', 'recent'},
+        now: now,
+        olderThanDays: 30,
+      ),
+      {'old'},
+    );
+    expect(
+      PodcastDownloadLogic.guidsDueForCleanup(
+        records: [old],
+        listenedGuids: {},
+        now: now,
+        olderThanDays: 30,
+      ),
+      isEmpty,
+    );
     const state = PodcastDownloadState(
       records: {
         'ready': PodcastDownloadRecord(
@@ -959,6 +1036,48 @@ void main() {
     expect(state.statusFor('bad'), EpisodeDownloadStatus.failed);
     expect(state.statusFor('none'), EpisodeDownloadStatus.none);
     expect(state.totalBytes, 10);
+    expect(
+      PodcastDownloadState(
+        records: {
+          'old': PodcastDownloadRecord(
+            guid: 'old',
+            feedId: 'feed',
+            title: '旧',
+            audioUrl: 'https://example.com/o.mp3',
+            fileName: 'old.mp3',
+            bytes: 1,
+            completedAtMs: 1,
+          ),
+          'new': PodcastDownloadRecord(
+            guid: 'new',
+            feedId: 'feed',
+            title: '新',
+            audioUrl: 'https://example.com/n.mp3',
+            fileName: 'new.mp3',
+            bytes: 2,
+            completedAtMs: 9,
+          ),
+        },
+      ).recordsNewestFirst.map((item) => item.guid),
+      ['new', 'old'],
+    );
+    expect(PodcastDownloadLogic.maxConcurrentDownloads, 2);
+  });
+
+  test('PlayQueue keeps remaining items after pop', () {
+    PlaybackItem episode(String guid) => PlaybackItem(
+          id: guid,
+          title: guid,
+          streamUrl: 'https://example.com/$guid.mp3',
+          kind: PlaybackKind.podcast,
+          episodeGuid: guid,
+        );
+    var queue = PlayQueue(items: [episode('a'), episode('b')]);
+    expect(queue.current?.episodeGuid, 'a');
+    expect(queue.items, hasLength(2));
+    queue = queue.pop();
+    expect(queue.current?.episodeGuid, 'b');
+    expect(queue.items, hasLength(1));
   });
 
   test('AppStorage treats empty podcast list as a saved record', () async {
@@ -1436,5 +1555,224 @@ void main() {
     expect(restored.byDay[ListeningStatsLogic.dayKey(now)]?.podcastSeconds, 150);
     expect(restored.bySource['feed-1']?.kind, PlaybackKind.podcast);
     expect(restored.bySource['feed-1']?.title, '测试播客');
+  });
+
+  test('PodcastDownloadLogic recentPendingForDownload takes newest pending', () {
+    PodcastEpisode episode(String id, DateTime published) => PodcastEpisode(
+          guid: id,
+          title: id,
+          audioUrl: 'https://example.com/$id.mp3',
+          publishedAt: published,
+        );
+    final oldest = episode('old', DateTime(2026, 1, 1));
+    final mid = episode('mid', DateTime(2026, 6, 1));
+    final newest = episode('new', DateTime(2026, 8, 1));
+    final unordered = [oldest, newest, mid];
+
+    EpisodeDownloadStatus statusFor(String guid) {
+      if (guid == 'new') return EpisodeDownloadStatus.ready;
+      if (guid == 'mid') return EpisodeDownloadStatus.downloading;
+      return EpisodeDownloadStatus.none;
+    }
+
+    expect(
+      PodcastDownloadLogic.recentPendingForDownload(
+        episodes: unordered,
+        statusFor: statusFor,
+        count: 3,
+      ).map((item) => item.guid),
+      ['old'],
+    );
+    expect(
+      PodcastDownloadLogic.recentPendingForDownload(
+        episodes: unordered,
+        statusFor: (_) => EpisodeDownloadStatus.none,
+        count: 2,
+      ).map((item) => item.guid),
+      ['new', 'mid'],
+    );
+    expect(
+      PodcastDownloadLogic.recentPendingForDownload(
+        episodes: unordered,
+        statusFor: (_) => EpisodeDownloadStatus.none,
+        count: 0,
+      ),
+      isEmpty,
+    );
+  });
+
+  test('PodcastDownloadLogic episodeDownloadLabel and percent', () {
+    expect(PodcastDownloadLogic.downloadPercent(null), 0);
+    expect(PodcastDownloadLogic.downloadPercent(0.456), 46);
+    expect(PodcastDownloadLogic.downloadPercent(1.5), 100);
+    expect(
+      PodcastDownloadLogic.episodeDownloadLabel(
+        status: EpisodeDownloadStatus.downloading,
+        progress: 0.45,
+      ),
+      '正在下载 45%',
+    );
+    expect(
+      PodcastDownloadLogic.episodeDownloadLabel(status: EpisodeDownloadStatus.failed),
+      '下载失败',
+    );
+    expect(
+      PodcastDownloadLogic.episodeDownloadLabel(
+        status: EpisodeDownloadStatus.ready,
+        bytes: 12 * 1024 * 1024,
+      ),
+      '已下载 (12.0 MB)',
+    );
+    expect(
+      PodcastDownloadLogic.episodeDownloadLabel(status: EpisodeDownloadStatus.none),
+      isNull,
+    );
+  });
+
+  test('PodcastDownloadLogic parallel queue, selection, failure notice, feed delete', () {
+    expect(PodcastDownloadLogic.workerCount(0), 0);
+    expect(PodcastDownloadLogic.workerCount(-1), 0);
+    expect(PodcastDownloadLogic.workerCount(1), 1);
+    expect(PodcastDownloadLogic.workerCount(2), 2);
+    expect(PodcastDownloadLogic.workerCount(9), 2);
+    expect(PodcastDownloadLogic.workerCount(9, max: 3), 3);
+    expect(PodcastDownloadLogic.workerCount(2, max: 0), 0);
+
+    const a = PodcastEpisode(guid: 'a', title: 'A', audioUrl: 'https://a');
+    const b = PodcastEpisode(guid: 'b', title: 'B', audioUrl: 'https://b');
+    const c = PodcastEpisode(guid: 'c', title: 'C', audioUrl: 'https://c');
+    final queue = DownloadWorkQueue([a, b, c]);
+    expect(queue.remaining, 3);
+    expect(queue.next()?.guid, 'a');
+    expect(queue.next()?.guid, 'b');
+    expect(queue.remaining, 1);
+    expect(queue.next()?.guid, 'c');
+    expect(queue.next(), isNull);
+    expect(queue.remaining, 0);
+
+    expect(
+      PodcastDownloadLogic.shouldShowFailureNotice(
+        previousSeq: null,
+        nextSeq: 1,
+        title: '一集',
+      ),
+      isFalse,
+    );
+    expect(
+      PodcastDownloadLogic.shouldShowFailureNotice(
+        previousSeq: 1,
+        nextSeq: 1,
+        title: '一集',
+      ),
+      isFalse,
+    );
+    expect(
+      PodcastDownloadLogic.shouldShowFailureNotice(
+        previousSeq: 1,
+        nextSeq: 2,
+        title: '',
+      ),
+      isFalse,
+    );
+    expect(
+      PodcastDownloadLogic.shouldShowFailureNotice(
+        previousSeq: 1,
+        nextSeq: 2,
+        title: '一集',
+      ),
+      isTrue,
+    );
+
+    EpisodeDownloadStatus statusFor(String guid) {
+      if (guid == 'a') return EpisodeDownloadStatus.ready;
+      if (guid == 'b') return EpisodeDownloadStatus.downloading;
+      if (guid == 'c') return EpisodeDownloadStatus.failed;
+      return EpisodeDownloadStatus.none;
+    }
+
+    expect(
+      PodcastDownloadLogic.pendingForDownloadAll(
+        episodes: [a, b, c],
+        statusFor: statusFor,
+      ).map((item) => item.guid),
+      ['c'],
+    );
+    expect(
+      PodcastDownloadLogic.selectedPendingForDownload(
+        episodes: [a, b, c],
+        selectedGuids: {'a', 'c'},
+        statusFor: statusFor,
+      ).map((item) => item.guid),
+      ['c'],
+    );
+    expect(
+      PodcastDownloadLogic.selectedPendingForDownload(
+        episodes: [a, b, c],
+        selectedGuids: {'a', 'b'},
+        statusFor: statusFor,
+      ),
+      isEmpty,
+    );
+    expect(
+      PodcastDownloadLogic.recentPendingForDownload(
+        episodes: [a, b, c],
+        statusFor: statusFor,
+        count: 5,
+      ).map((item) => item.guid),
+      ['c'],
+    );
+
+    const keep = PodcastDownloadRecord(
+      guid: 'keep',
+      feedId: 'other',
+      title: '留',
+      audioUrl: 'https://k',
+      fileName: 'keep.mp3',
+      bytes: 4,
+    );
+    const drop = PodcastDownloadRecord(
+      guid: 'drop',
+      feedId: 'gone',
+      title: '删',
+      audioUrl: 'https://d',
+      fileName: 'drop.mp3',
+      bytes: 8,
+    );
+    final before = PodcastDownloadState(
+      records: {'keep': keep, 'drop': drop},
+      progress: {'drop': 0.2, 'inflight': 0.5, 'keep': 0.1},
+      failed: {'drop', 'other-fail'},
+      failureSeq: 3,
+      lastFailureTitle: '删',
+    );
+    final after = PodcastDownloadLogic.afterDeleteForFeed(
+      state: before,
+      feedId: 'gone',
+      extraGuids: const ['inflight'],
+    );
+    expect(after.records.keys, ['keep']);
+    expect(after.progress.keys, ['keep']);
+    expect(after.failed, {'other-fail'});
+    expect(after.failureSeq, 3);
+
+    final reloaded = before.copyWith(records: {'keep': keep});
+    expect(reloaded.progress, before.progress);
+    expect(reloaded.failureSeq, 3);
+    expect(reloaded.lastFailureTitle, '删');
+
+    expect(PodcastDownloadRecord.tryFromJson({'guid': '', 'fileName': 'x.mp3'}), isNull);
+    expect(PodcastDownloadRecord.tryFromJson({'guid': 'g', 'fileName': ''}), isNull);
+    expect(
+      PodcastDownloadRecord.tryFromJson({
+        'guid': 'g',
+        'fileName': 'g.mp3',
+        'title': 'T',
+        'feedId': 'f',
+        'audioUrl': 'https://g',
+        'bytes': 3,
+        'completedAtMs': 9,
+      })?.title,
+      'T',
+    );
   });
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../core/audio/podcast_download.dart';
 import '../../core/network/new_episode_checker.dart';
 import '../../core/platform/desk_widget_sync.dart';
 import '../../shared/widgets/desk_mini_bar.dart';
@@ -91,6 +92,18 @@ class _HomeShellState extends ConsumerState<HomeShell> {
           const SnackBar(content: Text('已按定时停止播放')),
         );
       }
+    });
+    ref.listen(podcastDownloadsProvider, (previous, next) {
+      if (!PodcastDownloadLogic.shouldShowFailureNotice(
+        previousSeq: previous?.failureSeq,
+        nextSeq: next.failureSeq,
+        title: next.lastFailureTitle,
+      )) {
+        return;
+      }
+      ScaffoldMessenger.maybeOf(context)?.showSnackBar(
+        SnackBar(content: Text('「${next.lastFailureTitle}」下载失败')),
+      );
     });
     ref.listen(isOfflineProvider, (previous, next) {
       final wasOffline = previous?.value ?? false;

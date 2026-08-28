@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -7,10 +8,12 @@ import '../../core/audio/now_playing_hero.dart';
 import '../../core/audio/podcast_download.dart';
 import '../../core/audio/podcast_playback.dart';
 import '../../core/audio/radio_audio_handler.dart';
+import '../../core/models/podcast.dart';
 import '../../core/models/radio_station.dart';
 import '../../core/providers/app_providers.dart';
 import '../../features/podcast/episode_notes_sheet.dart';
 import '../../features/podcast/podcast_providers.dart';
+import '../../features/podcast/podcast_screen.dart';
 import 'now_playing_queue_sheet.dart';
 import 'now_playing_top_bar.dart';
 import 'podcast_skip_sheet.dart';
@@ -227,9 +230,36 @@ class _EpisodeChips extends ConsumerWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final hasNotes = PodcastPlaybackLogic.stripHtml(current.description).isNotEmpty;
     final guid = current.episodeGuid;
-    final downloaded = guid != null &&
-        ref.watch(podcastDownloadsProvider).statusFor(guid) == EpisodeDownloadStatus.ready;
+    final downloads = ref.watch(podcastDownloadsProvider);
+    final downloadStatus = guid == null ? EpisodeDownloadStatus.none : downloads.statusFor(guid);
+    final downloadLabel = guid == null
+        ? null
+        : PodcastDownloadLogic.episodeDownloadLabel(
+            status: downloadStatus,
+            progress: downloads.progress[guid],
+            bytes: downloads.records[guid]?.bytes ?? 0,
+          );
     final sleepActive = ref.watch(sleepTimerProvider).isActive;
+    final canDownload = guid != null && current.feedId != null;
+
+    Future<void> startDownload() async {
+      if (!canDownload) return;
+      if (!await ensureCanDownload(context, ref)) return;
+      final feed = PodcastFeed(
+        id: current.feedId!,
+        title: current.subtitle,
+        feedUrl: '',
+      );
+      final episode = PodcastEpisode(
+        guid: current.episodeGuid!,
+        title: current.title,
+        audioUrl: current.streamUrl,
+        description: current.description,
+        duration: current.duration,
+        imageUrl: current.artworkUrl,
+      );
+      unawaited(ref.read(podcastDownloadsProvider.notifier).download(feed, episode));
+    }
 
     return Wrap(
       spacing: 8,
@@ -247,11 +277,23 @@ class _EpisodeChips extends ConsumerWidget {
               description: current.description,
             ),
           ),
-        if (downloaded)
+        if (downloadStatus == EpisodeDownloadStatus.ready)
           const Chip(
             avatar: Icon(Icons.download_done, size: 18),
             label: Text('已下载'),
             visualDensity: VisualDensity.compact,
+          )
+        else if (canDownload && downloadStatus == EpisodeDownloadStatus.downloading)
+          ActionChip(
+            avatar: const Icon(Icons.cancel_outlined, size: 18),
+            label: Text(downloadLabel ?? '取消下载'),
+            onPressed: () => unawaited(ref.read(podcastDownloadsProvider.notifier).cancel(guid)),
+          )
+        else if (canDownload)
+          ActionChip(
+            avatar: const Icon(Icons.download_outlined, size: 18),
+            label: Text(downloadStatus == EpisodeDownloadStatus.failed ? '重新下载' : '下载'),
+            onPressed: startDownload,
           ),
         ActionChip(
           avatar: Icon(Icons.bedtime_outlined, size: 18, color: sleepActive ? colorScheme.primary : null),

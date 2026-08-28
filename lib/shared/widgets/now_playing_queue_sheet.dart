@@ -88,11 +88,13 @@ class _ManualQueue extends ConsumerWidget {
           ),
         ),
         SizedBox(
-          height: 56 * queue.items.length.clamp(0, 4).toDouble(),
+          height: (56.0 * queue.items.length).clamp(56.0, 56.0 * 8),
           child: ReorderableListView.builder(
             shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: queue.items.length.clamp(0, 4),
+            physics: queue.items.length > 8
+                ? const ClampingScrollPhysics()
+                : const NeverScrollableScrollPhysics(),
+            itemCount: queue.items.length,
             onReorder: (oldIndex, newIndex) {
               ref.read(playQueueProvider.notifier).move(oldIndex, newIndex);
             },
@@ -123,16 +125,6 @@ class _ManualQueue extends ConsumerWidget {
             },
           ),
         ),
-        if (queue.items.length > 4)
-          Padding(
-            padding: const EdgeInsets.only(left: 16, bottom: 8),
-            child: Text(
-              '还有 ${queue.items.length - 4} 集',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-            ),
-          ),
         const Divider(height: 1),
       ],
     );

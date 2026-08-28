@@ -286,24 +286,12 @@ class RadioAudioHandler extends BaseAudioHandler with SeekHandler {
         final skipIntro = Duration(seconds: _storage.getPodcastSkipIntro(feedId));
         if (item.episodeGuid != null) {
           final saved = await _storage.getPodcastProgress(item.episodeGuid!);
-          // 已听完（≥95% 或剩余 ≤15s）的单集从头播：seek 到结尾会立即触发
-          // completed 自动跳到下一集，导致无法重播。
-          Duration? seekTo = saved;
-          if (saved != null &&
-              saved > Duration.zero &&
-              !PodcastPlaybackLogic.isFinished(
-                progress: saved,
-                duration: item.duration,
-              )) {
-            seekTo = saved;
-          }
-          // Apply skip-intro: start after the intro region if enabled.
-          if (skipIntro > Duration.zero) {
-            final effective = seekTo ?? Duration.zero;
-            if (effective < skipIntro) {
-              seekTo = skipIntro;
-            }
-          }
+          // 已听完从头播：seek 到结尾会立刻 completed 并跳下一集。
+          final seekTo = PodcastPlaybackLogic.resumeSeek(
+            saved: saved,
+            duration: item.duration,
+            skipIntro: skipIntro,
+          );
           if (seekTo != null) {
             await _player.seek(seekTo);
           }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -42,7 +44,7 @@ Future<bool> confirmDeletePodcast(BuildContext context, PodcastFeed feed) async 
       false;
 }
 
-Future<bool> _ensureCanDownload(BuildContext context, WidgetRef ref) async {
+Future<bool> ensureCanDownload(BuildContext context, WidgetRef ref) async {
   final offline = ref.read(isOfflineProvider).value ?? false;
   if (offline) {
     if (context.mounted) {
@@ -154,7 +156,7 @@ class _PodcastScreenState extends ConsumerState<PodcastScreen> {
                   detail: '试试其他关键词',
                 );
               }
-              return ResumeAndInboxList(
+              return ResumeAndFeedList(
                 feeds: filtered,
                 query: query,
               );
@@ -304,13 +306,81 @@ class _AddFeedDialogState extends State<_AddFeedDialog> {
   }
 }
 
-class PodcastDetailScreen extends ConsumerWidget {
+enum _DetailMoreAction { newestFirst, oldestFirst, refresh, delete }
+
+class PodcastDetailScreen extends ConsumerStatefulWidget {
   const PodcastDetailScreen({super.key, required this.feed});
 
   final PodcastFeed feed;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<PodcastDetailScreen> createState() => _PodcastDetailScreenState();
+}
+
+class _PodcastDetailScreenState extends ConsumerState<PodcastDetailScreen> {
+  bool _selecting = false;
+  final Set<String> _selected = {};
+
+  PodcastFeed get feed => widget.feed;
+
+  void _enterSelect({String? initialGuid}) {
+    setState(() {
+      _selecting = true;
+      _selected.clear();
+      if (initialGuid != null) _selected.add(initialGuid);
+    });
+  }
+
+  void _exitSelect() {
+    setState(() {
+      _selecting = false;
+      _selected.clear();
+    });
+  }
+
+  void _toggleSelected(String guid) {
+    setState(() {
+      if (!_selected.add(guid)) _selected.remove(guid);
+    });
+  }
+
+  void _toggleSelectAll(List<PodcastEpisode> episodes) {
+    if (episodes.isEmpty) return;
+    final allSelected = episodes.every((item) => _selected.contains(item.guid));
+    if (allSelected) {
+      setState(_selected.clear);
+      return;
+    }
+    setState(() {
+      _selected
+        ..clear()
+        ..addAll(episodes.map((item) => item.guid));
+    });
+  }
+
+  Future<void> _downloadSelected(List<PodcastEpisode> episodes) async {
+    if (!await ensureCanDownload(context, ref)) return;
+    final pending = PodcastDownloadLogic.selectedPendingForDownload(
+      episodes: episodes,
+      selectedGuids: _selected,
+      statusFor: ref.read(podcastDownloadsProvider).statusFor,
+    );
+    if (!mounted) return;
+    if (pending.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('所选单集都已下载或正在下载')),
+      );
+      return;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('开始下载所选 ${pending.length} 集')),
+    );
+    _exitSelect();
+    unawaited(ref.read(podcastDownloadsProvider.notifier).downloadEpisodes(feed, pending));
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final detailAsync = ref.watch(podcastDetailProvider(feed));
     final offline = ref.watch(isOfflineProvider).value ?? false;
     final sort = ref.watch(podcastEpisodeSortProvider).value ?? PodcastEpisodeSort.newestFirst;
@@ -322,47 +392,105 @@ class PodcastDetailScreen extends ConsumerWidget {
         ref.read(podcastDownloadsProvider.notifier).downloadAll(detail.feed, detail.episodes);
       });
     });
-    return Scaffold(
+    return PopScope(
+      canPop: !_selecting,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop && _selecting) _exitSelect();
+      },
+      child: Scaffold(
       appBar: AppBar(
-        title: Text(feed.title),
+        leading: _selecting
+            ? IconButton(
+                tooltip: '取消选择',
+                icon: const Icon(Icons.close),
+                onPressed: _exitSelect,
+              )
+            : null,
+        title: Text(_selecting ? '已选 ${_selected.length} 集' : feed.title),
         actions: [
-          ref.watch(hideListenedEpisodesProvider).when(
-                data: (hide) => IconButton(
-                  tooltip: hide ? '显示已听完' : '隐藏已听完',
-                  icon: Icon(hide ? Icons.visibility_outlined : Icons.visibility_off_outlined),
-                  onPressed: () => ref.read(hideListenedEpisodesProvider.notifier).setHide(!hide),
+          if (_selecting) ...[
+            IconButton(
+              tooltip: () {
+                final detail = ref.read(podcastDetailProvider(feed)).value;
+                if (detail == null) return '全选';
+                final episodes = _visibleEpisodes(detail, sort);
+                final allSelected =
+                    episodes.isNotEmpty && episodes.every((item) => _selected.contains(item.guid));
+                return allSelected ? '取消全选' : '全选';
+              }(),
+              icon: const Icon(Icons.select_all),
+              onPressed: () {
+                final detail = ref.read(podcastDetailProvider(feed)).value;
+                if (detail == null) return;
+                _toggleSelectAll(_visibleEpisodes(detail, sort));
+              },
+            ),
+            IconButton(
+              tooltip: '下载所选',
+              icon: const Icon(Icons.download_outlined),
+              onPressed: _selected.isEmpty
+                  ? null
+                  : () {
+                      final detail = ref.read(podcastDetailProvider(feed)).value;
+                      if (detail == null) return;
+                      _downloadSelected(_visibleEpisodes(detail, sort));
+                    },
+            ),
+          ] else ...[
+            IconButton(
+              tooltip: '选择多项',
+              icon: const Icon(Icons.checklist),
+              onPressed: _enterSelect,
+            ),
+            ref.watch(hideListenedEpisodesProvider).when(
+                  data: (hide) => IconButton(
+                    tooltip: hide ? '显示已听完' : '隐藏已听完',
+                    icon: Icon(hide ? Icons.visibility_outlined : Icons.visibility_off_outlined),
+                    onPressed: () => ref.read(hideListenedEpisodesProvider.notifier).setHide(!hide),
+                  ),
+                  loading: () => const SizedBox.shrink(),
+                  error: (_, __) => const SizedBox.shrink(),
                 ),
-                loading: () => const SizedBox.shrink(),
-                error: (_, __) => const SizedBox.shrink(),
-              ),
-          PopupMenuButton<PodcastEpisodeSort>(
-            tooltip: '排序',
-            icon: const Icon(Icons.sort),
-            initialValue: sort,
-            onSelected: (value) => ref.read(podcastEpisodeSortProvider.notifier).setSort(value),
-            itemBuilder: (context) => [
-              for (final value in PodcastEpisodeSort.values)
-                PopupMenuItem(
-                  value: value,
-                  child: Text(value.label),
+            PopupMenuButton<_DetailMoreAction>(
+              tooltip: '更多',
+              onSelected: (action) async {
+                switch (action) {
+                  case _DetailMoreAction.newestFirst:
+                    await ref.read(podcastEpisodeSortProvider.notifier).setSort(PodcastEpisodeSort.newestFirst);
+                  case _DetailMoreAction.oldestFirst:
+                    await ref.read(podcastEpisodeSortProvider.notifier).setSort(PodcastEpisodeSort.oldestFirst);
+                  case _DetailMoreAction.refresh:
+                    ref.invalidate(podcastDetailProvider(feed));
+                  case _DetailMoreAction.delete:
+                    final confirmed = await confirmDeletePodcast(context, feed);
+                    if (confirmed != true) return;
+                    await ref.read(subscribedFeedsProvider.notifier).removeFeed(feed.id);
+                    if (context.mounted) Navigator.of(context).pop();
+                }
+              },
+              itemBuilder: (context) => [
+                CheckedPopupMenuItem(
+                  value: _DetailMoreAction.newestFirst,
+                  checked: sort == PodcastEpisodeSort.newestFirst,
+                  child: Text(PodcastEpisodeSort.newestFirst.label),
                 ),
-            ],
-          ),
-          IconButton(
-            tooltip: '刷新',
-            icon: const Icon(Icons.refresh),
-            onPressed: () => ref.invalidate(podcastDetailProvider(feed)),
-          ),
-          IconButton(
-            tooltip: '删除',
-            icon: const Icon(Icons.delete_outline),
-            onPressed: () async {
-              final confirmed = await confirmDeletePodcast(context, feed);
-              if (confirmed != true) return;
-              await ref.read(subscribedFeedsProvider.notifier).removeFeed(feed.id);
-              if (context.mounted) Navigator.of(context).pop();
-            },
-          ),
+                CheckedPopupMenuItem(
+                  value: _DetailMoreAction.oldestFirst,
+                  checked: sort == PodcastEpisodeSort.oldestFirst,
+                  child: Text(PodcastEpisodeSort.oldestFirst.label),
+                ),
+                const PopupMenuDivider(),
+                const PopupMenuItem(
+                  value: _DetailMoreAction.refresh,
+                  child: Text('刷新'),
+                ),
+                const PopupMenuItem(
+                  value: _DetailMoreAction.delete,
+                  child: Text('删除订阅'),
+                ),
+              ],
+            ),
+          ],
         ],
       ),
       body: detailAsync.when(
@@ -374,21 +502,19 @@ class PodcastDetailScreen extends ConsumerWidget {
             );
           }
           final header = PodcastPlaybackLogic.stripHtml(detail.feed.description);
-          final episodes = PodcastPlaybackLogic.sortedEpisodes(detail.episodes, sort);
-          final listened = ref.watch(listenedEpisodeGuidsSetProvider);
+          ref.watch(hideListenedEpisodesProvider);
+          ref.watch(listenedEpisodeGuidsSetProvider);
+          final listEpisodes = _visibleEpisodes(detail, sort);
           final hideListened = ref.watch(hideListenedEpisodesProvider).value ?? false;
-          final filtered = hideListened
-              ? episodes.where((e) => !listened.contains(e.guid)).toList()
-              : episodes;
-          if (filtered.isEmpty && hideListened) {
+          if (listEpisodes.isEmpty && hideListened) {
             return const AppEmptyState(
               icon: Icons.visibility_outlined,
               message: '都已听完',
               detail: '关闭「隐藏已听完」即可查看全部单集',
             );
           }
-          final leadingCount = 1 + (header.isEmpty ? 0 : 1);
-          final listEpisodes = filtered;
+          final showDownloadBar = !_selecting;
+          final leadingCount = (header.isEmpty ? 0 : 1) + (showDownloadBar ? 1 : 0);
           return RefreshIndicator(
             onRefresh: () async {
               ref.invalidate(podcastDetailProvider(feed));
@@ -414,11 +540,18 @@ class PodcastDetailScreen extends ConsumerWidget {
                     ),
                   );
                 }
-                if (index == (header.isEmpty ? 0 : 1)) {
-                  return _DownloadAllTile(feed: detail.feed, episodes: listEpisodes);
+                if (showDownloadBar && index == (header.isEmpty ? 0 : 1)) {
+                  return _DownloadAllTile(feed: detail.feed, episodes: detail.episodes);
                 }
                 final episode = listEpisodes[index - leadingCount];
-                return _EpisodeTile(feed: detail.feed, episode: episode);
+                return _EpisodeTile(
+                  feed: detail.feed,
+                  episode: episode,
+                  selecting: _selecting,
+                  selected: _selected.contains(episode.guid),
+                  onToggleSelect: () => _toggleSelected(episode.guid),
+                  onEnterSelect: () => _enterSelect(initialGuid: episode.guid),
+                );
               },
             ),
           );
@@ -432,7 +565,16 @@ class PodcastDetailScreen extends ConsumerWidget {
           onAction: () => ref.invalidate(podcastDetailProvider(feed)),
         ),
       ),
+    ),
     );
+  }
+
+  List<PodcastEpisode> _visibleEpisodes(PodcastDetail detail, PodcastEpisodeSort sort) {
+    final episodes = PodcastPlaybackLogic.sortedEpisodes(detail.episodes, sort);
+    final hideListened = ref.read(hideListenedEpisodesProvider).value ?? false;
+    if (!hideListened) return episodes;
+    final listened = ref.read(listenedEpisodeGuidsSetProvider);
+    return episodes.where((episode) => !listened.contains(episode.guid)).toList();
   }
 }
 
@@ -475,7 +617,7 @@ class _DownloadAllTile extends ConsumerWidget {
           ),
           value: enabled,
           onChanged: (value) async {
-            if (value && !await _ensureCanDownload(context, ref)) return;
+            if (value && !await ensureCanDownload(context, ref)) return;
             await ref.read(podcastDownloadAllFeedsProvider.notifier).setEnabled(feed.id, value);
             if (value) {
               await ref.read(podcastDownloadsProvider.notifier).downloadAll(feed, episodes);
@@ -516,7 +658,7 @@ class _DownloadAllTile extends ConsumerWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        '最近',
+                        '最近几集',
                         style: Theme.of(context).textTheme.bodySmall,
                       ),
                       const Icon(Icons.arrow_drop_down, size: 18),
@@ -524,8 +666,25 @@ class _DownloadAllTile extends ConsumerWidget {
                   ),
                 ),
                 onSelected: (count) async {
-                  if (!await _ensureCanDownload(context, ref)) return;
-                  await ref.read(podcastDownloadsProvider.notifier).downloadRecent(feed, episodes, count);
+                  if (!await ensureCanDownload(context, ref)) return;
+                  final pending = PodcastDownloadLogic.recentPendingForDownload(
+                    episodes: episodes,
+                    statusFor: ref.read(podcastDownloadsProvider).statusFor,
+                    count: count,
+                  );
+                  if (!context.mounted) return;
+                  if (pending.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('最近 $count 集都已下载')),
+                    );
+                    return;
+                  }
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('开始下载最近 ${pending.length} 集')),
+                  );
+                  unawaited(
+                    ref.read(podcastDownloadsProvider.notifier).downloadEpisodes(feed, pending),
+                  );
                 },
                 itemBuilder: (context) => [
                   for (final n in [3, 5, 10])
@@ -544,10 +703,21 @@ class _DownloadAllTile extends ConsumerWidget {
 }
 
 class _EpisodeTile extends ConsumerWidget {
-  const _EpisodeTile({required this.feed, required this.episode});
+  const _EpisodeTile({
+    required this.feed,
+    required this.episode,
+    required this.selecting,
+    required this.selected,
+    required this.onToggleSelect,
+    required this.onEnterSelect,
+  });
 
   final PodcastFeed feed;
   final PodcastEpisode episode;
+  final bool selecting;
+  final bool selected;
+  final VoidCallback onToggleSelect;
+  final VoidCallback onEnterSelect;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -566,73 +736,104 @@ class _EpisodeTile extends ConsumerWidget {
     final hasNotes = PodcastPlaybackLogic.stripHtml(episode.description).isNotEmpty;
     final download = ref.watch(podcastDownloadsProvider);
     final downloadStatus = download.statusFor(episode.guid);
-    final downloaded = downloadStatus == EpisodeDownloadStatus.ready;
-    return ListTile(
-      selected: isCurrent,
-      leading: Icon(
-        finished
-            ? Icons.check_circle_outline
-            : isCurrent
-                ? Icons.podcasts
-                : Icons.play_circle_outline,
-      ),
-      title: Text(
-        episode.title,
-        style: isCurrent ? const TextStyle(fontWeight: FontWeight.w600) : null,
-      ),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            [
-              if (episode.publishedAt != null)
-                '${episode.publishedAt!.year}-${episode.publishedAt!.month}-${episode.publishedAt!.day}',
-              if (episode.duration != null) _formatDuration(episode.duration!),
-              if (finished)
-                '已听完'
-              else if (progress != null && progress > Duration.zero)
-                '已播放 ${_formatDuration(progress)}',
-              if (downloaded)
-                '已下载${_downloadSizeLabel(download, episode.guid)}',
-              if (isCurrent) '正在收听',
-            ].where((s) => s.isNotEmpty).join(' · '),
-          ),
-          if (fraction != null && !finished) ...[
-            const SizedBox(height: 6),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(2),
-              child: LinearProgressIndicator(value: fraction, minHeight: 3),
+    final downloadLabel = PodcastDownloadLogic.episodeDownloadLabel(
+      status: downloadStatus,
+      progress: download.progress[episode.guid],
+      bytes: download.records[episode.guid]?.bytes ?? 0,
+    );
+    final downloading = downloadStatus == EpisodeDownloadStatus.downloading;
+    final downloadFraction = download.progress[episode.guid];
+    void openMenu() => _showEpisodeMenu(
+          context,
+          ref,
+          feed,
+          episode,
+          hasNotes: hasNotes,
+          downloadStatus: downloadStatus,
+          onEnterSelect: onEnterSelect,
+        );
+    return GestureDetector(
+      onSecondaryTap: selecting ? onToggleSelect : openMenu,
+      child: ListTile(
+        selected: selecting ? selected : isCurrent,
+        leading: selecting
+            ? Checkbox(
+                value: selected,
+                onChanged: (_) => onToggleSelect(),
+              )
+            : Icon(
+                finished
+                    ? Icons.check_circle_outline
+                    : isCurrent
+                        ? Icons.podcasts
+                        : Icons.play_circle_outline,
+              ),
+        title: Text(
+          episode.title,
+          style: !selecting && isCurrent ? const TextStyle(fontWeight: FontWeight.w600) : null,
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              [
+                if (episode.publishedAt != null)
+                  '${episode.publishedAt!.year}-${episode.publishedAt!.month}-${episode.publishedAt!.day}',
+                if (episode.duration != null) _formatDuration(episode.duration!),
+                if (finished) '已听完' else if (progress != null && progress > Duration.zero)
+                  '已播放 ${_formatDuration(progress)}',
+                if (downloadLabel != null) downloadLabel,
+                if (!selecting && isCurrent) '正在收听',
+              ].where((s) => s.isNotEmpty).join(' · '),
             ),
+            if (downloading) ...[
+              const SizedBox(height: 6),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(2),
+                child: LinearProgressIndicator(
+                  value: (downloadFraction ?? 0) > 0 ? downloadFraction : null,
+                  minHeight: 3,
+                ),
+              ),
+            ] else if (fraction != null && !finished) ...[
+              const SizedBox(height: 6),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(2),
+                child: LinearProgressIndicator(value: fraction, minHeight: 3),
+              ),
+            ],
           ],
-        ],
+        ),
+        trailing: hasNotes
+            ? IconButton(
+                tooltip: '查看备注',
+                icon: const Icon(Icons.notes_outlined, size: 20),
+                onPressed: () => showEpisodeNotesSheet(
+                  context: context,
+                  ref: ref,
+                  feed: feed,
+                  episode: episode,
+                ),
+              )
+            : null,
+        onTap: selecting
+            ? onToggleSelect
+            : () async {
+                await ref.read(playerControllerProvider).play(
+                      PlaybackItem.fromPodcastEpisode(
+                        podcastTitle: feed.title,
+                        episodeTitle: episode.title,
+                        audioUrl: episode.audioUrl,
+                        episodeGuid: episode.guid,
+                        artworkUrl: episode.imageUrl ?? feed.imageUrl,
+                        duration: episode.duration,
+                        description: episode.description,
+                        feedId: feed.id,
+                      ),
+                    );
+              },
+        onLongPress: selecting ? onToggleSelect : openMenu,
       ),
-      trailing: hasNotes
-          ? IconButton(
-              tooltip: '查看备注',
-              icon: const Icon(Icons.notes_outlined, size: 20),
-              onPressed: () => showEpisodeNotesSheet(
-                context: context,
-                ref: ref,
-                feed: feed,
-                episode: episode,
-              ),
-            )
-          : null,
-      onTap: () async {
-        await ref.read(playerControllerProvider).play(
-              PlaybackItem.fromPodcastEpisode(
-                podcastTitle: feed.title,
-                episodeTitle: episode.title,
-                audioUrl: episode.audioUrl,
-                episodeGuid: episode.guid,
-                artworkUrl: episode.imageUrl ?? feed.imageUrl,
-                duration: episode.duration,
-                description: episode.description,
-                feedId: feed.id,
-              ),
-            );
-      },
-      onLongPress: () => _showEpisodeMenu(context, ref, feed, episode, hasNotes, downloadStatus),
     );
   }
 
@@ -641,15 +842,17 @@ class _EpisodeTile extends ConsumerWidget {
     final seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
     return '$minutes:$seconds';
   }
-
-  String _downloadSizeLabel(PodcastDownloadState downloads, String guid) {
-    final record = downloads.records[guid];
-    if (record == null || record.bytes <= 0) return '';
-    return ' (${PodcastDownloadLogic.formatBytes(record.bytes)})';
-  }
 }
 
-void _showEpisodeMenu(BuildContext context, WidgetRef ref, PodcastFeed feed, PodcastEpisode episode, bool hasNotes, EpisodeDownloadStatus downloadStatus) {
+void _showEpisodeMenu(
+  BuildContext context,
+  WidgetRef ref,
+  PodcastFeed feed,
+  PodcastEpisode episode, {
+  required bool hasNotes,
+  required EpisodeDownloadStatus downloadStatus,
+  required VoidCallback onEnterSelect,
+}) {
   showModalBottomSheet<void>(
     context: context,
     showDragHandle: true,
@@ -671,6 +874,14 @@ void _showEpisodeMenu(BuildContext context, WidgetRef ref, PodcastFeed feed, Pod
                   showEpisodeNotesSheet(context: context, ref: ref, feed: feed, episode: episode);
                 },
               ),
+            ListTile(
+              leading: const Icon(Icons.checklist),
+              title: const Text('选择多项'),
+              onTap: () {
+                Navigator.pop(sheetContext);
+                onEnterSelect();
+              },
+            ),
             ListTile(
               leading: const Icon(Icons.playlist_add),
               title: const Text('加入播放队列'),
@@ -701,14 +912,25 @@ void _showEpisodeMenu(BuildContext context, WidgetRef ref, PodcastFeed feed, Pod
                   _confirmDeleteDownload(context, ref, feed, episode);
                 },
               )
-            else if (downloadStatus != EpisodeDownloadStatus.downloading)
+            else if (downloadStatus == EpisodeDownloadStatus.downloading)
+              ListTile(
+                leading: const Icon(Icons.cancel_outlined),
+                title: const Text('取消下载'),
+                onTap: () {
+                  Navigator.pop(sheetContext);
+                  unawaited(ref.read(podcastDownloadsProvider.notifier).cancel(episode.guid));
+                },
+              )
+            else
               ListTile(
                 leading: const Icon(Icons.download_outlined),
-                title: const Text('下载到本机'),
+                title: Text(
+                  downloadStatus == EpisodeDownloadStatus.failed ? '重新下载' : '下载到本机',
+                ),
                 onTap: () async {
                   Navigator.pop(sheetContext);
-                  if (!await _ensureCanDownload(context, ref)) return;
-                  await ref.read(podcastDownloadsProvider.notifier).download(feed, episode);
+                  if (!await ensureCanDownload(context, ref)) return;
+                  unawaited(ref.read(podcastDownloadsProvider.notifier).download(feed, episode));
                 },
               ),
             ListTile(
@@ -756,8 +978,8 @@ Future<void> _confirmDeleteDownload(BuildContext context, WidgetRef ref, Podcast
 }
 
 /// 播客主页：继续收听卡片 + 订阅列表。
-class ResumeAndInboxList extends ConsumerWidget {
-  const ResumeAndInboxList({
+class ResumeAndFeedList extends ConsumerWidget {
+  const ResumeAndFeedList({
     super.key,
     required this.feeds,
     this.query = '',
@@ -897,22 +1119,25 @@ class _FeedItem extends ConsumerWidget {
       ),
       confirmDismiss: (_) => confirmDeletePodcast(context, feed),
       onDismissed: (_) => ref.read(subscribedFeedsProvider.notifier).removeFeed(feed.id),
-      child: ListTile(
-        leading: StationArtwork(url: feed.imageUrl, size: 48, icon: Icons.podcasts),
-        title: Text(feed.title),
-        subtitle: Text(
-          summary.isEmpty ? feed.feedUrl : summary,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
+      child: GestureDetector(
+        onSecondaryTap: () => _showFeedMenu(context, ref, feed),
+        child: ListTile(
+          leading: StationArtwork(url: feed.imageUrl, size: 48, icon: Icons.podcasts),
+          title: Text(feed.title),
+          subtitle: Text(
+            summary.isEmpty ? feed.feedUrl : summary,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+          ),
+          onTap: () {
+            Navigator.of(context).push(
+              MaterialPageRoute<void>(
+                builder: (_) => PodcastDetailScreen(feed: feed),
+              ),
+            );
+          },
+          onLongPress: () => _showFeedMenu(context, ref, feed),
         ),
-        onTap: () {
-          Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (_) => PodcastDetailScreen(feed: feed),
-            ),
-          );
-        },
-        onLongPress: () => _showFeedMenu(context, ref, feed),
       ),
     );
   }

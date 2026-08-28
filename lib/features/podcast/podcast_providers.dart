@@ -339,7 +339,11 @@ final resumeListeningProvider = FutureProvider<PodcastHistoryEntry?>((ref) async
 
 final podcastDownloadsProvider =
     StateNotifierProvider<PodcastDownloadsNotifier, PodcastDownloadState>((ref) {
-  return PodcastDownloadsNotifier(ref);
+  final notifier = PodcastDownloadsNotifier(ref);
+  ref.listen<int>(downloadCleanupEpochProvider, (previous, next) {
+    if (previous != next) unawaited(notifier.reload());
+  });
+  return notifier;
 });
 
 final downloadWifiOnlyProvider =
@@ -374,14 +378,18 @@ class PodcastDownloadsNotifier extends StateNotifier<PodcastDownloadState> {
   final Ref _ref;
   final Set<String> _downloadAllRunning = {};
   final Set<String> _downloadAllRequested = {};
+  final Map<String, String> _inflightFeedByGuid = {};
 
   Future<void> _load() async {
     final store = await _ref.read(podcastDownloadStoreProvider.future);
-    state = PodcastDownloadState(records: await store.loadRecords());
+    state = state.copyWith(records: await store.loadRecords());
   }
 
+  Future<void> reload() => _load();
+
   Future<void> download(PodcastFeed feed, PodcastEpisode episode) async {
-    if (state.statusFor(episode.guid) == EpisodeDownloadStatus.downloading) {
+    if (state.statusFor(episode.guid) == EpisodeDownloadStatus.downloading ||
+        state.statusFor(episode.guid) == EpisodeDownloadStatus.ready) {
       return;
     }
     final wifiOnlyAsync = _ref.read(downloadWifiOnlyProvider);
@@ -391,6 +399,7 @@ class PodcastDownloadsNotifier extends StateNotifier<PodcastDownloadState> {
     }
     final progress = Map<String, double>.from(state.progress)..[episode.guid] = 0;
     final failed = Set<String>.from(state.failed)..remove(episode.guid);
+    _inflightFeedByGuid[episode.guid] = feed.id;
     state = state.copyWith(progress: progress, failed: failed);
     try {
       final store = await _ref.read(podcastDownloadStoreProvider.future);
@@ -412,10 +421,36 @@ class PodcastDownloadsNotifier extends StateNotifier<PodcastDownloadState> {
         state = state.copyWith(progress: remaining);
         return;
       }
-      _markFailed(episode.guid);
+      _markFailed(episode.guid, episode.title);
     } catch (_) {
-      _markFailed(episode.guid);
+      _markFailed(episode.guid, episode.title);
+    } finally {
+      _inflightFeedByGuid.remove(episode.guid);
     }
+  }
+
+  Future<void> _downloadMany(
+    PodcastFeed feed,
+    List<PodcastEpisode> episodes, {
+    bool Function()? shouldContinue,
+  }) async {
+    final pending = PodcastDownloadLogic.pendingForDownloadAll(
+      episodes: episodes,
+      statusFor: state.statusFor,
+    );
+    if (pending.isEmpty) return;
+    final queue = DownloadWorkQueue(pending);
+    Future<void> worker() async {
+      while (true) {
+        if (shouldContinue != null && !shouldContinue()) return;
+        final episode = queue.next();
+        if (episode == null) return;
+        await download(feed, episode);
+      }
+    }
+
+    final workers = PodcastDownloadLogic.workerCount(pending.length);
+    await Future.wait([for (var i = 0; i < workers; i++) worker()]);
   }
 
   Future<void> downloadAll(PodcastFeed feed, List<PodcastEpisode> episodes) async {
@@ -426,46 +461,30 @@ class PodcastDownloadsNotifier extends StateNotifier<PodcastDownloadState> {
         if (!(_ref.read(podcastDownloadAllFeedsProvider).value?.contains(feed.id) ?? false)) {
           return;
         }
-        final pending = PodcastDownloadLogic.pendingForDownloadAll(
-          episodes: episodes,
-          statusFor: state.statusFor,
+        await _downloadMany(
+          feed,
+          episodes,
+          shouldContinue: () =>
+              _ref.read(podcastDownloadAllFeedsProvider).value?.contains(feed.id) ?? false,
         );
-        for (final episode in pending) {
-          if (!(_ref.read(podcastDownloadAllFeedsProvider).value?.contains(feed.id) ?? false)) {
-            return;
-          }
-          await download(feed, episode);
-        }
       }
     } finally {
       _downloadAllRunning.remove(feed.id);
     }
   }
 
-  /// Download the most recent [count] episodes from the feed.
+  Future<void> downloadEpisodes(PodcastFeed feed, List<PodcastEpisode> episodes) async {
+    await _downloadMany(feed, episodes);
+  }
+
+  /// 按最新在前下载未保存的前 [count] 集，不依赖「全部下载」开关。
   Future<void> downloadRecent(PodcastFeed feed, List<PodcastEpisode> episodes, int count) async {
-    _downloadAllRequested.add(feed.id);
-    if (!_downloadAllRunning.add(feed.id)) return;
-    try {
-      while (_downloadAllRequested.remove(feed.id)) {
-        if (!(_ref.read(podcastDownloadAllFeedsProvider).value?.contains(feed.id) ?? false)) {
-          return;
-        }
-        final pending = PodcastDownloadLogic.pendingForDownloadAll(
-          episodes: episodes,
-          statusFor: state.statusFor,
-        );
-        final recent = pending.take(count);
-        for (final episode in recent) {
-          if (!(_ref.read(podcastDownloadAllFeedsProvider).value?.contains(feed.id) ?? false)) {
-            return;
-          }
-          await download(feed, episode);
-        }
-      }
-    } finally {
-      _downloadAllRunning.remove(feed.id);
-    }
+    final pending = PodcastDownloadLogic.recentPendingForDownload(
+      episodes: episodes,
+      statusFor: state.statusFor,
+      count: count,
+    );
+    await downloadEpisodes(feed, pending);
   }
 
   Future<void> cancel(String guid) async {
@@ -491,11 +510,20 @@ class PodcastDownloadsNotifier extends StateNotifier<PodcastDownloadState> {
   }
 
   Future<void> deleteForFeed(String feedId) async {
+    final inflight = [
+      for (final entry in _inflightFeedByGuid.entries)
+        if (entry.value == feedId) entry.key,
+    ];
     final store = await _ref.read(podcastDownloadStoreProvider.future);
+    for (final guid in inflight) {
+      store.cancel(guid);
+    }
     await store.deleteForFeed(feedId);
-    final records = Map<String, PodcastDownloadRecord>.from(state.records)
-      ..removeWhere((_, record) => record.feedId == feedId);
-    state = state.copyWith(records: records);
+    state = PodcastDownloadLogic.afterDeleteForFeed(
+      state: state,
+      feedId: feedId,
+      extraGuids: inflight,
+    );
   }
 
   Future<void> clearAll() async {
@@ -504,10 +532,15 @@ class PodcastDownloadsNotifier extends StateNotifier<PodcastDownloadState> {
     state = const PodcastDownloadState();
   }
 
-  void _markFailed(String guid) {
+  void _markFailed(String guid, String title) {
     final progress = Map<String, double>.from(state.progress)..remove(guid);
     final failed = Set<String>.from(state.failed)..add(guid);
-    state = state.copyWith(progress: progress, failed: failed);
+    state = state.copyWith(
+      progress: progress,
+      failed: failed,
+      failureSeq: state.failureSeq + 1,
+      lastFailureTitle: title,
+    );
   }
 }
 
@@ -605,8 +638,12 @@ final podcastQueueSyncProvider = Provider<void>((ref) {
       final queue = ref.read(playQueueProvider).value ?? const PlayQueue();
       if (queue.items.isNotEmpty) {
         final next = queue.items.first;
-        await ref.read(playQueueProvider.notifier).pop();
-        await ref.read(playerControllerProvider).play(next);
+        try {
+          await ref.read(playerControllerProvider).play(next);
+          await ref.read(playQueueProvider.notifier).pop();
+        } catch (_) {
+          // 播放失败时留在队列，避免这一集被丢掉
+        }
         return;
       }
       await ref.read(podcastQueueControllerProvider).playNext();

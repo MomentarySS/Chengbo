@@ -94,6 +94,32 @@ abstract final class PodcastPlaybackLogic {
     return bestRaw;
   }
 
+  /// 开播时应 seek 的位置。已听完返回 null（从头播）；启用跳过片头时，
+  /// 目标仍在片头内则跳到片头结束。
+  static Duration? resumeSeek({
+    required Duration? saved,
+    required Duration? duration,
+    Duration skipIntro = Duration.zero,
+  }) {
+    Duration? seekTo;
+    if (saved != null &&
+        saved > Duration.zero &&
+        !isFinished(progress: saved, duration: duration)) {
+      seekTo = saved;
+    }
+    if (skipIntro > Duration.zero) {
+      final effective = seekTo ?? Duration.zero;
+      if (effective < skipIntro) {
+        seekTo = skipIntro;
+      }
+    }
+    return seekTo;
+  }
+
+  static double speedForFeed({required double? stored, required double fallback}) {
+    return snapSpeed(stored ?? fallback);
+  }
+
   static bool isFinished({
     required Duration? progress,
     required Duration? duration,

@@ -360,9 +360,10 @@ class AppStorage {
   }
 
   double getPodcastSpeedForFeed(String feedId) {
-    return PodcastPlaybackLogic.snapSpeed(
-      _prefs.getDouble('$_podcastSpeedByFeedPrefix$feedId') ??
-          PodcastPlaybackLogic.defaultSpeed,
+    if (feedId.isEmpty) return getPodcastSpeed();
+    return PodcastPlaybackLogic.speedForFeed(
+      stored: _prefs.getDouble('$_podcastSpeedByFeedPrefix$feedId'),
+      fallback: getPodcastSpeed(),
     );
   }
 

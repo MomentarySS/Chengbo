@@ -167,23 +167,17 @@ class PodcastDownloadStore {
     required Set<String> listenedGuids,
     int olderThanDays = 30,
   }) async {
-    final cutoff = DateTime.now().subtract(Duration(days: olderThanDays));
     final records = (await _storage.getPodcastDownloads())
         .map(PodcastDownloadRecord.tryFromJson)
         .where((r) => r != null)
         .cast<PodcastDownloadRecord>()
         .toList();
-    final toDelete = <String>{};
-    for (final record in records) {
-      if (!listenedGuids.contains(record.guid)) continue;
-      // 查找下载完成时间：用 completedAtMs 或默认为当天
-      final completedAt = DateTime.fromMillisecondsSinceEpoch(
-        record.completedAtMs ?? DateTime.now().millisecondsSinceEpoch,
-      );
-      if (completedAt.isBefore(cutoff)) {
-        toDelete.add(record.guid);
-      }
-    }
+    final toDelete = PodcastDownloadLogic.guidsDueForCleanup(
+      records: records,
+      listenedGuids: listenedGuids,
+      now: DateTime.now(),
+      olderThanDays: olderThanDays,
+    );
     for (final guid in toDelete) {
       await delete(guid);
     }

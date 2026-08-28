@@ -3,7 +3,7 @@
 后续功能按本文开发，做完一项就把状态勾成完成。  
 产品名：**澄波**。定位：**国内精选流 + 可开关的 Radio Browser + 手动添加**；播放器保持 Spotify 式迷你条，不再做复古全屏收音机。
 
-**当前：** P0–P5 已完成。P5 含睡眠到本集结束、摇一摇延长睡眠、ICY 跑马灯、Android 小组件、新一集通知、Podcast Index 搜索、Chromecast。
+**当前：** P0–P5 已完成。P5 含睡眠到本集结束、摇一摇延长睡眠、ICY 跑马灯、Android 小组件、新一集通知、Podcast Index 搜索、Chromecast。1.5.3 修下载 reload 冲进度、删订阅停 inflight，并补关键测试。
 
 ---
 
@@ -38,7 +38,7 @@
 ## 二、已完成（排查修复）
 
 - [x] Radio Browser 启动时请求 `all.api.radio-browser.info/json/servers`，失败回退 de1/fi1/nl1
-- [x] User-Agent 为可识别的 `Chengbo/1.1.9 (Flutter; chengbo radio)`，去掉 `contact@example.com`
+- [x] User-Agent 为可识别的 `Chengbo/<version> (Flutter; chengbo radio)`，随 `AppBrand` / pubspec 对齐（当前 `1.5.3`）
 - [x] 手动添加与精选/已加载列表查重（同名、同 URL）
 - [x] `StationSource.custom`；旧数据靠 tag「自定义」兼容
 - [x] 设置页拆到 `lib/features/settings/settings_screen.dart`
@@ -84,7 +84,7 @@
 ### P2 工程与发布
 
 - [x] Android 真机验证后台播放、通知栏、Android 13+ 通知权限（见下方清单）
-- [x] Windows 安装包 / Android APK（`scripts/pack.ps1` 按 pubspec 写出 `dist/chengbo-1.2.0.apk`、`dist/chengbo-windows-1.2.0.zip`；本机有 `android/key.properties` 时用正式签名）
+- [x] Windows 安装包 / Android APK（`scripts/pack.ps1` 按 pubspec 写出 `dist/chengbo-<version>.apk`、`dist/chengbo-windows-<version>.zip` / `.exe`；本机有 `android/key.properties` 时用正式签名）
 - [x] 播放器与网络层再补测试（`test/layer_test.dart`：handler 重试、discovery 开关、隐私文案）
 - [x] 隐私说明：直播不落盘、播客可按需下载、不收集收听内容（设置页 + [PRIVACY.md](PRIVACY.md)）
 - [x] 不提供节目单：不爬蜻蜓 / 云听，不编 EPG，底栏不设节目单页
@@ -122,6 +122,36 @@
 - [x] 订阅节目新一集通知（默认关；最少 6 小时；首次只记 guid）
 - [x] Podcast Index 搜索 → 一键订阅（只在设置里；默认滤 explicit；密钥本机保存）
 - [x] Chromecast（仅 Android；默认接收器 CC1AD845；无 Play Services 时静默失败）
+
+### 1.5.3（2026-08-28）
+
+- [x] 下载列表 reload 只更新 records，不冲掉进行中进度 / 失败态
+- [x] 删除订阅取消该节目 inflight 下载，并清掉对应 progress / failed
+- [x] 补测 workerCount、DownloadWorkQueue、失败 SnackBar、勾选待下、afterDeleteForFeed
+- [x] 文档与 `AppBrand` / 产物名对齐为 `1.5.3`
+- [x] 版本 `1.5.3+32`（Android `versionCode` 32）
+
+### 1.5.2（2026-08-28）
+
+- [x] 「最近 N 集」不依赖「全部下载」开关；按最新在前取未下载单集，点击有提示
+- [x] Windows 右键与长按同一份菜单；下载中可取消，失败可重试
+- [x] 单集行显示下载进度百分比与失败；不在设置「数据管理」做任务队列
+- [x] 顶栏勾选 + 菜单「选择多项」，下载所选
+- [x] 文档与 `AppBrand` / 产物名对齐为 `1.5.2`
+- [x] 电台列表 Windows 右键与长按同一份菜单
+- [x] 设置「数据管理 → 播客下载」可进入已下载清单并删除单集
+- [x] 批量下载最多 2 路并行
+- [x] 下载失败用 SnackBar 提示，不发系统通知
+
+### 1.5.1（2026-08-27）
+
+- [x] 已听完单集重播：`resumeSeek` 在 `isFinished` 时不再 seek 到结尾
+- [x] 下载自动清理等已听名单就绪；缺完成时间的旧下载视为到期；开关/天数变更触发清理并刷新列表
+- [x] 按节目倍速回退全局值；速度面板 invalidate 选中态
+- [x] 手动队列先播放再出队；队列 UI 展示全部条目
+- [x] Chromecast 开关仅 Android 外观页
+- [x] 文档与 `AppBrand` / 产物名对齐为 `1.5.1`
+- [x] 版本 `1.5.1+30`（Android `versionCode` 30）
 
 ### 1.5.0（2026-08-27）
 
@@ -267,7 +297,7 @@
 
 ### 1.2.8（2026-08-17）
 
-- [x] 播客主页增加搜索框，按订阅标题搜索，搜索时隐藏继续收听卡片和 inbox
+- [x] 播客主页增加搜索框，按订阅标题搜索，搜索时隐藏继续收听卡片
 - [x] 版本 `1.2.8+20`（Android `versionCode` 20）
 
 ### 1.2.7（2026-08-17）

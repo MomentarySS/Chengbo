@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/audio/podcast_download.dart';
 import '../../core/storage/artwork_cache_service.dart';
 import '../podcast/podcast_providers.dart';
+import 'podcast_downloads_screen.dart';
 
 /// 数据管理：存储方式说明、封面缓存、播客下载。
 class DataManagementScreen extends ConsumerStatefulWidget {
@@ -115,7 +116,10 @@ class _DataManagementScreenState extends ConsumerState<DataManagementScreen> {
             subtitle: Text(
               podcastDownloads.records.isEmpty
                   ? '还没有下载单集'
-                  : '已占用 ${PodcastDownloadLogic.formatBytes(podcastDownloads.totalBytes)}',
+                  : '已占用 ${PodcastDownloadLogic.formatBytes(podcastDownloads.totalBytes)} · 点开查看清单',
+            ),
+            onTap: () => Navigator.of(context).push(
+              MaterialPageRoute<void>(builder: (_) => const PodcastDownloadsScreen()),
             ),
             trailing: _clearingPodcasts
                 ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))
