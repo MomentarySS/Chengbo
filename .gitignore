@@ -64,3 +64,6 @@ tools/gd_merge_report.json
 
 # Windows icon experiments
 windows/runner/resources/test_icon*.ico
+
+# Local-only source lists (not for public repo; NSFW)
+/ADULT_SOURCES.md

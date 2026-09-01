@@ -6,7 +6,7 @@
 
 当前版本：`1.5.4+33`（2026-08-28）。相对 1.5.3：空订阅可搜索节目；收听 tab 也有继续收听；电台收藏置顶；单集可标已听/收藏并筛选；± 秒数可调；睡眠记住上次并可再听 N 集；有章节的单集会显示目录。
 
-功能清单见 [DEVELOPMENT.md](DEVELOPMENT.md)：P0–P5 已完成。源扩充仍可排后的项见 [SOURCES.md](SOURCES.md)。成人向公开 RSS 的人工清单见 [ADULT_SOURCES.md](ADULT_SOURCES.md)（不预装）。
+功能清单见 [DEVELOPMENT.md](DEVELOPMENT.md)：P0–P5 已完成。源扩充仍可排后的项见 [SOURCES.md](SOURCES.md)。成人向 RSS 调研仅作本机笔记（`ADULT_SOURCES.md`，不入公开仓库；见 SOURCES.md 第 6 节产品约定）。
 
 ## 功能
 
@@ -206,7 +206,7 @@ tools/                  # 广东台测流、合并脚本
 - Chromecast 需要 Google Play 服务，以及和手机同一网络上的投屏设备
 - 新一集通知默认关；打开后最少隔 6 小时查一次订阅，第一次只记 guid
 
-完整清单与同类 App 对照见 [DEVELOPMENT.md](DEVELOPMENT.md)。仍可排后的源扩充见 [SOURCES.md](SOURCES.md)；成人向 RSS 清单见 [ADULT_SOURCES.md](ADULT_SOURCES.md)。
+完整清单与同类 App 对照见 [DEVELOPMENT.md](DEVELOPMENT.md)。仍可排后的源扩充见 [SOURCES.md](SOURCES.md)（含成人向内容的产品边界，详细节目表不入库）。
 
 ## 许可证
 

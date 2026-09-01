@@ -65,7 +65,7 @@
 | `language=chinese` / `language=mandarin` | 补中文台，不限 CN，合并时只留 CN/TW/HK/MO | 已做 |
 | `countrycode=TW\|HK\|MO` | 仅在「显示境外电台」打开时出现在列表 | 已做 |
 | `tag=traffic` / `tag=交通` | 交通台 | 已做 |
-| `tag=adult` 等 | 见第 6 节与 [ADULT_SOURCES.md](ADULT_SOURCES.md)，默认不要拉 | 不做 |
+| `tag=adult` 等 | 见第 6 节；详细节目表仅本机 `ADULT_SOURCES.md`（`.gitignore`，不入库），默认不要拉 | 不做 |
 
 点击播放可继续打 `GET /json/url/{stationuuid}`（已有 `reportClick`）。
 
@@ -271,7 +271,7 @@ Listen Notes 适合做备选搜索，注意 API 配额和商标展示要求。
 
 有。主要在**境外互联网电台和公开 RSS**里，不是国内省级广播的正式频道。
 
-**节目地址、内容说明、核对状态**只维护在 [ADULT_SOURCES.md](ADULT_SOURCES.md)，不要再往本文件堆 RSS 表。旧稿 `中文成人向音频_Podcast_RSS清单.md` 已并入那一份。
+**节目地址、内容说明、核对状态**不入公开仓库：仅在开发者本机维护 `ADULT_SOURCES.md`（已加入 `.gitignore`）。不要再往本文件或 Git 堆 RSS 表。旧稿 `中文成人向音频_Podcast_RSS清单.md` 已并入那份本地笔记。
 
 ### 6.1 电台
 
@@ -287,7 +287,7 @@ GET /json/stations/search?tag=adult&hidebroken=true&order=votes
 
 公开 RSS 里成人谈话、性教育、情色音频、小说朗读都有，标记是 `<itunes:explicit>`。没有官方「中文成人播客总站」。大陆 App 会审；能稳定订的多在 Firstory / SoundOn / Anchor / Captivate。
 
-听：播客页贴 RSS。Podcast Index 搜索默认滤 explicit，要听成人向先关掉。集合站和节目表见 [ADULT_SOURCES.md](ADULT_SOURCES.md)。
+听：播客页贴 RSS。Podcast Index 搜索默认滤 explicit，要听成人向先关掉。具体集合站与节目表见本机 `ADULT_SOURCES.md`（NSFW，不提交 Git）。
 
 ### 6.3 澄波怎么处理（约定）
 
@@ -298,4 +298,4 @@ GET /json/stations/search?tag=adult&hidebroken=true&order=votes
 5. 商店：国内 Android、Google Play 对色情目录都敏感。默认列表带上成人源，审核风险远大于多几个台。
 6. 只播用户或公开目录给出的流/RSS；不爬付费站、不绕过登录、不收录违法内容。
 
-一句话：**网上有成人台和成人播客；澄波只当通用播放器，清单放在 ADULT_SOURCES.md，不做成收录源。**
+一句话：**网上有成人台和成人播客；澄波只当通用播放器，详细清单仅本地笔记、不做成收录源，公开文档只写产品边界。**
