@@ -127,11 +127,12 @@ def render(*, size: int, background: bool, dual: bool | None = None) -> Image.Im
 
 def _save_ico(path: Path) -> None:
     images = [render(size=s, background=True).convert("RGBA") for s in ICO_SIZES]
-    images[0].save(
+    # Pillow only writes ICO frames <= the base image size; 16x16 as base drops all larger sizes.
+    images[-1].save(
         path,
         format="ICO",
         sizes=[(s, s) for s in ICO_SIZES],
-        append_images=images[1:],
+        append_images=images[:-1],
     )
 
 
