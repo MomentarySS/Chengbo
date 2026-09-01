@@ -47,3 +47,20 @@ app.*.map.json
 # Local pack outputs
 /dist/
 *.exe
+
+# Dev tool local state
+.mimosa/
+.impeccable/
+
+# Tooling caches & local reports
+tools/_scrape_cache/
+tools/gd_merge_report.json
+/android/build/
+
+# Local design drafts (root)
+/chengbo_icon_*.jpg
+/heatmap_mockup.html
+/icon_args.json
+
+# Windows icon experiments
+windows/runner/resources/test_icon*.ico

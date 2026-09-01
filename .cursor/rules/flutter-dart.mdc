@@ -1,0 +1,16 @@
+---
+description: Flutter/Dart 代码结构与测试
+globs: lib/**,test/**
+alwaysApply: false
+---
+
+# Flutter 开发
+
+- 功能按 `lib/features/` 分模块；共享组件在 `lib/shared/`；核心逻辑在 `lib/core/`
+- 纯逻辑优先抽到 `lib/core/` 可单测函数（见 `podcast_download.dart`、`podcast_playback.dart` 模式）
+- 改 `podcast_providers.dart` 下载逻辑时注意：`reload()` 不冲掉进行中进度；删订阅要 cancel inflight
+- 主题：Material 3；宽屏 ≥900px 用 NavigationRail；双端同一套语言，不改成 Fluent/Cupertino
+- Windows：单集/电台支持右键，与长按同一份菜单；`just_audio_windows` 无 ICY，回调须 marshal 到 UI 线程
+- 直播音频**禁止**写盘；播客仅用户主动下载；电台探测用 GET 优先，HLS 须见 `#EXTM3U`
+- 测试：`flutter test`；改下载/排序/队列/睡眠等逻辑补 `test/layer_test.dart`
+- 最小 diff：不顺手重构无关模块；不添加 PRODUCT.md「明确不做」的功能

@@ -1,0 +1,16 @@
+---
+description: 澄波 Chengbo 项目全局约定
+alwaysApply: true
+---
+
+# 澄波（Chengbo）全局约定
+
+- 产品：**澄波**；包名 `chengbo`；Android + Windows 双端 Flutter 应用（Material 3，不做复古收音机 UI）
+- 文档真源：`DEVELOPMENT.md`（开发清单）、`PRODUCT.md`（产品边界）、`ROADMAP.md`、`README.md`、`CHANGELOG.md`
+- 当前版本以 `pubspec.yaml` + `lib/core/brand.dart` 为准（对齐 `AppBrand.version` 与 User-Agent）
+- 定位：国内精选电台 + 可开关 Radio Browser + 手动添加；Spotify 式迷你条 + RSS 播客
+- 明确不做：蜻蜓/喜马拉雅版权点播、直播录音、独立闹钟、均衡器、逐字稿、全球 RB 浏览器、iOS/Web
+- 状态管理：Riverpod；音频：`just_audio` + `audio_service`；Windows 用 `third_party/just_audio_windows`
+- 改功能：代码 → 能测则补 `test/layer_test.dart` → 勾 `DEVELOPMENT.md` → 更新 README/CHANGELOG/PRODUCT
+- 打包：`scripts/pack.ps1` → `dist/`；升版本须同步 pubspec、AppBrand、打包脚本、文档
+- 仅在我明确要求时 git commit；不自动 push

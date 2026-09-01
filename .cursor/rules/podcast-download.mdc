@@ -1,0 +1,15 @@
+---
+description: 播客下载、进度与 UI 入口约定
+globs: lib/features/podcast/**,lib/core/audio/podcast_download.dart,lib/features/settings/data_management_screen.dart,lib/features/settings/podcast_downloads_screen.dart
+alwaysApply: false
+---
+
+# 播客下载
+
+- 单集下载：**长按或 Windows 右键**，不在列表行尾加下载图标
+- 进度：显示在**节目详情单集行**（百分比 + 失败态）；设置「数据管理」只显示占用、清单入口与清除
+- 「最近 N 集」：按**最新在前**取未下载集，**不依赖**「全部下载」开关；点击须有 SnackBar 反馈
+- 多选：顶栏勾选 + 菜单「选择多项」；批量下载最多 2 路并行
+- 下载中菜单可取消；失败可重试；已下载不重复下；失败用 SnackBar，不发系统通知
+- 仅 WiFi 下载：蜂窝网络跳过（用户可在详情页开启）
+- 自动清理：已听名单就绪后按设置清理；`copyWith(records:)` 须保留 progress/failed 状态
