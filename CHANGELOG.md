@@ -188,7 +188,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/zh-CN/), and the pr
 
 ## 1.2.9 / 2026-08-17
 
-- （见 DEVELOPMENT.md 历史记录）
+- （见更早 CHANGELOG 记录）
 
 ---
 
@@ -198,4 +198,4 @@ Format follows [Keep a Changelog](https://keepachangelog.com/zh-CN/), and the pr
 
 ---
 
-更早版本记录见 [DEVELOPMENT.md](DEVELOPMENT.md)。
+更早版本记录已归档。

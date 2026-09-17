@@ -74,7 +74,7 @@ Known gaps (not shipped):
 - Curated stations: `assets/stations_cn.json` (about 409 tested streams, rebuilt 2026-08-19 from 蜻蜓省市级 + 央广官方 + 广东本地补充, 3 Qingting 404s and Shantou Comprehensive Radio dropped 2026-09-04; after first-launch scope selection the app probes within that scope, or on Settings → 电台管理 → 检测可播放的源, and hides unreachable URLs from the home list).
 - Podcasts start empty; users add public RSS feeds in the app.
 - Branding sources: `assets/branding/app_icon.png`. Launcher assets live under `android/` and `windows/runner/`.
-- Product and backlog truth: `README.md`, `DEVELOPMENT.md`.
+- Product truth: `README.md`, `ROADMAP.md`, `CHANGELOG.md`.
 - No testimonials, press, usage metrics, or paid-customer proof. Future work must not invent them.
 
 ## Product Principles
