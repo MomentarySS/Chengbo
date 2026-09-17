@@ -6,8 +6,6 @@
 
 当前版本：`2.0.1+37`（2026-09-17）。相对 1.5.4：发现播客（iTunes + 中文热榜）、版权库拦截、氛围包、台标与通知栏封面、Android 缓冲/手势/章节跳转、本机备份、车机播客、未听 inbox、按节目自动下载最新一集、时间戳书签、Windows 托盘、快捷键、开机启动与启动即迷你窗、Android 小组件下一台 / 续播；Android 播客开播切 speech 会话、蓝牙连回续播（默认关）、紧凑列表（默认标准）、正在播放静态图标、首次探测可取消/先听已测到的、关键页面 widget 测试；暂停后保留前台服务，进度与已听状态迁移到独立存储并纳入备份；精选约 409 台。
 
-功能清单见 [DEVELOPMENT.md](DEVELOPMENT.md)：P0–P5 与 **2.0.1** 已发布。源扩充仍可排后的项见 [SOURCES.md](SOURCES.md)。
-
 ## 功能
 
 - 直播电台：首次启动自选想听的**类型**（央广、音乐、新闻等）和/或**省份**，也可选「加载全部精选」；之后可在设置「电台管理 → 收听范围」修改。默认只显示中国大陆电台；港澳台等境外台需在设置「电台管理」中打开「显示境外电台」
@@ -150,13 +148,6 @@ curl.exe -sL --max-time 12 "流地址" | more
 
 带 `?t=` / `key=` 的 token 链接会过期，优先用不带 token 的地址。
 
-广东台批量测试 / 合并：
-
-```powershell
-python tools/test_gd_stations.py
-python tools/merge_gd_stations.py
-```
-
 ## 项目结构
 
 ```
@@ -188,7 +179,6 @@ assets/
 └── stations_cn.json
 scripts/                # setup / flutter / pack / 国内镜像
 test/                   # widget_test + layer_test
-tools/                  # 广东台测流、合并脚本
 ```
 
 ## 注意事项
@@ -206,8 +196,6 @@ tools/                  # 广东台测流、合并脚本
 - HLS（`.m3u8`）和 Windows 播放引擎通常没有 ICY 曲名，迷你条会回退显示分类；有 ICY 且一行放不下才跑马灯
 - Chromecast 需要 Google Play 服务，以及和手机同一网络上的投屏设备
 - 新一集通知默认关；打开后才弹系统通知。订阅 RSS 会按至少 6 小时刷新（每次最多 12 个），用来更新未听列表；第一次只记 guid
-
-完整清单与同类 App 对照见 [DEVELOPMENT.md](DEVELOPMENT.md)。仍可排后的源扩充见 [SOURCES.md](SOURCES.md)
 
 ## 许可证
 
