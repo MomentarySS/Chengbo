@@ -1,0 +1,5803 @@
+[
+  {
+    "id": "src-qtfm-1",
+    "name": "1008可乐台",
+    "url": "https://lhttp.qtfm.cn/live/1153/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2016/0217/20160217104038691.png",
+    "tags": [
+      "qtfm",
+      "浙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-2",
+    "name": "1042南阳新闻广播",
+    "url": "https://lhttp.qtfm.cn/live/1213/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2017/1110/20171110060558.jpeg",
+    "tags": [
+      "qtfm",
+      "河南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-3",
+    "name": "1061长沙交通广播",
+    "url": "https://lhttp.qtfm.cn/live/3967/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2021/0322/20210322092941.jpeg",
+    "tags": [
+      "qtfm",
+      "湖南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-4",
+    "name": "1063城市生活广播",
+    "url": "https://lhttp.qtfm.cn/live/4984/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2022/1208/20221208081944.jpeg",
+    "tags": [
+      "qtfm",
+      "吉林"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-5",
+    "name": "1077新乡交通广播",
+    "url": "https://lhttp.qtfm.cn/live/1229/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2021/0526/20210526102723.png",
+    "tags": [
+      "qtfm",
+      "河南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-6",
+    "name": "936私家车广播",
+    "url": "https://lhttp.qtfm.cn/live/1670/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/0829/20180829032931.png",
+    "tags": [
+      "qtfm",
+      "山东"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-7",
+    "name": "938重庆私家车广播",
+    "url": "https://lhttp.qtfm.cn/live/1502/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2024/0606/20240606020132.jpeg",
+    "tags": [
+      "qtfm",
+      "重庆"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-8",
+    "name": "978玉林城市电台",
+    "url": "https://lhttp.qtfm.cn/live/1762/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2017/0426/20170426123414.jpeg",
+    "tags": [
+      "qtfm",
+      "广西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-9",
+    "name": "991新乡综合广播",
+    "url": "https://lhttp.qtfm.cn/live/1228/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/198/1624939185271_YdwHoSGJ6.png",
+    "tags": [
+      "qtfm",
+      "河南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-10",
+    "name": "997金陵之声",
+    "url": "https://lhttp.qtfm.cn/live/5056/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2019/0305/20190305093341.jpeg",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-11",
+    "name": "FM1008新闻综合广播",
+    "url": "https://lhttp.qtfm.cn/live/1934/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0508/20200508091546.jpeg",
+    "tags": [
+      "qtfm",
+      "云南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-12",
+    "name": "FM101.8济宁综合广播",
+    "url": "https://lhttp.qtfm.cn/live/4901/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2021/1230/20211230074250.jpeg",
+    "tags": [
+      "qtfm",
+      "山东"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-13",
+    "name": "FM102.2亲子智慧电台",
+    "url": "https://lhttp.qtfm.cn/live/4930/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2021/0602/20210602055905.jpeg",
+    "tags": [
+      "qtfm",
+      "湖南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-14",
+    "name": "FM1026太原音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/1185/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2024/0806/20240806043234.jpeg",
+    "tags": [
+      "qtfm",
+      "山西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-15",
+    "name": "FM103.5湖州经济广播",
+    "url": "https://lhttp.qtfm.cn/live/2812/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/48/1666692694501_iYdneUYRr.jpeg",
+    "tags": [
+      "qtfm",
+      "浙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-16",
+    "name": "FM103.5绍兴音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/5054/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/48/1689237604713_KblxSErAD.png",
+    "tags": [
+      "qtfm",
+      "浙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-17",
+    "name": "FM104.5旅游之声",
+    "url": "https://lhttp.qtfm.cn/live/4524/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/198/1631606706374_5N7WkixsO.jpeg",
+    "tags": [
+      "qtfm",
+      "浙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-18",
+    "name": "FM1044太原经济广播",
+    "url": "https://lhttp.qtfm.cn/live/4018/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2016/1020/20161020044258.png",
+    "tags": [
+      "qtfm",
+      "山西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-19",
+    "name": "FM104镇江综合广播",
+    "url": "https://lhttp.qtfm.cn/live/3984/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2012/0809/20120809031540810.jpg",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-20",
+    "name": "FM105.0长沙新闻广播",
+    "url": "https://lhttp.qtfm.cn/live/4877/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/48/1744072514714_to76co5We.jpeg",
+    "tags": [
+      "qtfm",
+      "湖南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-21",
+    "name": "FM105城市资讯",
+    "url": "https://lhttp.qtfm.cn/live/1937/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2016/1227/20161227094524.jpeg",
+    "tags": [
+      "qtfm",
+      "云南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-22",
+    "name": "FM105湖州之声",
+    "url": "https://lhttp.qtfm.cn/live/2810/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2014/1231/20141231103753859.jpg",
+    "tags": [
+      "qtfm",
+      "浙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-23",
+    "name": "FM106.8柯桥人民广播电台",
+    "url": "https://lhttp.qtfm.cn/live/2422/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/198/1626751388466_KvpcMf7ST.jpeg",
+    "tags": [
+      "qtfm",
+      "浙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-24",
+    "name": "FM107太原交通广播",
+    "url": "https://lhttp.qtfm.cn/live/4900/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2017/0223/20170223061817.jpeg",
+    "tags": [
+      "qtfm",
+      "山西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-25",
+    "name": "FM107济宁生活广播",
+    "url": "https://lhttp.qtfm.cn/live/4008/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2021/1230/20211230070056.jpeg",
+    "tags": [
+      "qtfm",
+      "山东"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-26",
+    "name": "FM107潍坊交通广播",
+    "url": "https://lhttp.qtfm.cn/live/4014/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2016/0704/20160704120048197.png",
+    "tags": [
+      "qtfm",
+      "山东"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-27",
+    "name": "FM88.8镇江交通广播",
+    "url": "https://lhttp.qtfm.cn/live/3985/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2012/0809/20120809023827782.jpg",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-28",
+    "name": "FM91.8郑州私家车广播",
+    "url": "https://lhttp.qtfm.cn/live/1222/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2016/0322/20160322180737316.png",
+    "tags": [
+      "qtfm",
+      "河南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-29",
+    "name": "FM93.6绍兴综合广播",
+    "url": "https://lhttp.qtfm.cn/live/5052/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/48/1689237317741_ssnuc4EFB.png",
+    "tags": [
+      "qtfm",
+      "浙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-30",
+    "name": "FM93.7无锡新闻综合广播",
+    "url": "https://lhttp.qtfm.cn/live/2777/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2017/0920/20170920101106.png",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-31",
+    "name": "FM93浙江交通之声",
+    "url": "https://lhttp.qtfm.cn/live/4522/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0405/20200405120311.jpeg",
+    "tags": [
+      "qtfm",
+      "浙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-32",
+    "name": "FM94.1绍兴交通广播",
+    "url": "https://lhttp.qtfm.cn/live/5053/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/48/1689237486257_cAzBAhuYR.png",
+    "tags": [
+      "qtfm",
+      "浙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-33",
+    "name": "FM94.5赣州交通音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/4942/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2023/0504/20230504054309.png",
+    "tags": [
+      "qtfm",
+      "江西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-34",
+    "name": "FM95.2青岛故事广播",
+    "url": "https://lhttp.qtfm.cn/live/4956/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/0726/20180726010222.png",
+    "tags": [
+      "qtfm",
+      "山东"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-35",
+    "name": "FM950广西音乐台",
+    "url": "https://lhttp.qtfm.cn/live/4875/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/0225/20150225111148873.png",
+    "tags": [
+      "qtfm",
+      "广西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-36",
+    "name": "FM954汽车音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/1936/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0405/20200405095837.png",
+    "tags": [
+      "qtfm",
+      "云南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-37",
+    "name": "FM96.3镇江文艺广播",
+    "url": "https://lhttp.qtfm.cn/live/4605/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2013/channel_logo/4605.jpg",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-38",
+    "name": "FM97 舟山交通音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/1161/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0411/20200411114604.png",
+    "tags": [
+      "qtfm",
+      "浙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-39",
+    "name": "FM998 舟山新闻综合广播",
+    "url": "https://lhttp.qtfm.cn/live/1160/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2023/0905/20230905081127.jpeg",
+    "tags": [
+      "qtfm",
+      "浙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-40",
+    "name": "上海交通广播电台",
+    "url": "https://lhttp.qtfm.cn/live/266/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/48/1641437453117_JxQnTn1vv.jpeg",
+    "tags": [
+      "qtfm",
+      "上海"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-41",
+    "name": "上海动感101",
+    "url": "https://lhttp.qtfm.cn/live/274/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2014/0909/20140909123511693.jpg",
+    "tags": [
+      "qtfm",
+      "上海"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-42",
+    "name": "上海戏曲广播",
+    "url": "https://lhttp.qtfm.cn/live/269/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/48/1641437758835_67As1roa7.jpeg",
+    "tags": [
+      "qtfm",
+      "上海"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-43",
+    "name": "上海新闻广播",
+    "url": "https://lhttp.qtfm.cn/live/270/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/0202/20150202170847551.jpg",
+    "tags": [
+      "qtfm",
+      "上海"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-44",
+    "name": "上海流行音乐LoveRadio",
+    "url": "https://lhttp.qtfm.cn/live/273/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2014/0909/20140909125130474.jpg",
+    "tags": [
+      "qtfm",
+      "上海"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-45",
+    "name": "上海经典947",
+    "url": "https://lhttp.qtfm.cn/live/267/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/48/1641437907698_k0NNOUP54.jpeg",
+    "tags": [
+      "qtfm",
+      "上海"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-radio_cn-46",
+    "name": "中国之声",
+    "url": "https://ytlive.radio.cn/130/radios/10639/index_10639.m3u8?type=1&key=9e8560483501fe45d397a28b14ed774f&time=6a9a96f2",
+    "favicon": "https://ytmedia.radio.cn/CCYT%2F202302%2F09%2F16%2FooaRWbtET4tHDAMFR2023020916528.png",
+    "tags": [
+      "radio_cn"
+    ],
+    "category": "央广",
+    "bitrate": 64,
+    "codec": "HLS",
+    "homepage": "https://www.radio.cn/"
+  },
+  {
+    "id": "src-radio_cn-47",
+    "name": "中国乡村之声",
+    "url": "https://ytlive.radio.cn/130/radios/10654/index_10654.m3u8?type=1&key=9f1eecf8e1f6e7a3c71eed710ec8c78c&time=6a9a96f2",
+    "favicon": "https://ytmedia.radio.cn/25010/adfile/202311/09/17/5FXrZWPJp8CDoNPuD4FeEIZL73X1XbqggPosRo4PYBwasg4w12023110917670.jpg",
+    "tags": [
+      "radio_cn"
+    ],
+    "category": "央广",
+    "bitrate": 64,
+    "codec": "HLS",
+    "homepage": "https://www.radio.cn/"
+  },
+  {
+    "id": "src-radio_cn-48",
+    "name": "中国交通广播",
+    "url": "https://ytlive.radio.cn/130/radios/10653/index_10653.m3u8?type=1&key=6b6f9401dc018b3cdb1f8c708f7b1143&time=6a9a96f2",
+    "favicon": "https://ytmedia.radio.cn/CCYT%2F202505%2F19%2F18%2F8jLzVYGQuoQrHLIljfYQxUeOssaU12f5xAiFGZr2025051918831.jpg",
+    "tags": [
+      "radio_cn"
+    ],
+    "category": "央广",
+    "bitrate": 64,
+    "codec": "HLS",
+    "homepage": "https://www.radio.cn/"
+  },
+  {
+    "id": "src-qtfm-51",
+    "name": "临沂交通旅游广播",
+    "url": "https://lhttp.qtfm.cn/live/3993/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/0328/20180328033351.jpeg",
+    "tags": [
+      "qtfm",
+      "山东"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-52",
+    "name": "临沂综合广播",
+    "url": "https://lhttp.qtfm.cn/live/3992/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2021/0729/20210729053950.jpeg",
+    "tags": [
+      "qtfm",
+      "山东"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-53",
+    "name": "临沂音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/4017/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2024/0102/20240102111825.png",
+    "tags": [
+      "qtfm",
+      "山东"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-54",
+    "name": "乌鲁木齐974交通广播",
+    "url": "https://lhttp.qtfm.cn/live/1919/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/0311/20150311154831773.jpg",
+    "tags": [
+      "qtfm",
+      "新疆"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-55",
+    "name": "乌鲁木齐新闻广播",
+    "url": "https://lhttp.qtfm.cn/live/1918/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/1225/20181225105550.jpeg",
+    "tags": [
+      "qtfm",
+      "新疆"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-56",
+    "name": "乌鲁木齐旅游音乐",
+    "url": "https://lhttp.qtfm.cn/live/1920/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/0211/20180211050246.png",
+    "tags": [
+      "qtfm",
+      "新疆"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-57",
+    "name": "乌鲁木齐维吾尔语广播",
+    "url": "https://lhttp.qtfm.cn/live/1923/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2021/1122/20211122085801.jpeg",
+    "tags": [
+      "qtfm",
+      "新疆"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-58",
+    "name": "乐山综合广播FM102.8",
+    "url": "https://lhttp.qtfm.cn/live/1122/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/0416/20180416092749.jpeg",
+    "tags": [
+      "qtfm",
+      "四川"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-59",
+    "name": "乐山音乐交通广播FM100.5",
+    "url": "https://lhttp.qtfm.cn/live/4864/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/0417/20180417111459.jpeg",
+    "tags": [
+      "qtfm",
+      "四川"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-60",
+    "name": "云南交通之声",
+    "url": "https://lhttp.qtfm.cn/live/1928/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/0302/20150302154215601.png",
+    "tags": [
+      "qtfm",
+      "云南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-61",
+    "name": "云南新闻广播",
+    "url": "https://lhttp.qtfm.cn/live/1926/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0404/20200404114731.jpeg",
+    "tags": [
+      "qtfm",
+      "云南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-62",
+    "name": "云南民族广播",
+    "url": "https://lhttp.qtfm.cn/live/1933/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2011/0926/20110926113757107.jpg",
+    "tags": [
+      "qtfm",
+      "云南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-63",
+    "name": "云南私家车电台",
+    "url": "https://lhttp.qtfm.cn/live/1927/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/0408/20180408081824.jpeg",
+    "tags": [
+      "qtfm",
+      "云南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-64",
+    "name": "云南音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/1929/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0325/20200325122958.jpeg",
+    "tags": [
+      "qtfm",
+      "云南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-65",
+    "name": "公安人民广播电台",
+    "url": "https://lhttp.qtfm.cn/live/5063/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2019/0121/20190121110053.jpeg",
+    "tags": [
+      "qtfm",
+      "湖北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-66",
+    "name": "内蒙古交通之声",
+    "url": "https://lhttp.qtfm.cn/live/1884/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0305/20200305053951.jpeg",
+    "tags": [
+      "qtfm",
+      "内蒙古"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-67",
+    "name": "内蒙古新闻综合广播",
+    "url": "https://lhttp.qtfm.cn/live/1883/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/0324/20150324134139396.jpg",
+    "tags": [
+      "qtfm",
+      "内蒙古"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-68",
+    "name": "内蒙古绿野之声广播",
+    "url": "https://lhttp.qtfm.cn/live/1888/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2011/0926/20110926100350125.jpg",
+    "tags": [
+      "qtfm",
+      "内蒙古"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-69",
+    "name": "内蒙古蒙古语广播",
+    "url": "https://lhttp.qtfm.cn/live/1882/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2011/0926/20110926100552676.jpg",
+    "tags": [
+      "qtfm",
+      "内蒙古"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-70",
+    "name": "内蒙古音乐之声",
+    "url": "https://lhttp.qtfm.cn/live/1886/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2016/0623/20160623160646692.png",
+    "tags": [
+      "qtfm",
+      "内蒙古"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-71",
+    "name": "动感955",
+    "url": "https://lhttp.qtfm.cn/live/1689/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/198/1559293010068_PxLud1rdP.png",
+    "tags": [
+      "qtfm",
+      "山东"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-72",
+    "name": "北京交通广播",
+    "url": "https://lhttp.qtfm.cn/live/336/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2019/0227/20190227023249.png",
+    "tags": [
+      "qtfm",
+      "北京"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-73",
+    "name": "北京城市广播",
+    "url": "https://lhttp.qtfm.cn/live/345/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/0313/20150313190104234.jpg",
+    "tags": [
+      "qtfm",
+      "北京"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-74",
+    "name": "北京文艺广播",
+    "url": "https://lhttp.qtfm.cn/live/333/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/198/1631520087008_cMpTFBNNx.jpeg",
+    "tags": [
+      "qtfm",
+      "北京"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-75",
+    "name": "北京新闻广播",
+    "url": "https://lhttp.qtfm.cn/live/339/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/0514/2015051417385422.jpg",
+    "tags": [
+      "qtfm",
+      "北京"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-76",
+    "name": "北京音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/332/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2017/0424/20170424025444.jpeg",
+    "tags": [
+      "qtfm",
+      "北京"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-77",
+    "name": "南京音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/4963/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/1223/20151223210750357.jpg",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-78",
+    "name": "南昌交通广播",
+    "url": "https://lhttp.qtfm.cn/live/1804/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2019/0109/20190109101558.jpeg",
+    "tags": [
+      "qtfm",
+      "江西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-radio_cn-79",
+    "name": "南海之声",
+    "url": "https://ytlive.radio.cn/130/radios/10664/index_10664.m3u8?type=1&key=1b1f88c8611d5a56f9cd77ae6a463c29&time=6a9a96f2",
+    "favicon": "https://ytmedia.radio.cn/25010/adfile/202604/10/14/F02h0R2026041014423.jpg",
+    "tags": [
+      "radio_cn"
+    ],
+    "category": "央广",
+    "bitrate": 64,
+    "codec": "HLS",
+    "homepage": "https://www.radio.cn/"
+  },
+  {
+    "id": "src-qtfm-80",
+    "name": "南阳交通广播",
+    "url": "https://lhttp.qtfm.cn/live/1212/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2023/0302/20230302125220.jpeg",
+    "tags": [
+      "qtfm",
+      "河南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-81",
+    "name": "厦门交通旅游广播",
+    "url": "https://lhttp.qtfm.cn/live/1738/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2013/channel_logo/1738.jpg",
+    "tags": [
+      "qtfm",
+      "福建"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-82",
+    "name": "厦门综合广播",
+    "url": "https://lhttp.qtfm.cn/live/1737/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2011/0926/20110926092639528.jpg",
+    "tags": [
+      "qtfm",
+      "福建"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-84",
+    "name": "厦门音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/1739/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2022/1207/20221207073949.png",
+    "tags": [
+      "qtfm",
+      "福建"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-85",
+    "name": "台州交通广播",
+    "url": "https://lhttp.qtfm.cn/live/1146/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2013/channel_logo/1146.jpg",
+    "tags": [
+      "qtfm",
+      "浙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-86",
+    "name": "台州新闻综合 ",
+    "url": "https://lhttp.qtfm.cn/live/1145/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2016/0815/20160815092443.png",
+    "tags": [
+      "qtfm",
+      "浙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-87",
+    "name": "台州音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/1144/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2021/0406/20210406123718.jpeg",
+    "tags": [
+      "qtfm",
+      "浙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-radio_cn-88",
+    "name": "台海之声",
+    "url": "https://ytlive.radio.cn/130/radios/10643/index_10643.m3u8?type=1&key=38400a153f938de51187fb92218ba767&time=6a9a96f2",
+    "favicon": "https://ytmedia.radio.cn/CCYT%2F202306%2F12%2F18%2FTmqb0FNuYzW6u5Ym7LhxxSemBelX3h7I70gh2023061218805.jpg",
+    "tags": [
+      "radio_cn"
+    ],
+    "category": "央广",
+    "bitrate": 64,
+    "codec": "HLS",
+    "homepage": "https://www.radio.cn/"
+  },
+  {
+    "id": "src-qtfm-89",
+    "name": "合肥交通广播",
+    "url": "https://lhttp.qtfm.cn/live/1960/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2022/0112/20220112024349.jpeg",
+    "tags": [
+      "qtfm",
+      "安徽"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-90",
+    "name": "合肥文旅广播",
+    "url": "https://lhttp.qtfm.cn/live/1961/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2025/0604/20250604044418.jpeg",
+    "tags": [
+      "qtfm",
+      "安徽"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-91",
+    "name": "合肥文艺广播",
+    "url": "https://lhttp.qtfm.cn/live/1975/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2022/0718/20220718054728.png",
+    "tags": [
+      "qtfm",
+      "安徽"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-92",
+    "name": "吉林乡村广播",
+    "url": "https://lhttp.qtfm.cn/live/3977/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2013/channel_logo/3977.jpg",
+    "tags": [
+      "qtfm",
+      "吉林"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-93",
+    "name": "吉林交通广播",
+    "url": "https://lhttp.qtfm.cn/live/4945/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2017/0117/20170117092340.jpeg",
+    "tags": [
+      "qtfm",
+      "吉林"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-94",
+    "name": "吉林健康娱乐广播",
+    "url": "https://lhttp.qtfm.cn/live/4952/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2023/0607/20230607014518.jpeg",
+    "tags": [
+      "qtfm",
+      "吉林"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-95",
+    "name": "吉林市交通台 FM939",
+    "url": "https://lhttp.qtfm.cn/live/1819/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/0528/20180528120913.jpeg",
+    "tags": [
+      "qtfm",
+      "吉林"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-96",
+    "name": "吉林市广播电视台经济广播",
+    "url": "https://lhttp.qtfm.cn/live/1823/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/0319/20150319122107523.jpg",
+    "tags": [
+      "qtfm",
+      "吉林"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-97",
+    "name": "吉林新闻综合广播",
+    "url": "https://lhttp.qtfm.cn/live/4953/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2012/0724/20120724112902255.jpg",
+    "tags": [
+      "qtfm",
+      "吉林"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-98",
+    "name": "吉林经济广播FM95.3AM846",
+    "url": "https://lhttp.qtfm.cn/live/3976/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/0630/2015063010030464.jpg",
+    "tags": [
+      "qtfm",
+      "吉林"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-99",
+    "name": "吉林资讯广播",
+    "url": "https://lhttp.qtfm.cn/live/3978/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2017/0419/20170419085948.png",
+    "tags": [
+      "qtfm",
+      "吉林"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-100",
+    "name": "吉林音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/1831/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2021/0730/20210730064142.jpeg",
+    "tags": [
+      "qtfm",
+      "吉林"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-101",
+    "name": "咸宁交通广播",
+    "url": "https://lhttp.qtfm.cn/live/5068/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/0213/20150213160006689.png",
+    "tags": [
+      "qtfm",
+      "湖北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-102",
+    "name": "咸宁综合广播",
+    "url": "https://lhttp.qtfm.cn/live/5067/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/0213/20150213155941313.png",
+    "tags": [
+      "qtfm",
+      "湖北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-103",
+    "name": "哈尔滨交通广播",
+    "url": "https://lhttp.qtfm.cn/live/838/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/0103/20180103014457.jpeg",
+    "tags": [
+      "qtfm",
+      "黑龙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-104",
+    "name": "哈尔滨经济广播",
+    "url": "https://lhttp.qtfm.cn/live/837/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2019/0306/20190306114349.png",
+    "tags": [
+      "qtfm",
+      "黑龙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-105",
+    "name": "哈尔滨音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/839/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/1210/20151210172937967.jpg",
+    "tags": [
+      "qtfm",
+      "黑龙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-radio_cn-106",
+    "name": "哈萨克语广播",
+    "url": "https://ytlive.radio.cn/130/radios/10655/index_10655.m3u8?type=1&key=ab7701bcc2c7440ddb64fc8a665f5eb3&time=6a9a96f2",
+    "favicon": "https://ytmedia.radio.cn/25010/adfile/202310/13/17/Vdr0aD733JLDXao4HZ5HYR6osONcAvIV1hZRiZOzTon2023101317621.jpg",
+    "tags": [
+      "radio_cn"
+    ],
+    "category": "央广",
+    "bitrate": 64,
+    "codec": "HLS",
+    "homepage": "https://www.radio.cn/"
+  },
+  {
+    "id": "src-qtfm-107",
+    "name": "唐山交通文艺",
+    "url": "https://lhttp.qtfm.cn/live/1659/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2017/0922/20170922044515.jpeg",
+    "tags": [
+      "qtfm",
+      "河北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-108",
+    "name": "唐山小说娱乐广播",
+    "url": "https://lhttp.qtfm.cn/live/1660/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/0518/20180518082634.jpeg",
+    "tags": [
+      "qtfm",
+      "河北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-109",
+    "name": "唐山新闻综合",
+    "url": "https://lhttp.qtfm.cn/live/1657/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2019/0114/20190114100035.jpeg",
+    "tags": [
+      "qtfm",
+      "河北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-110",
+    "name": "唐山音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/4871/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/0606/20180606123850.jpeg",
+    "tags": [
+      "qtfm",
+      "河北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-111",
+    "name": "唐诗电台",
+    "url": "https://lhttp.qtfm.cn/live/1603/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2026/0423/20260423045410.jpeg",
+    "tags": [
+      "qtfm",
+      "陕西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-112",
+    "name": "嘉兴交通广播",
+    "url": "https://lhttp.qtfm.cn/live/1135/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2016/0511/20160511132905582.png",
+    "tags": [
+      "qtfm",
+      "浙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-113",
+    "name": "嘉兴综合广播",
+    "url": "https://lhttp.qtfm.cn/live/1154/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/198/1610074180745_jNazsOAR9.jpeg",
+    "tags": [
+      "qtfm",
+      "浙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-114",
+    "name": "嘉兴音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/1136/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2019/0827/20190827023015.jpeg",
+    "tags": [
+      "qtfm",
+      "浙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-115",
+    "name": "四川交通广播FM101.7",
+    "url": "https://lhttp.qtfm.cn/live/4886/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2017/0321/20170321042352.jpeg",
+    "tags": [
+      "qtfm",
+      "四川"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-116",
+    "name": "四川城市之音",
+    "url": "https://lhttp.qtfm.cn/live/1111/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/0301/20180301060158.png",
+    "tags": [
+      "qtfm",
+      "四川"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-117",
+    "name": "四川岷江音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/1110/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2021/0304/20210304115049.jpeg",
+    "tags": [
+      "qtfm",
+      "四川"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-118",
+    "name": "四川新闻广播FM106.1",
+    "url": "https://lhttp.qtfm.cn/live/4906/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2025/0704/20250704020203.png",
+    "tags": [
+      "qtfm",
+      "四川"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-119",
+    "name": "四川民族频率",
+    "url": "https://lhttp.qtfm.cn/live/1115/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2019/0124/20190124025029.jpeg",
+    "tags": [
+      "qtfm",
+      "四川"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-120",
+    "name": "四川财富生活广播FM94.0",
+    "url": "https://lhttp.qtfm.cn/live/4927/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/0123/20180123035643.jpeg",
+    "tags": [
+      "qtfm",
+      "四川"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-radio_cn-121",
+    "name": "大湾区之声",
+    "url": "https://ytlive.radio.cn/130/radios/10645/index_10645.m3u8?type=1&key=7b2974eadc1669927a68c758ad9747cc&time=6a9a96f2",
+    "favicon": "https://ytmedia.radio.cn/CCYT%2F202306%2F12%2F18%2Fzmco8RqfK6wcZu7BZCv2023061218737.jpg",
+    "tags": [
+      "radio_cn"
+    ],
+    "category": "央广",
+    "bitrate": 64,
+    "codec": "HLS",
+    "homepage": "https://www.radio.cn/"
+  },
+  {
+    "id": "src-qtfm-122",
+    "name": "大理电台苍洱调频",
+    "url": "https://lhttp.qtfm.cn/live/1940/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2013/channel_logo/1940.jpg",
+    "tags": [
+      "qtfm",
+      "云南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-123",
+    "name": "大连1067",
+    "url": "https://lhttp.qtfm.cn/live/1084/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2024/0905/20240905042419.jpeg",
+    "tags": [
+      "qtfm",
+      "辽宁"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-124",
+    "name": "大连交通广播",
+    "url": "https://lhttp.qtfm.cn/live/3997/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2024/1216/20241216092705.jpeg",
+    "tags": [
+      "qtfm",
+      "辽宁"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-125",
+    "name": "大连体育广播",
+    "url": "https://lhttp.qtfm.cn/live/1085/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/198/1572602808032_aLDLW2SXN.jpeg",
+    "tags": [
+      "qtfm",
+      "辽宁"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-126",
+    "name": "大连新闻广播",
+    "url": "https://lhttp.qtfm.cn/live/1089/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2024/1216/20241216100713.jpeg",
+    "tags": [
+      "qtfm",
+      "辽宁"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-127",
+    "name": "大连都市广播",
+    "url": "https://lhttp.qtfm.cn/live/1086/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2024/1211/20241211043454.png",
+    "tags": [
+      "qtfm",
+      "辽宁"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-128",
+    "name": "天长人民广播电台",
+    "url": "https://lhttp.qtfm.cn/live/4854/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2017/0717/20170717160155673.jpg",
+    "tags": [
+      "qtfm",
+      "安徽"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-129",
+    "name": "宁夏交通广播",
+    "url": "https://lhttp.qtfm.cn/live/1840/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/1125/20151125112804631.jpg",
+    "tags": [
+      "qtfm",
+      "宁夏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-130",
+    "name": "宁波交通广播",
+    "url": "https://lhttp.qtfm.cn/live/1140/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2026/0422/20260422021039.jpeg",
+    "tags": [
+      "qtfm",
+      "浙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-131",
+    "name": "宁波新闻综合广播",
+    "url": "https://lhttp.qtfm.cn/live/1138/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2017/0609/20170609033140.png",
+    "tags": [
+      "qtfm",
+      "浙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-132",
+    "name": "宁波经济广播",
+    "url": "https://lhttp.qtfm.cn/live/1152/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2026/0422/20260422021123.jpeg",
+    "tags": [
+      "qtfm",
+      "浙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-133",
+    "name": "宁波音乐广播私家车986",
+    "url": "https://lhttp.qtfm.cn/live/1142/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2016/0919/20160919041852.jpeg",
+    "tags": [
+      "qtfm",
+      "浙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-134",
+    "name": "安庆交通音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/1966/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2017/0704/2017070410523115.jpg",
+    "tags": [
+      "qtfm",
+      "安徽"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-135",
+    "name": "安庆综合广播",
+    "url": "https://lhttp.qtfm.cn/live/1965/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2023/1202/20231202034254.jpeg",
+    "tags": [
+      "qtfm",
+      "安徽"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-136",
+    "name": "安徽交通广播",
+    "url": "https://lhttp.qtfm.cn/live/1949/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0311/20200311053004.png",
+    "tags": [
+      "qtfm",
+      "安徽"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-137",
+    "name": "安徽农村广播",
+    "url": "https://lhttp.qtfm.cn/live/1950/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/0108/20180108015724.png",
+    "tags": [
+      "qtfm",
+      "安徽"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-138",
+    "name": "安徽戏曲广播",
+    "url": "https://lhttp.qtfm.cn/live/1952/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2022/0607/20220607105040.jpeg",
+    "tags": [
+      "qtfm",
+      "安徽"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-139",
+    "name": "安徽生活广播",
+    "url": "https://lhttp.qtfm.cn/live/1948/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2023/0209/20230209013623.jpeg",
+    "tags": [
+      "qtfm",
+      "安徽"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-140",
+    "name": "安徽经济广播",
+    "url": "https://lhttp.qtfm.cn/live/4916/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0405/20200405123733.png",
+    "tags": [
+      "qtfm",
+      "安徽"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-141",
+    "name": "安徽综合广播",
+    "url": "https://lhttp.qtfm.cn/live/4919/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2023/0209/20230209105349.jpeg",
+    "tags": [
+      "qtfm",
+      "安徽"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-142",
+    "name": "安徽老年广播",
+    "url": "https://lhttp.qtfm.cn/live/1951/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2023/0103/20230103030203.jpeg",
+    "tags": [
+      "qtfm",
+      "安徽"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-143",
+    "name": "安徽音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/1947/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/0209/20150209212414954.jpg",
+    "tags": [
+      "qtfm",
+      "安徽"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-144",
+    "name": "宜兴交通台",
+    "url": "https://lhttp.qtfm.cn/live/3982/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2016/0819/20160819110908.jpeg",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-145",
+    "name": "宿豫人民广播电台",
+    "url": "https://lhttp.qtfm.cn/live/5005/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/0117/20180117112523.png",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-146",
+    "name": "宿迁交通广播",
+    "url": "https://lhttp.qtfm.cn/live/5004/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/0408/20150408150002849.jpg",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-147",
+    "name": "山东音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/1665/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/198/1616046817671_NvOcEhIBs.jpeg",
+    "tags": [
+      "qtfm",
+      "山东"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-148",
+    "name": "山西农村广播",
+    "url": "https://lhttp.qtfm.cn/live/1186/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/0214/20180214113747.jpeg",
+    "tags": [
+      "qtfm",
+      "山西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-149",
+    "name": "山西音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/4932/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2013/channel_logo/4932.jpg",
+    "tags": [
+      "qtfm",
+      "山西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-150",
+    "name": "巴彦淖尔交通广播",
+    "url": "https://lhttp.qtfm.cn/live/1895/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/198/1630045878967_TSWL79UZa.png",
+    "tags": [
+      "qtfm",
+      "内蒙古"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-151",
+    "name": "巴彦淖尔广播电视台 综合广播",
+    "url": "https://lhttp.qtfm.cn/live/1893/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2019/0711/20190711040510.png",
+    "tags": [
+      "qtfm",
+      "内蒙古"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-152",
+    "name": "巴彦淖尔文艺生活广播",
+    "url": "https://lhttp.qtfm.cn/live/1894/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/48/1644478373834_ZUBSD-dc6.jpeg",
+    "tags": [
+      "qtfm",
+      "内蒙古"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-153",
+    "name": "常州交通广播",
+    "url": "https://lhttp.qtfm.cn/live/2796/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2023/0119/20230119022544.jpeg",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-154",
+    "name": "常州新闻广播",
+    "url": "https://lhttp.qtfm.cn/live/2798/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2013/channel_logo/2798.jpg",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-155",
+    "name": "常州经济广播",
+    "url": "https://lhttp.qtfm.cn/live/2794/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2011/1115/20111115042031501.jpg",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-156",
+    "name": "常州音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/2799/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2013/channel_logo/2799.jpg",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-167",
+    "name": "广西970女主播电台",
+    "url": "https://lhttp.qtfm.cn/live/1754/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/0326/20150326113522239.jpg",
+    "tags": [
+      "qtfm",
+      "广西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-168",
+    "name": "广西交通台",
+    "url": "https://lhttp.qtfm.cn/live/1758/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2022/0528/20220528105727.jpeg",
+    "tags": [
+      "qtfm",
+      "广西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-169",
+    "name": "广西北部湾之声",
+    "url": "https://lhttp.qtfm.cn/live/1757/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2011/0926/20110926093729137.jpg",
+    "tags": [
+      "qtfm",
+      "广西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-170",
+    "name": "广西电台新闻910",
+    "url": "https://lhttp.qtfm.cn/live/1753/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2013/channel_logo/1753.jpg",
+    "tags": [
+      "qtfm",
+      "广西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-171",
+    "name": "广西私家车930",
+    "url": "https://lhttp.qtfm.cn/live/1756/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2024/0707/20240707103601.jpeg",
+    "tags": [
+      "qtfm",
+      "广西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-172",
+    "name": "开封交通旅游广播",
+    "url": "https://lhttp.qtfm.cn/live/1214/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2022/0630/20220630054859.jpeg",
+    "tags": [
+      "qtfm",
+      "河南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-173",
+    "name": "开封私家车音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/4569/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2024/0112/20240112052314.jpeg",
+    "tags": [
+      "qtfm",
+      "河南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-175",
+    "name": "徐州交通广播",
+    "url": "https://lhttp.qtfm.cn/live/4924/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2024/0329/20240329101019.jpeg",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-176",
+    "name": "徐州新闻综合广播",
+    "url": "https://lhttp.qtfm.cn/live/4922/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2012/0611/20120611051726586.jpg",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-177",
+    "name": "徐州音乐广播FM91.9",
+    "url": "https://lhttp.qtfm.cn/live/4923/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2023/0415/20230415115800.png",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-178",
+    "name": "快乐903私家车广播",
+    "url": "https://lhttp.qtfm.cn/live/5021919/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2016/0721/20160721151657940.jpg",
+    "tags": [
+      "qtfm",
+      "河南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-179",
+    "name": "怀旧好声音",
+    "url": "https://lhttp.qtfm.cn/live/1223/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2022/0905/20220905030909.jpeg",
+    "tags": [
+      "qtfm",
+      "河南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-180",
+    "name": "成都电台FM946",
+    "url": "https://lhttp.qtfm.cn/live/4892/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0407/20200407041648.jpeg",
+    "tags": [
+      "qtfm",
+      "四川"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-181",
+    "name": "扬州YESFM949",
+    "url": "https://lhttp.qtfm.cn/live/2805/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/0102/20180102065447.jpeg",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-182",
+    "name": "扬州交通广播",
+    "url": "https://lhttp.qtfm.cn/live/2804/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2013/channel_logo/2804.jpg",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-183",
+    "name": "扬州新闻广播",
+    "url": "https://lhttp.qtfm.cn/live/5000/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/0907/20150907174509839.jpg",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-185",
+    "name": "攀枝花交通音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/4905/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2021/1214/20211214105037.png",
+    "tags": [
+      "qtfm",
+      "四川"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-186",
+    "name": "攀枝花综合广播",
+    "url": "https://lhttp.qtfm.cn/live/4904/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2013/channel_logo/4904.jpg",
+    "tags": [
+      "qtfm",
+      "四川"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-radio_cn-187",
+    "name": "文艺之声",
+    "url": "https://ytlive.radio.cn/130/radios/10648/index_10648.m3u8?type=1&key=053da39d708930b1a050cf7ba5ef1867&time=6a9a96f2",
+    "favicon": "https://ytmedia.radio.cn/CCYT%2F202302%2F09%2F17%2FyxIcj6Jaem8nTuSZiQGzESHnX2023020917766.png",
+    "tags": [
+      "radio_cn"
+    ],
+    "category": "央广",
+    "bitrate": 64,
+    "codec": "HLS",
+    "homepage": "https://www.radio.cn/"
+  },
+  {
+    "id": "src-qtfm-189",
+    "name": "新疆929文化旅游广播",
+    "url": "https://lhttp.qtfm.cn/live/1909/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/48/1655973859679_JuEdN2LUM.png",
+    "tags": [
+      "qtfm",
+      "新疆"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-190",
+    "name": "新疆交通广播",
+    "url": "https://lhttp.qtfm.cn/live/1910/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2013/channel_logo/1910.jpg",
+    "tags": [
+      "qtfm",
+      "新疆"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-191",
+    "name": "新疆哈萨克语广播",
+    "url": "https://lhttp.qtfm.cn/live/1908/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2013/channel_logo/1908.jpg",
+    "tags": [
+      "qtfm",
+      "新疆"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-192",
+    "name": "新疆新闻广播FM96.1",
+    "url": "https://lhttp.qtfm.cn/live/1902/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0217/20200217122305.png",
+    "tags": [
+      "qtfm",
+      "新疆"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-193",
+    "name": "新疆蒙古语广播",
+    "url": "https://lhttp.qtfm.cn/live/1903/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2011/0926/20110926113202671.jpg",
+    "tags": [
+      "qtfm",
+      "新疆"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-194",
+    "name": "无锡交通广播",
+    "url": "https://lhttp.qtfm.cn/live/2780/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/48/1656575961599_wbP13ZNMY.png",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-195",
+    "name": "无锡梁溪之声",
+    "url": "https://lhttp.qtfm.cn/live/2782/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/0427/20150427150729661.png",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-196",
+    "name": "无锡经济广播",
+    "url": "https://lhttp.qtfm.cn/live/2778/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/1129/20181129110232711.jpg",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-197",
+    "name": "无锡音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/2779/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2017/1228/20171228081057.jpeg",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-198",
+    "name": "日照交通生活广播",
+    "url": "https://lhttp.qtfm.cn/live/4005/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/48/1767579862064_tW1BVo7HG.jpeg",
+    "tags": [
+      "qtfm",
+      "山东"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-199",
+    "name": "晋城交通广播",
+    "url": "https://lhttp.qtfm.cn/live/1189/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/0615/20150615164801261.jpg",
+    "tags": [
+      "qtfm",
+      "山西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-200",
+    "name": "晋城新闻综合广播FM1072",
+    "url": "https://lhttp.qtfm.cn/live/1188/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0324/20200324033903.jpeg",
+    "tags": [
+      "qtfm",
+      "山西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-201",
+    "name": "普洱市广播电视台综合广播",
+    "url": "https://lhttp.qtfm.cn/live/1938/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2013/channel_logo/1938.jpg",
+    "tags": [
+      "qtfm",
+      "云南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-202",
+    "name": "杭州交通91.8电台",
+    "url": "https://lhttp.qtfm.cn/live/1133/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2014/0829/20140829044142919.png",
+    "tags": [
+      "qtfm",
+      "浙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-203",
+    "name": "松原大众生活广播",
+    "url": "https://lhttp.qtfm.cn/live/5082/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/0324/20150324151336749.jpg",
+    "tags": [
+      "qtfm",
+      "吉林"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-204",
+    "name": "松原新闻综合广播",
+    "url": "https://lhttp.qtfm.cn/live/5079/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2017/0731/20170731164526169.png",
+    "tags": [
+      "qtfm",
+      "吉林"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-205",
+    "name": "枣庄交通文艺广播",
+    "url": "https://lhttp.qtfm.cn/live/1688/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/0810/20150810185329986.jpg",
+    "tags": [
+      "qtfm",
+      "山东"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-206",
+    "name": "枣庄经济生活广播",
+    "url": "https://lhttp.qtfm.cn/live/1687/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/0330/20150330162635349.jpg",
+    "tags": [
+      "qtfm",
+      "山东"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-207",
+    "name": "枣庄综合广播",
+    "url": "https://lhttp.qtfm.cn/live/1686/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/0619/20150619095510432.jpg",
+    "tags": [
+      "qtfm",
+      "山东"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-208",
+    "name": "桂林新闻综合广播",
+    "url": "https://lhttp.qtfm.cn/live/1759/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2021/0428/20210428032428.jpeg",
+    "tags": [
+      "qtfm",
+      "广西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-209",
+    "name": "桂林飞扬调频",
+    "url": "https://lhttp.qtfm.cn/live/1760/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2016/0105/20160105162323155.jpg",
+    "tags": [
+      "qtfm",
+      "广西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-210",
+    "name": "楚天交通广播",
+    "url": "https://lhttp.qtfm.cn/live/1291/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2013/channel_logo/1291.jpg",
+    "tags": [
+      "qtfm",
+      "湖北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-211",
+    "name": "楚雄综合广播",
+    "url": "https://lhttp.qtfm.cn/live/4030/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0405/20200405120206.png",
+    "tags": [
+      "qtfm",
+      "云南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-212",
+    "name": "武汉交通广播",
+    "url": "https://lhttp.qtfm.cn/live/4665/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/0101/20180101120944.jpeg",
+    "tags": [
+      "qtfm",
+      "湖北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-213",
+    "name": "武汉经典音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/1297/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2017/0501/20170501063612.jpeg",
+    "tags": [
+      "qtfm",
+      "湖北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-radio_cn-214",
+    "name": "民族之声",
+    "url": "https://ytlive.radio.cn/130/radios/10647/index_10647.m3u8?type=1&key=43192a8f248e57f0e4760f23550af5a2&time=6a9a96f2",
+    "favicon": "https://ytmedia.radio.cn/25010/adfile/202310/13/16/pUugab0CYIwg1hEFuid2023101316616.jpg",
+    "tags": [
+      "radio_cn"
+    ],
+    "category": "央广",
+    "bitrate": 64,
+    "codec": "HLS",
+    "homepage": "https://www.radio.cn/"
+  },
+  {
+    "id": "src-qtfm-215",
+    "name": "江苏交通广播",
+    "url": "https://lhttp.qtfm.cn/live/4054/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/198/1631519000891__6ukgTMjU.jpeg",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-216",
+    "name": "江苏新闻广播",
+    "url": "https://lhttp.qtfm.cn/live/4944/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2023/1225/20231225094225.jpeg",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-217",
+    "name": "江苏新闻综合广播",
+    "url": "https://lhttp.qtfm.cn/live/5055/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/198/1631521619025_c20oEOWrc.jpeg",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-218",
+    "name": "江苏经典流行音乐",
+    "url": "https://lhttp.qtfm.cn/live/4938/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2017/0518/20170518065929.jpeg",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-219",
+    "name": "江苏音乐广播PlayFM897",
+    "url": "https://lhttp.qtfm.cn/live/4936/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/1015/20181015061008.png",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-220",
+    "name": "江西交通广播",
+    "url": "https://lhttp.qtfm.cn/live/1811/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2022/0712/20220712044858.jpeg",
+    "tags": [
+      "qtfm",
+      "江西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-221",
+    "name": "江西新闻广播",
+    "url": "https://lhttp.qtfm.cn/live/1809/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2011/0926/20110926094712575.jpg",
+    "tags": [
+      "qtfm",
+      "江西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-222",
+    "name": "江西音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/1802/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/1218/20181218111110.jpeg",
+    "tags": [
+      "qtfm",
+      "江西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-223",
+    "name": "沈阳交通广播FM98.6",
+    "url": "https://lhttp.qtfm.cn/live/1101/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/1210/20151210093625327.jpg",
+    "tags": [
+      "qtfm",
+      "辽宁"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-224",
+    "name": "沈阳生活广播",
+    "url": "https://lhttp.qtfm.cn/live/1102/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2023/1001/20231001080532.jpeg",
+    "tags": [
+      "qtfm",
+      "辽宁"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-225",
+    "name": "沈阳都市广播",
+    "url": "https://lhttp.qtfm.cn/live/1099/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2024/0516/20240516065010.png",
+    "tags": [
+      "qtfm",
+      "辽宁"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-226",
+    "name": "沧州交通广播",
+    "url": "https://lhttp.qtfm.cn/live/3954/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/0317/20150317142857824.jpg",
+    "tags": [
+      "qtfm",
+      "河北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-227",
+    "name": "河北交通广播",
+    "url": "https://lhttp.qtfm.cn/live/1646/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2017/0411/20170411011252.jpeg",
+    "tags": [
+      "qtfm",
+      "河北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-228",
+    "name": "河北农民广播",
+    "url": "https://lhttp.qtfm.cn/live/1650/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2017/0302/20170302085703.jpeg",
+    "tags": [
+      "qtfm",
+      "河北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-229",
+    "name": "河北故事广播",
+    "url": "https://lhttp.qtfm.cn/live/1645/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2017/1110/20171110050727.jpeg",
+    "tags": [
+      "qtfm",
+      "河北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-230",
+    "name": "河北文艺广播",
+    "url": "https://lhttp.qtfm.cn/live/4868/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/1031/20181031103406.jpeg",
+    "tags": [
+      "qtfm",
+      "河北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-231",
+    "name": "河北新闻广播",
+    "url": "https://lhttp.qtfm.cn/live/1644/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2014/0616/20140616053545367.jpg",
+    "tags": [
+      "qtfm",
+      "河北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-232",
+    "name": "河北旅游文化广播",
+    "url": "https://lhttp.qtfm.cn/live/1651/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2012/0703/20120703040517929.jpg",
+    "tags": [
+      "qtfm",
+      "河北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-233",
+    "name": "河北生活广播",
+    "url": "https://lhttp.qtfm.cn/live/4867/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2017/0517/20170517052356.jpeg",
+    "tags": [
+      "qtfm",
+      "河北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-234",
+    "name": "河北音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/1649/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/1223/20151223210921313.jpg",
+    "tags": [
+      "qtfm",
+      "河北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-235",
+    "name": "洛阳交通广播",
+    "url": "https://lhttp.qtfm.cn/live/1227/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2012/0712/20120712100438693.jpg",
+    "tags": [
+      "qtfm",
+      "河南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-236",
+    "name": "洛阳综合广播",
+    "url": "https://lhttp.qtfm.cn/live/1225/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2019/1114/20191114040729.jpeg",
+    "tags": [
+      "qtfm",
+      "河南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-237",
+    "name": "洛阳音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/1226/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2022/0217/20220217121421.jpeg",
+    "tags": [
+      "qtfm",
+      "河南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-238",
+    "name": "济南交通广播",
+    "url": "https://lhttp.qtfm.cn/live/1669/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2013/channel_logo/1669.jpg",
+    "tags": [
+      "qtfm",
+      "山东"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-239",
+    "name": "济南故事广播",
+    "url": "https://lhttp.qtfm.cn/live/1672/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2012/0816/20120816032527380.jpg",
+    "tags": [
+      "qtfm",
+      "山东"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-240",
+    "name": "济南新闻广播",
+    "url": "https://lhttp.qtfm.cn/live/1667/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0331/20200331035111.jpeg",
+    "tags": [
+      "qtfm",
+      "山东"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-241",
+    "name": "济南经济广播",
+    "url": "https://lhttp.qtfm.cn/live/1668/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2012/0816/20120816114101877.jpg",
+    "tags": [
+      "qtfm",
+      "山东"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-242",
+    "name": "济南音乐广播FM88.7",
+    "url": "https://lhttp.qtfm.cn/live/1671/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0806/20200806032624.jpeg",
+    "tags": [
+      "qtfm",
+      "山东"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-243",
+    "name": "浙江之声",
+    "url": "https://lhttp.qtfm.cn/live/4518/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/198/1631507628107_SNMv8U_Ue.jpeg",
+    "tags": [
+      "qtfm",
+      "浙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-244",
+    "name": "浙江经济广播",
+    "url": "https://lhttp.qtfm.cn/live/4519/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2026/0217/20260217124842.png",
+    "tags": [
+      "qtfm",
+      "浙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-245",
+    "name": "浙江音乐调频",
+    "url": "https://lhttp.qtfm.cn/live/4866/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0408/20200408094917.jpeg",
+    "tags": [
+      "qtfm",
+      "浙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-246",
+    "name": "海南交通广播",
+    "url": "https://lhttp.qtfm.cn/live/4911/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2024/0126/20240126040225.png",
+    "tags": [
+      "qtfm",
+      "海南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-247",
+    "name": "海南新闻广播",
+    "url": "https://lhttp.qtfm.cn/live/1861/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2023/0111/20230111111839.png",
+    "tags": [
+      "qtfm",
+      "海南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-248",
+    "name": "海南旅游广播•国际旅游岛之声",
+    "url": "https://lhttp.qtfm.cn/live/1862/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2021/0106/20210106052859.jpeg",
+    "tags": [
+      "qtfm",
+      "海南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-249",
+    "name": "海南音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/4878/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/0326/20180326122700.png",
+    "tags": [
+      "qtfm",
+      "海南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-250",
+    "name": "海峡之声广播电台",
+    "url": "https://lhttp.qtfm.cn/live/1744/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0806/20200806093145.jpeg",
+    "tags": [
+      "qtfm",
+      "福建"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-251",
+    "name": "淮安FM104.2",
+    "url": "https://lhttp.qtfm.cn/live/4588/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0507/20200507093620.jpeg",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-252",
+    "name": "淮安交通文艺",
+    "url": "https://lhttp.qtfm.cn/live/4586/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2026/0721/20260721105013.jpeg",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-253",
+    "name": "淮安新闻综合",
+    "url": "https://lhttp.qtfm.cn/live/4589/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/0508/20150508142352461.png",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-254",
+    "name": "淮安经济生活",
+    "url": "https://lhttp.qtfm.cn/live/4587/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/0508/20150508141128775.png",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-259",
+    "name": "温岭1036电台",
+    "url": "https://lhttp.qtfm.cn/live/4567/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2022/1110/20221110023637.jpeg",
+    "tags": [
+      "qtfm",
+      "浙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-260",
+    "name": "湖北之声",
+    "url": "https://lhttp.qtfm.cn/live/1303/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/198/1631607042423_APvC7PZWG.jpeg",
+    "tags": [
+      "qtfm",
+      "湖北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-261",
+    "name": "湖北经典音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/1296/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/0316/20180316022139.jpeg",
+    "tags": [
+      "qtfm",
+      "湖北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-262",
+    "name": "湖北经济广播",
+    "url": "https://lhttp.qtfm.cn/live/1295/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/0112/20150112153655847.png",
+    "tags": [
+      "qtfm",
+      "湖北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-263",
+    "name": "湖州交通文艺广播",
+    "url": "https://lhttp.qtfm.cn/live/2811/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2024/0304/20240304043350.png",
+    "tags": [
+      "qtfm",
+      "浙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-264",
+    "name": "漳州人民广播电台交通广播",
+    "url": "https://lhttp.qtfm.cn/live/1743/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2017/0919/20170919095002.jpeg",
+    "tags": [
+      "qtfm",
+      "福建"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-265",
+    "name": "漳州人民广播电台综合广播",
+    "url": "https://lhttp.qtfm.cn/live/1742/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2021/0616/20210616111758.jpeg",
+    "tags": [
+      "qtfm",
+      "福建"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-266",
+    "name": "潍坊982广播电台",
+    "url": "https://lhttp.qtfm.cn/live/4865/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2025/1023/20251023045250.jpeg",
+    "tags": [
+      "qtfm",
+      "山东"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-267",
+    "name": "澎湃907",
+    "url": "https://lhttp.qtfm.cn/live/2789/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/198/1615173075735_jYI2VngmU.jpeg",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-268",
+    "name": "濮阳交通广播",
+    "url": "https://lhttp.qtfm.cn/live/1233/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/1010/20201010124730.png",
+    "tags": [
+      "qtfm",
+      "河南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-269",
+    "name": "烟台交通广播FM103",
+    "url": "https://lhttp.qtfm.cn/live/1684/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0511/20200511042222.png",
+    "tags": [
+      "qtfm",
+      "山东"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-270",
+    "name": "烟台综合广播FM101",
+    "url": "https://lhttp.qtfm.cn/live/1682/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2022/0527/20220527030514.jpeg",
+    "tags": [
+      "qtfm",
+      "山东"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-271",
+    "name": "烟台音乐广播FM105.9",
+    "url": "https://lhttp.qtfm.cn/live/1683/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/198/1575860171495_jUB_-mOhG.jpeg",
+    "tags": [
+      "qtfm",
+      "山东"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-radio_cn-272",
+    "name": "环球资讯广播",
+    "url": "https://ytlive.radio.cn/130/radios/10692/index_10692.m3u8?type=1&key=8ad0e4e89dbfdd4a1ef1066aa4f8ad32&time=6a9a96f2",
+    "favicon": "https://ytmedia.radio.cn/CCYT%2F202302%2F09%2F16%2F78TPTKDEspxwVe2m9DzSNW2xBHcNHIIUkkF2023020916167.png",
+    "tags": [
+      "radio_cn"
+    ],
+    "category": "央广",
+    "bitrate": 64,
+    "codec": "HLS",
+    "homepage": "https://www.radio.cn/"
+  },
+  {
+    "id": "src-qtfm-275",
+    "name": "瑞安人民广播",
+    "url": "https://lhttp.qtfm.cn/live/1143/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2014/1231/20141231090833885.jpg",
+    "tags": [
+      "qtfm",
+      "浙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-276",
+    "name": "甘肃交通广播",
+    "url": "https://lhttp.qtfm.cn/live/3939/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0405/20200405122429.jpeg",
+    "tags": [
+      "qtfm",
+      "甘肃"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-277",
+    "name": "甘肃农村广播",
+    "url": "https://lhttp.qtfm.cn/live/3941/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/1126/20181126103417.jpeg",
+    "tags": [
+      "qtfm",
+      "甘肃"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-278",
+    "name": "畅听882（贺州广播电视台综合广播）",
+    "url": "https://lhttp.qtfm.cn/live/5043/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2022/0427/20220427064638.png",
+    "tags": [
+      "qtfm",
+      "广西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-279",
+    "name": "畅行951",
+    "url": "https://lhttp.qtfm.cn/live/3948/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0223/20200223113101.png",
+    "tags": [
+      "qtfm",
+      "河北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-280",
+    "name": "眉山综合广播",
+    "url": "https://lhttp.qtfm.cn/live/4027/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2011/1205/20111205125620382.jpg",
+    "tags": [
+      "qtfm",
+      "四川"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-281",
+    "name": "石家庄交通广播",
+    "url": "https://lhttp.qtfm.cn/live/1655/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2025/0225/20250225102521.jpeg",
+    "tags": [
+      "qtfm",
+      "河北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-282",
+    "name": "石家庄新闻广播",
+    "url": "https://lhttp.qtfm.cn/live/1652/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0408/20200408050918.jpeg",
+    "tags": [
+      "qtfm",
+      "河北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-283",
+    "name": "石家庄音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/1654/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/1009/20181009063315.jpeg",
+    "tags": [
+      "qtfm",
+      "河北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-radio_cn-284",
+    "name": "神州之声",
+    "url": "https://ytlive.radio.cn/130/radios/10644/index_10644.m3u8?type=1&key=f3e6aeff0389fedbe90cd552eadcd3d5&time=6a9a96f2",
+    "favicon": "https://ytmedia.radio.cn/CCYT%2F202306%2F12%2F18%2F22NcNJxAjbe3NgbLCNZfH6fWW2q6VhCo2W2023061218376.jpg",
+    "tags": [
+      "radio_cn"
+    ],
+    "category": "央广",
+    "bitrate": 64,
+    "codec": "HLS",
+    "homepage": "https://www.radio.cn/"
+  },
+  {
+    "id": "src-qtfm-285",
+    "name": "福州新闻广播",
+    "url": "https://lhttp.qtfm.cn/live/5025/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/0809/20180809013603.jpeg",
+    "tags": [
+      "qtfm",
+      "福建"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-286",
+    "name": "福建987私家车广播",
+    "url": "https://lhttp.qtfm.cn/live/1736/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0716/20200716110451.jpeg",
+    "tags": [
+      "qtfm",
+      "福建"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-287",
+    "name": "福建交通广播",
+    "url": "https://lhttp.qtfm.cn/live/1733/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2021/0506/20210506024016.png",
+    "tags": [
+      "qtfm",
+      "福建"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-288",
+    "name": "福建新闻广播",
+    "url": "https://lhttp.qtfm.cn/live/1731/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2016/0521/20160521095045577.png",
+    "tags": [
+      "qtfm",
+      "福建"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-289",
+    "name": "福建经济广播",
+    "url": "https://lhttp.qtfm.cn/live/1732/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2016/1209/20161209033121.jpeg",
+    "tags": [
+      "qtfm",
+      "福建"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-290",
+    "name": "第一财经广播",
+    "url": "https://lhttp.qtfm.cn/live/276/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/48/1641438475219_mv9SoJP78.jpeg",
+    "tags": [
+      "qtfm",
+      "上海"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-292",
+    "name": "红河综合广播",
+    "url": "https://lhttp.qtfm.cn/live/4033/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2026/0827/20260827083338.png",
+    "tags": [
+      "qtfm",
+      "云南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-radio_cn-293",
+    "name": "经典音乐广播",
+    "url": "https://ytlive.radio.cn/130/radios/10642/index_10642.m3u8?type=1&key=4487acee193c7d336e09ee2b0823aae1&time=6a9a96f2",
+    "favicon": "https://ytmedia.radio.cn/CCYT%2F202302%2F09%2F17%2FHRdlznt8YcKTRJdZsE8SXJRsFzZaVJlJJ2023020917172.png",
+    "tags": [
+      "radio_cn"
+    ],
+    "category": "央广",
+    "bitrate": 64,
+    "codec": "HLS",
+    "homepage": "https://www.radio.cn/"
+  },
+  {
+    "id": "src-radio_cn-294",
+    "name": "经济之声",
+    "url": "https://ytlive.radio.cn/130/radios/10640/index_10640.m3u8?type=1&key=5560b386417670d334b401cf835c2fd0&time=6a9a96f2",
+    "favicon": "https://ytmedia.radio.cn/CCYT%2F202302%2F09%2F16%2FUgh1gKpGMpZRjhaxOz3lk4xS2023020916974.png",
+    "tags": [
+      "radio_cn"
+    ],
+    "category": "央广",
+    "bitrate": 64,
+    "codec": "HLS",
+    "homepage": "https://www.radio.cn/"
+  },
+  {
+    "id": "src-radio_cn-295",
+    "name": "维吾尔语广播",
+    "url": "https://ytlive.radio.cn/130/radios/10651/index_10651.m3u8?type=1&key=31be51eea53a9abea2336f2482d6164f&time=6a9a96f2",
+    "favicon": "https://ytmedia.radio.cn/25010/adfile/202310/13/16/Gtr71eiTMz8Lzs5tcaZD4wq2frDAeLqMX3Es90BIk0uCti2023101316420.jpg",
+    "tags": [
+      "radio_cn"
+    ],
+    "category": "央广",
+    "bitrate": 64,
+    "codec": "HLS",
+    "homepage": "https://www.radio.cn/"
+  },
+  {
+    "id": "src-qtfm-296",
+    "name": "绵阳交通广播",
+    "url": "https://lhttp.qtfm.cn/live/4026/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2024/0315/20240315020104.jpeg",
+    "tags": [
+      "qtfm",
+      "四川"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-297",
+    "name": "绵阳新闻广播",
+    "url": "https://lhttp.qtfm.cn/live/4024/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/0508/20180508011612.jpeg",
+    "tags": [
+      "qtfm",
+      "四川"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-radio_cn-299",
+    "name": "老年之声",
+    "url": "https://ytlive.radio.cn/130/radios/10649/index_10649.m3u8?type=1&key=271037385b43cd58c41baf035ee7a51a&time=6a9a96f2",
+    "favicon": "https://ytmedia.radio.cn/CCYT%2F202302%2F10%2F14%2F9iLXHwkkaOWXQtMFpl2023021014630.png",
+    "tags": [
+      "radio_cn"
+    ],
+    "category": "央广",
+    "bitrate": 64,
+    "codec": "HLS",
+    "homepage": "https://www.radio.cn/"
+  },
+  {
+    "id": "src-qtfm-300",
+    "name": "芜湖交通经济广播",
+    "url": "https://lhttp.qtfm.cn/live/5027/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/0710/20180710115339.jpeg",
+    "tags": [
+      "qtfm",
+      "安徽"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-301",
+    "name": "芜湖综合广播",
+    "url": "https://lhttp.qtfm.cn/live/5029/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2025/0304/20250304102443.png",
+    "tags": [
+      "qtfm",
+      "安徽"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-302",
+    "name": "芜湖音乐故事广播",
+    "url": "https://lhttp.qtfm.cn/live/5028/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/0116/20150116164937118.png",
+    "tags": [
+      "qtfm",
+      "安徽"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-304",
+    "name": "苏州交通广播",
+    "url": "https://lhttp.qtfm.cn/live/2806/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/198/1631607649319_Vd7ueakoB.jpeg",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-305",
+    "name": "苏州儿童广播",
+    "url": "https://lhttp.qtfm.cn/live/2807/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2016/1103/20161103123044.jpeg",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-306",
+    "name": "苏州新闻广播",
+    "url": "https://lhttp.qtfm.cn/live/2808/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2022/0620/20220620102227.jpeg",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-307",
+    "name": "苏州生活广播",
+    "url": "https://lhttp.qtfm.cn/live/2801/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2022/1125/20221125113151.jpeg",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-308",
+    "name": "苏州音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/2803/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2022/1207/20221207091708.jpeg",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-radio_cn-309",
+    "name": "英语资讯广播 CGTN Radio",
+    "url": "https://ytlive.radio.cn/130/radios/10734/index_10734.m3u8?type=1&key=1f94b653cf2d458133b5460bd8ff3df4&time=6a9a96f2",
+    "favicon": "https://ytmedia.radio.cn/CCYT%2F202302%2F10%2F14%2FpDZEJjU92023021014157.png",
+    "tags": [
+      "radio_cn"
+    ],
+    "category": "央广",
+    "bitrate": 64,
+    "codec": "HLS",
+    "homepage": "https://www.radio.cn/"
+  },
+  {
+    "id": "src-qtfm-310",
+    "name": "荆州广播电视台90.1汽车广播",
+    "url": "https://lhttp.qtfm.cn/live/1312/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2013/channel_logo/1312.jpg",
+    "tags": [
+      "qtfm",
+      "湖北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-radio_cn-311",
+    "name": "藏语广播",
+    "url": "https://ytlive.radio.cn/130/radios/10650/index_10650.m3u8?type=1&key=544dff97a72bf83d5d8dd68346809959&time=6a9a96f2",
+    "favicon": "https://ytmedia.radio.cn/25010/adfile/202310/13/16/QVkMVRVlYkS5QIqxueAPtPg4hx99yGnmX9QG7Jnzdw2023101316660.jpg",
+    "tags": [
+      "radio_cn"
+    ],
+    "category": "央广",
+    "bitrate": 64,
+    "codec": "HLS",
+    "homepage": "https://www.radio.cn/"
+  },
+  {
+    "id": "src-qtfm-312",
+    "name": "蚌埠交通文艺广播",
+    "url": "https://lhttp.qtfm.cn/live/4577/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0405/20200405093021.jpeg",
+    "tags": [
+      "qtfm",
+      "安徽"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-313",
+    "name": "襄阳之声",
+    "url": "https://lhttp.qtfm.cn/live/1307/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/1008/20181008085254.png",
+    "tags": [
+      "qtfm",
+      "湖北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-314",
+    "name": "襄阳交通音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/1308/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/198/1617351277703_d5H0ioSOL.jpeg",
+    "tags": [
+      "qtfm",
+      "湖北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-315",
+    "name": "襄阳文化教育广播",
+    "url": "https://lhttp.qtfm.cn/live/5057/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/198/1617257566515_u992tgyrr.png",
+    "tags": [
+      "qtfm",
+      "湖北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-316",
+    "name": "西双版纳民族语广播FM90.6",
+    "url": "https://lhttp.qtfm.cn/live/4036/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/0204/20150204083403759.jpg",
+    "tags": [
+      "qtfm",
+      "云南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-317",
+    "name": "西安交通广播",
+    "url": "https://lhttp.qtfm.cn/live/1611/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/1117/20151117101033240.jpg",
+    "tags": [
+      "qtfm",
+      "陕西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-318",
+    "name": "西安新闻广播",
+    "url": "https://lhttp.qtfm.cn/live/1610/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/1116/20151116155201700.jpg",
+    "tags": [
+      "qtfm",
+      "陕西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-319",
+    "name": "西安音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/1612/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/0528/20150528101127365.jpg",
+    "tags": [
+      "qtfm",
+      "陕西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-320",
+    "name": "西湖之声",
+    "url": "https://lhttp.qtfm.cn/live/1163/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0405/20200405112241.jpeg",
+    "tags": [
+      "qtfm",
+      "浙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-321",
+    "name": "财富932私家车广播",
+    "url": "https://lhttp.qtfm.cn/live/3994/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2025/1027/20251027044012.png",
+    "tags": [
+      "qtfm",
+      "山东"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-322",
+    "name": "贵阳综合广播",
+    "url": "https://lhttp.qtfm.cn/live/1773/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2026/0127/20260127052946.jpeg",
+    "tags": [
+      "qtfm",
+      "贵州"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-323",
+    "name": "赤峰1024",
+    "url": "https://lhttp.qtfm.cn/live/1898/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2024/1120/20241120084436.png",
+    "tags": [
+      "qtfm",
+      "内蒙古"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-324",
+    "name": "赤峰交通广播",
+    "url": "https://lhttp.qtfm.cn/live/1899/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2024/1120/20241120084033.jpeg",
+    "tags": [
+      "qtfm",
+      "内蒙古"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-325",
+    "name": "赤峰综合广播",
+    "url": "https://lhttp.qtfm.cn/live/1896/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2024/1120/20241120084356.png",
+    "tags": [
+      "qtfm",
+      "内蒙古"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-326",
+    "name": "赤峰蒙古语综合广播",
+    "url": "https://lhttp.qtfm.cn/live/1897/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2024/1120/20241120085105.jpeg",
+    "tags": [
+      "qtfm",
+      "内蒙古"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-327",
+    "name": "运城文艺广播",
+    "url": "https://lhttp.qtfm.cn/live/1191/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2022/0722/20220722092852.jpeg",
+    "tags": [
+      "qtfm",
+      "山西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-328",
+    "name": "运城综合广播",
+    "url": "https://lhttp.qtfm.cn/live/1190/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2022/0722/20220722093154.jpeg",
+    "tags": [
+      "qtfm",
+      "山西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-329",
+    "name": "连云港交通广播",
+    "url": "https://lhttp.qtfm.cn/live/2775/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2021/0714/20210714033025.jpeg",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-330",
+    "name": "邯郸交通广播",
+    "url": "https://lhttp.qtfm.cn/live/3950/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2021/0713/20210713031222.jpeg",
+    "tags": [
+      "qtfm",
+      "河北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-331",
+    "name": "邯郸新闻综合广播",
+    "url": "https://lhttp.qtfm.cn/live/5072/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/0421/20150421191442115.jpg",
+    "tags": [
+      "qtfm",
+      "河北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-332",
+    "name": "邯郸都市生活广播",
+    "url": "https://lhttp.qtfm.cn/live/3951/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/1126/20201126011538.jpeg",
+    "tags": [
+      "qtfm",
+      "河北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-333",
+    "name": "邯郸音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/4601/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2021/0730/20210730055726.jpeg",
+    "tags": [
+      "qtfm",
+      "河北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-334",
+    "name": "邳州人民广播电台",
+    "url": "https://lhttp.qtfm.cn/live/2809/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0609/20200609015130.jpeg",
+    "tags": [
+      "qtfm",
+      "江苏"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-335",
+    "name": "郑州交通广播",
+    "url": "https://lhttp.qtfm.cn/live/1211/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0405/20200405021046.jpeg",
+    "tags": [
+      "qtfm",
+      "河南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-336",
+    "name": "郑州新闻广播",
+    "url": "https://lhttp.qtfm.cn/live/1220/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0405/20200405083235.png",
+    "tags": [
+      "qtfm",
+      "河南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-337",
+    "name": "郑州经济广播",
+    "url": "https://lhttp.qtfm.cn/live/1221/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/0403/2015040314494225.jpg",
+    "tags": [
+      "qtfm",
+      "河南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-338",
+    "name": "郑州音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/4921/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2025/0429/20250429053701.jpeg",
+    "tags": [
+      "qtfm",
+      "河南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-339",
+    "name": "都市101经济广播",
+    "url": "https://lhttp.qtfm.cn/live/3995/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2017/0928/20170928054640.jpeg",
+    "tags": [
+      "qtfm",
+      "山东"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-340",
+    "name": "重庆之声",
+    "url": "https://lhttp.qtfm.cn/live/1498/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2025/0328/20250328111702.jpeg",
+    "tags": [
+      "qtfm",
+      "重庆"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-341",
+    "name": "重庆交通广播",
+    "url": "https://lhttp.qtfm.cn/live/1500/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2022/1207/20221207063716.jpeg",
+    "tags": [
+      "qtfm",
+      "重庆"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-342",
+    "name": "重庆音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/647/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2022/1130/20221130104320.jpeg",
+    "tags": [
+      "qtfm",
+      "重庆"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-343",
+    "name": "金山区广播电视台综合广播",
+    "url": "https://lhttp.qtfm.cn/live/4022/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2022/1207/20221207084749.png",
+    "tags": [
+      "qtfm",
+      "上海"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-344",
+    "name": "钦州新闻综合广播",
+    "url": "https://lhttp.qtfm.cn/live/5042/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2013/channel_logo/5042.jpg",
+    "tags": [
+      "qtfm",
+      "广西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-345",
+    "name": "长三角之声",
+    "url": "https://lhttp.qtfm.cn/live/275/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/198/1606449636209_K8-0Zavn2.png",
+    "tags": [
+      "qtfm",
+      "上海"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-346",
+    "name": "长春交通之声",
+    "url": "https://lhttp.qtfm.cn/live/4967/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2012/0821/20120821104235396.jpg",
+    "tags": [
+      "qtfm",
+      "吉林"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-347",
+    "name": "长春广播电视台 FM88.0",
+    "url": "https://lhttp.qtfm.cn/live/4850/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/0305/20180305020802.jpeg",
+    "tags": [
+      "qtfm",
+      "吉林"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-348",
+    "name": "长春新闻广播",
+    "url": "https://lhttp.qtfm.cn/live/5013/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/0103/20180103050334.jpeg",
+    "tags": [
+      "qtfm",
+      "吉林"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-349",
+    "name": "长沙FM101.7城市之声",
+    "url": "https://lhttp.qtfm.cn/live/4237/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2021/0322/20210322094257.jpeg",
+    "tags": [
+      "qtfm",
+      "湖南"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-350",
+    "name": "阜阳交通广播",
+    "url": "https://lhttp.qtfm.cn/live/1971/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/48/1710835270651_OjqXCW0Ca.png",
+    "tags": [
+      "qtfm",
+      "安徽"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-351",
+    "name": "阜阳综合广播",
+    "url": "https://lhttp.qtfm.cn/live/1970/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/48/1710835317734_QroSGniJC.png",
+    "tags": [
+      "qtfm",
+      "安徽"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-352",
+    "name": "陕西交通广播",
+    "url": "https://lhttp.qtfm.cn/live/1601/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/0201/20180201120816.png",
+    "tags": [
+      "qtfm",
+      "陕西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-353",
+    "name": "陕西农村广播",
+    "url": "https://lhttp.qtfm.cn/live/1602/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/198/1631506829495_G_Sfqktqx.jpeg",
+    "tags": [
+      "qtfm",
+      "陕西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-354",
+    "name": "陕西新闻广播",
+    "url": "https://lhttp.qtfm.cn/live/1600/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2016/0715/20160715150648227.png",
+    "tags": [
+      "qtfm",
+      "陕西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-355",
+    "name": "陕西青少广播·1055青春有我",
+    "url": "https://lhttp.qtfm.cn/live/4885/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0410/20200410094502.jpeg",
+    "tags": [
+      "qtfm",
+      "陕西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-356",
+    "name": "陕西音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/4873/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/198/1631506916079_0-KbsSKet.jpeg",
+    "tags": [
+      "qtfm",
+      "陕西"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-357",
+    "name": "青岛交通广播",
+    "url": "https://lhttp.qtfm.cn/live/1676/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2021/0125/20210125040657.jpeg",
+    "tags": [
+      "qtfm",
+      "山东"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-358",
+    "name": "青岛文艺广播",
+    "url": "https://lhttp.qtfm.cn/live/1675/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2022/1024/20221024030346.jpeg",
+    "tags": [
+      "qtfm",
+      "山东"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-359",
+    "name": "青岛新闻广播",
+    "url": "https://lhttp.qtfm.cn/live/1673/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2021/0112/20210112095009.jpeg",
+    "tags": [
+      "qtfm",
+      "山东"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-360",
+    "name": "青岛经济广播",
+    "url": "https://lhttp.qtfm.cn/live/1674/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0721/20200721085832.png",
+    "tags": [
+      "qtfm",
+      "山东"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-361",
+    "name": "青岛音乐体育广播",
+    "url": "https://lhttp.qtfm.cn/live/1677/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2021/0330/20210330084513.jpeg",
+    "tags": [
+      "qtfm",
+      "山东"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-362",
+    "name": "青海交通音乐",
+    "url": "https://lhttp.qtfm.cn/live/5009/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0405/20200405122326.jpeg",
+    "tags": [
+      "qtfm",
+      "青海"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-radio_cn-363",
+    "name": "音乐之声",
+    "url": "https://ytlive.radio.cn/130/radios/10641/index_10641.m3u8?type=1&key=155a4f0ec60f13c57e14a44542298da0&time=6a9a96f2",
+    "favicon": "https://ytmedia.radio.cn/CCYT%2F202302%2F09%2F17%2Fj5t4Bt3drpLhkZnDREc2023020917793.png",
+    "tags": [
+      "radio_cn"
+    ],
+    "category": "央广",
+    "bitrate": 64,
+    "codec": "HLS",
+    "homepage": "https://www.radio.cn/"
+  },
+  {
+    "id": "src-radio_cn-364",
+    "name": "香港之声",
+    "url": "https://ytlive.radio.cn/130/radios/10646/index_10646.m3u8?type=1&key=b476e32b6ced008d5fe17ff3770798e4&time=6a9a96f2",
+    "favicon": "https://ytmedia.radio.cn/CCYT%2F202306%2F12%2F18%2F1E202306121836.jpg",
+    "tags": [
+      "radio_cn"
+    ],
+    "category": "央广",
+    "bitrate": 64,
+    "codec": "HLS",
+    "homepage": "https://www.radio.cn/"
+  },
+  {
+    "id": "src-qtfm-366",
+    "name": "黄冈新闻综合广播",
+    "url": "https://lhttp.qtfm.cn/live/1301/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/1208/20151208122815541.jpg",
+    "tags": [
+      "qtfm",
+      "湖北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-367",
+    "name": "黄山交通旅游广播",
+    "url": "https://lhttp.qtfm.cn/live/1969/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2012/0817/20120817043121225.jpg",
+    "tags": [
+      "qtfm",
+      "安徽"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-368",
+    "name": "黄山新闻综合广播",
+    "url": "https://lhttp.qtfm.cn/live/1968/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2012/0817/20120817042544747.jpg",
+    "tags": [
+      "qtfm",
+      "安徽"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-369",
+    "name": "黄石交通广播",
+    "url": "https://lhttp.qtfm.cn/live/3964/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2011/1202/20111202030156207.png",
+    "tags": [
+      "qtfm",
+      "湖北"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-370",
+    "name": "黑龙江交通广播",
+    "url": "https://lhttp.qtfm.cn/live/4973/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2021/1231/20211231014716.jpeg",
+    "tags": [
+      "qtfm",
+      "黑龙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-371",
+    "name": "黑龙江生活广播",
+    "url": "https://lhttp.qtfm.cn/live/4970/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2021/1205/20211205040132.png",
+    "tags": [
+      "qtfm",
+      "黑龙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-372",
+    "name": "黑龙江老年少儿广播",
+    "url": "https://lhttp.qtfm.cn/live/4972/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2012/0821/20120821035528889.jpg",
+    "tags": [
+      "qtfm",
+      "黑龙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-373",
+    "name": "黑龙江音乐广播",
+    "url": "https://lhttp.qtfm.cn/live/4969/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/48/1638179327711_IlklMh2sV.jpeg",
+    "tags": [
+      "qtfm",
+      "黑龙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-374",
+    "name": "黑龙江高校广播",
+    "url": "https://lhttp.qtfm.cn/live/4976/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/0118/20180118040752.jpeg",
+    "tags": [
+      "qtfm",
+      "黑龙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-375",
+    "name": "黔西南FM107.9综合广播",
+    "url": "https://lhttp.qtfm.cn/live/5045/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0610/20200610042315.jpeg",
+    "tags": [
+      "qtfm",
+      "贵州"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-376",
+    "name": "黔西南FM88.3交通旅游广播",
+    "url": "https://lhttp.qtfm.cn/live/5046/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2021/0122/20210122033304.jpeg",
+    "tags": [
+      "qtfm",
+      "贵州"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-377",
+    "name": "龙广新闻台",
+    "url": "https://lhttp.qtfm.cn/live/4974/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2016/1024/20161024070619.jpeg",
+    "tags": [
+      "qtfm",
+      "黑龙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "src-qtfm-378",
+    "name": "龙广都市女性台",
+    "url": "https://lhttp.qtfm.cn/live/4968/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2014/0330/20140330112742795.jpg",
+    "tags": [
+      "qtfm",
+      "黑龙江"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.qtfm.cn/"
+  },
+  {
+    "id": "gd-1",
+    "name": "广东珠江经济台",
+    "url": "https://lhttp.qtfm.cn/live/1259/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/0209/20150209212831195.jpg",
+    "tags": [
+      "地方台",
+      "广东",
+      "财经"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "gd-2",
+    "name": "广东音乐之声",
+    "url": "https://lhttp.qtfm.cn/live/1260/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/198/1564454286057_EAoJdKLRT.jpeg",
+    "tags": [
+      "地方台",
+      "广东",
+      "音乐"
+    ],
+    "category": "地方台",
+    "bitrate": 128,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "gd-3",
+    "name": "广东新闻频道",
+    "url": "http://ls.qingting.fm/live/1254.m3u8",
+    "favicon": "https://pic.qtfm.cn/2021/0919/20210919103138.jpeg",
+    "tags": [
+      "地方台",
+      "广东",
+      "新闻"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "gd-4",
+    "name": "广东羊城交通广播",
+    "url": "http://ls.qingting.fm/live/1262.m3u8",
+    "favicon": "https://pic.qtfm.cn/2025/0311/20250311045956.png",
+    "tags": [
+      "地方台",
+      "广东",
+      "交通"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "gd-5",
+    "name": "广东南方生活广播",
+    "url": "http://ls.qingting.fm/live/468.m3u8",
+    "favicon": "https://pic.qtfm.cn/2021/0519/20210519030711.jpeg",
+    "tags": [
+      "地方台",
+      "广东",
+      "生活"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "gd-6",
+    "name": "广东文体广播",
+    "url": "http://ls.qingting.fm/live/471.m3u8",
+    "favicon": "https://pic.qtfm.cn/sso/198/1567411393720_vdCUW70Lt.jpeg",
+    "tags": [
+      "地方台",
+      "广东",
+      "综合"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "gd-7",
+    "name": "广东城市之声",
+    "url": "http://ls.qingting.fm/live/469.m3u8",
+    "favicon": "https://pic.qtfm.cn/2020/0402/20200402042931.png",
+    "tags": [
+      "地方台",
+      "广东",
+      "综合"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "gd-8",
+    "name": "广东优悦广播",
+    "url": "http://ls.qingting.fm/live/470.m3u8",
+    "favicon": "https://pic.qtfm.cn/2022/0729/20220729092142.jpeg",
+    "tags": [
+      "地方台",
+      "广东",
+      "综合"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "gd-9",
+    "name": "广东股市广播",
+    "url": "http://ls.qingting.fm/live/4847.m3u8",
+    "favicon": "https://pic.qtfm.cn/sso/198/1606978988505_KEOyj7yxs.jpeg",
+    "tags": [
+      "地方台",
+      "广东",
+      "财经"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "gz-1",
+    "name": "广州新闻电台",
+    "url": "http://ls.qingting.fm/live/4848.m3u8",
+    "favicon": "https://pic.qtfm.cn/sso/198/1631608611268_yOwdpDG9p.jpeg",
+    "tags": [
+      "地方台",
+      "广东",
+      "广州",
+      "新闻"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "gz-2",
+    "name": "广州交通电台",
+    "url": "http://ls.qingting.fm/live/4955.m3u8",
+    "favicon": "https://pic.qtfm.cn/2016/0412/20160412212622806.png",
+    "tags": [
+      "地方台",
+      "广东",
+      "广州",
+      "交通"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "gz-3",
+    "name": "广州汽车音乐电台",
+    "url": "http://ls.qingting.fm/live/52710.m3u8",
+    "favicon": "https://pic.qtfm.cn/2017/0411/20170411122342.gif",
+    "tags": [
+      "地方台",
+      "广东",
+      "广州",
+      "音乐"
+    ],
+    "category": "地方台",
+    "bitrate": 128,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "gz-4",
+    "name": "广州MYFM",
+    "url": "http://ls.qingting.fm/live/52712.m3u8",
+    "tags": [
+      "地方台",
+      "广东",
+      "广州",
+      "音乐"
+    ],
+    "category": "地方台",
+    "bitrate": 128,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "gz-5",
+    "name": "广州金曲音乐广播",
+    "url": "http://lhttp.qingting.fm/live/20192/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2017/0411/20170411122342.gif",
+    "tags": [
+      "地方台",
+      "广东",
+      "广州",
+      "音乐"
+    ],
+    "category": "地方台",
+    "bitrate": 128,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "gz-6",
+    "name": "增城人民广播电台",
+    "url": "http://lhttp.qingting.fm/live/20211702/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/0927/20180927100414.png",
+    "tags": [
+      "地方台",
+      "广东",
+      "增城",
+      "综合"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "gz-7",
+    "name": "番禺区广播电台",
+    "url": "https://lhttp.qtfm.cn/live/20212427/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2022/1207/20221207074421.jpeg",
+    "tags": [
+      "地方台",
+      "广东",
+      "番禺",
+      "综合"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "sz-1",
+    "name": "深圳先锋898",
+    "url": "http://ls.qingting.fm/live/1270.m3u8",
+    "favicon": "https://pic.qtfm.cn/sso/198/1572602894027_Jv8W5VjLR.jpeg",
+    "tags": [
+      "地方台",
+      "广东",
+      "深圳",
+      "新闻"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.szradio.com.cn/"
+  },
+  {
+    "id": "sz-2",
+    "name": "深圳飞扬971",
+    "url": "http://ls.qingting.fm/live/1271.m3u8",
+    "favicon": "https://pic.qtfm.cn/2014/0330/20140330113445384.jpg",
+    "tags": [
+      "地方台",
+      "广东",
+      "深圳",
+      "音乐"
+    ],
+    "category": "地方台",
+    "bitrate": 128,
+    "codec": "AAC",
+    "homepage": "https://www.szradio.com.cn/"
+  },
+  {
+    "id": "sz-3",
+    "name": "深圳快乐1062",
+    "url": "http://ls.qingting.fm/live/1272.m3u8",
+    "favicon": "https://pic.qtfm.cn/2015/1207/20151207195702947.jpg",
+    "tags": [
+      "地方台",
+      "广东",
+      "深圳",
+      "交通"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.szradio.com.cn/"
+  },
+  {
+    "id": "sz-4",
+    "name": "深圳私家车942",
+    "url": "http://ls.qingting.fm/live/1273.m3u8",
+    "favicon": "https://pic.qtfm.cn/2018/0201/20180201045806.jpeg",
+    "tags": [
+      "地方台",
+      "广东",
+      "深圳",
+      "生活"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.szradio.com.cn/"
+  },
+  {
+    "id": "sz-5",
+    "name": "深圳缤纷1043",
+    "url": "http://ls.qingting.fm/live/267.m3u8",
+    "favicon": "https://pic.qtfm.cn/sso/48/1641437907698_k0NNOUP54.jpeg",
+    "tags": [
+      "地方台",
+      "广东",
+      "深圳",
+      "音乐"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.szradio.com.cn/"
+  },
+  {
+    "id": "sz-6",
+    "name": "深圳星光991",
+    "url": "http://ls.qingting.fm/live/28132.m3u8",
+    "tags": [
+      "地方台",
+      "广东",
+      "深圳",
+      "综合"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.szradio.com.cn/"
+  },
+  {
+    "id": "sz-7",
+    "name": "深圳龙岗频道",
+    "url": "http://lhttp.qingting.fm/live/20160/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2020/0612/20200612100339.jpeg",
+    "tags": [
+      "地方台",
+      "广东",
+      "深圳",
+      "综合"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.szradio.com.cn/"
+  },
+  {
+    "id": "fs-1",
+    "name": "佛山综合广播",
+    "url": "http://ls.qingting.fm/live/1263.m3u8",
+    "favicon": "https://pic.qtfm.cn/2020/0929/20200929113150.jpeg",
+    "tags": [
+      "地方台",
+      "广东",
+      "佛山",
+      "新闻"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "fs-3",
+    "name": "佛山顺德广播",
+    "url": "https://radiopull.radiofoshan.com.cn/live/1400820947_BSID_44_audio.m3u8",
+    "tags": [
+      "地方台",
+      "广东",
+      "佛山",
+      "综合"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "zh-1",
+    "name": "珠海先锋951",
+    "url": "http://ls.qingting.fm/live/1274.m3u8",
+    "favicon": "https://pic.qtfm.cn/2022/0815/20220815031908.png",
+    "tags": [
+      "地方台",
+      "广东",
+      "珠海",
+      "新闻"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "zh-2",
+    "name": "珠海交通音乐875",
+    "url": "http://ls.qingting.fm/live/1275.m3u8",
+    "favicon": "https://pic.qtfm.cn/2022/1229/20221229110525.jpeg",
+    "tags": [
+      "地方台",
+      "广东",
+      "珠海",
+      "交通"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "hz-1",
+    "name": "惠州新闻100",
+    "url": "http://ls.qingting.fm/live/5016.m3u8",
+    "favicon": "https://pic.qtfm.cn/2021/0810/20210810093440.jpeg",
+    "tags": [
+      "地方台",
+      "广东",
+      "惠州",
+      "新闻"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "hz-3",
+    "name": "惠州音乐907",
+    "url": "http://ls.qingting.fm/live/2212959.m3u8",
+    "tags": [
+      "地方台",
+      "广东",
+      "惠州",
+      "音乐"
+    ],
+    "category": "地方台",
+    "bitrate": 128,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "jm-1",
+    "name": "江门新闻综合",
+    "url": "http://ls.qingting.fm/live/1282.m3u8",
+    "favicon": "https://pic.qtfm.cn/2011/0902/20110902063048724.jpg",
+    "tags": [
+      "地方台",
+      "广东",
+      "江门",
+      "新闻"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "jm-2",
+    "name": "江门旅游音乐",
+    "url": "http://ls.qingting.fm/live/1283.m3u8",
+    "favicon": "https://pic.qtfm.cn/2013/channel_logo/1283.jpg",
+    "tags": [
+      "地方台",
+      "广东",
+      "江门",
+      "音乐"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "zq-1",
+    "name": "肇庆综合广播",
+    "url": "https://live.ximalaya.com/radio-first-page-app/live/2892/64.m3u8?transcode=ts",
+    "tags": [
+      "地方台",
+      "广东",
+      "肇庆",
+      "新闻"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "zq-3",
+    "name": "肇庆高新之声",
+    "url": "https://lhttp-hw.qtfm.cn/live/20500213/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/48/1712027454972_KusoeWYpG.png",
+    "tags": [
+      "地方台",
+      "广东",
+      "肇庆",
+      "综合"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "zq-4",
+    "name": "怀集音乐之声",
+    "url": "http://lhttp.qingting.fm/live/4804/64k.mp3",
+    "tags": [
+      "地方台",
+      "广东",
+      "怀集",
+      "音乐"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "mz-1",
+    "name": "梅州新闻948",
+    "url": "http://ls.qingting.fm/live/24173.m3u8",
+    "tags": [
+      "地方台",
+      "广东",
+      "梅州",
+      "新闻"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "mz-2",
+    "name": "梅州交通1058",
+    "url": "http://ls.qingting.fm/live/24195.m3u8",
+    "tags": [
+      "地方台",
+      "广东",
+      "梅州",
+      "交通"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "mz-3",
+    "name": "梅州综合广播",
+    "url": "https://lhttp-hw.qtfm.cn/live/1257/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2022/1016/20221016105318.jpeg",
+    "tags": [
+      "地方台",
+      "广东",
+      "梅州",
+      "新闻"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "mz-4",
+    "name": "梅县人民广播电台",
+    "url": "http://lhttp.qingting.fm/live/5021942/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2023/0714/20230714084034.jpeg",
+    "tags": [
+      "地方台",
+      "广东",
+      "梅县",
+      "综合"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "zj-1",
+    "name": "湛江综合广播",
+    "url": "http://lhttp.qingting.fm/live/20617/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2022/0729/20220729042835.jpeg",
+    "tags": [
+      "地方台",
+      "广东",
+      "湛江",
+      "新闻"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "zj-2",
+    "name": "廉江广播",
+    "url": "https://lhttp-hw.qtfm.cn/live/20211578/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2017/1123/20171123024527.jpeg",
+    "tags": [
+      "地方台",
+      "广东",
+      "廉江",
+      "综合"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "mm-1",
+    "name": "茂名综合广播",
+    "url": "http://lhttp.qingting.fm/live/20500088/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2023/0425/20230425101811.jpeg",
+    "tags": [
+      "地方台",
+      "广东",
+      "茂名",
+      "新闻"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "mm-2",
+    "name": "茂名交通广播",
+    "url": "https://lhttp.qingting.fm/live/20211574/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2017/1117/20171117123448.png",
+    "tags": [
+      "地方台",
+      "广东",
+      "茂名",
+      "交通"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "sg-1",
+    "name": "韶关综合广播",
+    "url": "https://lhttp-hw.qtfm.cn/live/5022074/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2017/0807/20170807103138.jpeg",
+    "tags": [
+      "地方台",
+      "广东",
+      "韶关",
+      "新闻"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "hy-1",
+    "name": "河源综合广播",
+    "url": "http://ls.qingting.fm/live/1291.m3u8",
+    "favicon": "https://pic.qtfm.cn/2013/channel_logo/1291.jpg",
+    "tags": [
+      "地方台",
+      "广东",
+      "河源",
+      "新闻"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "hy-2",
+    "name": "河源旅游广播",
+    "url": "http://tmpstream.hyrtv.cn/lygb/sd/live.m3u8",
+    "tags": [
+      "地方台",
+      "广东",
+      "河源",
+      "生活"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "qy-1",
+    "name": "清远综合广播",
+    "url": "http://lhttp.qingting.fm/live/15318668/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2018/1018/20181018124644.jpeg",
+    "tags": [
+      "地方台",
+      "广东",
+      "清远",
+      "新闻"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "qy-2",
+    "name": "清远交通音乐广播",
+    "url": "http://lhttp.qingting.fm/live/20500067/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/sso/198/1594014939597_JRQgVpilz.png",
+    "tags": [
+      "地方台",
+      "广东",
+      "清远",
+      "交通"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "cz-1",
+    "name": "潮州综合频率",
+    "url": "http://ls.qingting.fm/live/4596.m3u8",
+    "favicon": "https://pic.qtfm.cn/2015/0427/20150427150434900.jpg",
+    "tags": [
+      "地方台",
+      "广东",
+      "潮州",
+      "新闻"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "cz-2",
+    "name": "潮州交通音乐广播",
+    "url": "https://lhttp.qingting.fm/live/4594/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2012/0906/20120906035229820.jpg",
+    "tags": [
+      "地方台",
+      "广东",
+      "潮州",
+      "交通"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "cz-3",
+    "name": "潮州戏曲广播",
+    "url": "http://ls.qingting.fm/live/4595.m3u8",
+    "favicon": "https://pic.qtfm.cn/2015/0427/20150427150246450.jpg",
+    "tags": [
+      "地方台",
+      "广东",
+      "潮州",
+      "生活"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "jy-1",
+    "name": "普宁人民广播电台",
+    "url": "http://lhttp.qingting.fm/live/5022527/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2015/0727/2015072716240951.jpg",
+    "tags": [
+      "地方台",
+      "广东",
+      "揭阳",
+      "综合"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "yf-1",
+    "name": "云浮综合广播",
+    "url": "http://lhttp.qingting.fm/live/5022442/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2016/0722/20160722005013961.png",
+    "tags": [
+      "地方台",
+      "广东",
+      "云浮",
+      "新闻"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "yj-1",
+    "name": "阳江综合广播",
+    "url": "https://lhttp.qtfm.cn/live/15318429/64k.mp3",
+    "favicon": "https://pic.qtfm.cn/2019/0710/20190710074446.jpeg",
+    "tags": [
+      "地方台",
+      "广东",
+      "阳江",
+      "新闻"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "zs-1",
+    "name": "中山新锐967",
+    "url": "http://ls.qingting.fm/live/1277.m3u8",
+    "favicon": "https://pic.qtfm.cn/2020/0417/20200417071307.png",
+    "tags": [
+      "地方台",
+      "广东",
+      "中山",
+      "综合"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "zs-2",
+    "name": "中山快乐888",
+    "url": "http://ls.qingting.fm/live/1278.m3u8",
+    "favicon": "https://pic.qtfm.cn/2017/0811/20170811095134.jpeg",
+    "tags": [
+      "地方台",
+      "广东",
+      "中山",
+      "音乐"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "dg-1",
+    "name": "东莞阳光1008",
+    "url": "https://stream.sun0769.com/dgrtv1/mp4tv10/index.m3u8",
+    "tags": [
+      "地方台",
+      "广东",
+      "东莞",
+      "综合"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  },
+  {
+    "id": "dg-2",
+    "name": "东莞畅享1075",
+    "url": "https://stream.sun0769.com/dgrtv1/mp4tv11/index.m3u8",
+    "tags": [
+      "地方台",
+      "广东",
+      "东莞",
+      "交通"
+    ],
+    "category": "地方台",
+    "bitrate": 64,
+    "codec": "AAC",
+    "homepage": "https://www.gdtv.cn/"
+  }
+]

@@ -1,0 +1,44 @@
+allprojects {
+    repositories {
+        maven { url "https://maven.aliyun.com/repository/google" }
+        maven { url "https://maven.aliyun.com/repository/central" }
+        maven { url "https://maven.aliyun.com/repository/public" }
+        maven { url "https://repo.huaweicloud.com/repository/maven/" }
+    }
+    configurations.configureEach {
+        resolutionStrategy {
+            force "androidx.glance:glance-appwidget:1.1.1"
+        }
+    }
+}
+
+rootProject.buildDir = "../build"
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+subprojects {
+    project.evaluationDependsOn(":app")
+}
+
+subprojects { sub ->
+    def alignJvm = {
+        if (sub.hasProperty("android")) {
+            sub.android.compileOptions {
+                sourceCompatibility JavaVersion.VERSION_11
+                targetCompatibility JavaVersion.VERSION_11
+            }
+        }
+        sub.tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+            compilerOptions.jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
+        }
+    }
+    if (sub.state.executed) {
+        alignJvm()
+    } else {
+        sub.afterEvaluate { alignJvm() }
+    }
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}

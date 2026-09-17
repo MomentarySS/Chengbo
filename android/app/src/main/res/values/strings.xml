@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="widget_description">显示当前电台或单集，可播放、暂停、下一台或续播</string>
+</resources>

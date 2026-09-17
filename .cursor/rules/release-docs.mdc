@@ -1,0 +1,21 @@
+---
+description: 版本发布与文档同步
+globs: pubspec.yaml,lib/core/brand.dart,CHANGELOG.md,README.md,DEVELOPMENT.md,PRODUCT.md,ROADMAP.md,scripts/**
+alwaysApply: false
+---
+
+# 发布与文档
+
+升版本时同步：
+
+1. `pubspec.yaml`（`version` + `versionCode`）
+2. `lib/core/brand.dart`（`AppBrand.version`）
+3. `scripts/chengbo-windows.iss`（若存在）
+4. `CHANGELOG.md`、`README.md`、`DEVELOPMENT.md`、`PRODUCT.md`、`ROADMAP.md`、`PRIVACY.md`、`SOURCES.md`（按需）
+5. User-Agent 行：`Chengbo/<version> (Flutter; chengbo radio)`
+
+打包：`.\scripts\pack.ps1` → `dist/chengbo-<version>.apk`、zip、exe
+
+发版前：`flutter analyze`（改动文件）、`flutter test` 全绿
+
+精选台维护：死链换址走设置「连不上的电台」或更新 `assets/stations_cn.json`；`SOURCES.md` 记录源维护状态
