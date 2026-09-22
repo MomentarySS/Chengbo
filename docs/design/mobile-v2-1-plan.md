@@ -96,6 +96,8 @@
 13. `ChengboWidgetProvider.kt`：按 flag + `SDK_INT >= 31` 分支着色；换图标资源
 14. 提交
 
+> 🟡 **施工单就绪**：[`mobile-v2-1-step-3-work-order.md`](./mobile-v2-1-step-3-work-order.md)（commit `4919bae` on `feat/v2-1-widget-b1`）。**代码待实施**：4 个 commit（C1 Dart 契约 / C2 Dart 同步 / C3 Kotlin+资源 / C4 图标切换）。⚠️ 施工单 §3.1 (b) `DeskWidgetSnapshot` 字段误写为 `empty`，现场实际为 `hasItem`，动手 C1 时以现场为准。
+
 ### 第 4 步：widget「Latest Episodes」（P0-B2）
 
 15. `lib/core/audio/desk_widget.dart`：
@@ -111,6 +113,8 @@
 23. **测试**：`test/desk_widget_episodes_test.dart`（payload 序列化 + 空数据 + `play` URI 解析，§6.6）
 24. 提交
 
+> 🟡 **施工单就绪**：[`mobile-v2-1-step-4-work-order.md`](./mobile-v2-1-step-4-work-order.md)（commit `1fe68e7` on `feat/v2-1-widget-b1`）。**代码待实施**：4 个 commit（D1 Dart 契约 / D2 Dart 同步 / D3 Kotlin+资源 / D4 测试）。
+
 ### 第 5 步：全量验证
 
 25. 跑 §6.1–§6.4
@@ -118,6 +122,8 @@
 27. 更新 ROADMAP.md（标记 v2.1 已实施）
 28. 更新本文件 §7
 29. 提交
+
+> 🟡 **施工单就绪**：[`mobile-v2-1-step-5-work-order.md`](./mobile-v2-1-step-5-work-order.md)（commit `99a6ff5` on `feat/v2-1-widget-b1`）。**触发条件**：第 3 + 4 步实施 PR 都合 main 之后执行。
 
 **每步验收标准**：编译通过 + 该步新增测试通过 + 前序步骤验证点不回归。
 
@@ -155,12 +161,12 @@
 | mini player 副文 | `_IcyStatusLine`：ICY 曲名（电台）/ 节目名（播客）/ 状态（缓冲、错误） | 不变 |
 | mini player 剩余时间 | 无 | 播客在标题行右侧显示 `剩余 mm:ss`（**P0-A 已实现**：PR #3 / `5e86f65` + `85c27f5` + `c0f9cae`）|
 | 剩余时间数据源 | `_MiniProgressBar` 已用 `current.duration ?? handler.player.duration` | 复用同一套 |
-| widget 配色 | 硬编码 `@color/widget_background` = `#0D4F8C`（深澄蓝），**无深色变体、无动态色** | 跟随 App 的壁纸配色开关；深色模式有变体 |
-| widget 图标 | `android.R.drawable.ic_media_play` / `pause` / `next`（系统默认） | 自绘 M3 vector drawable |
+| widget 配色 | 硬编码 `@color/widget_background` = `#0D4F8C`（深澄蓝），**无深色变体、无动态色** | 跟随 App 的壁纸配色开关；深色模式有变体（**B1 实施就绪**：施工单 `mobile-v2-1-step-3-work-order.md`，代码待实施）|
+| widget 图标 | `android.R.drawable.ic_media_play` / `pause` / `next`（系统默认） | 自绘 M3 vector drawable（**B1 同上**）|
 | widget 数据契约 | Dart `DeskWidgetLogic` 常量 ↔ Kotlin 字符串字面量**重复定义** | 新增 2 个 key（`widget_use_dynamic_color` / `widget_episodes`）；契约在 §5 第 8 条记录 |
-| widget 布局 | `LinearLayout` 单行：标题/副文 + 续 + 播停 + 下一台（4×1） | 现有不动；**新增第二个 4×2「待听」widget** |
+| widget 布局 | `LinearLayout` 单行：标题/副文 + 续 + 播停 + 下一台（4×1） | 现有不动；**新增第二个 4×2「待听」widget**（**B2 实施就绪**：施工单 `mobile-v2-1-step-4-work-order.md`，代码待实施）|
 | widget 元数据 | minWidth 250dp / minHeight 40dp / 4×1 cell | 现有不动；新增 4×2 / minHeight 110dp |
-| widget 动作 | open / toggle / next / resume | 新增 `play?guid=`（仅新 widget 使用） |
+| widget 动作 | open / toggle / next / resume | 新增 `play?guid=`（仅新 widget 使用）|
 
 ---
 
@@ -784,6 +790,7 @@ ref.listen<List<InboxItem>>(inboxProvider, (_, next) => publishEpisodes(next));
 | 2026-09-22 | 1.1 | §8 八项待核验全部完成（§8.1）；额外发现 `inboxProvider` 已存在，B2 规模由「大」下调为「中」（§8.2）；§3.3 / §6.2 相应更正 |
 | 2026-09-22 | **1.2** | **实施就绪（三项全含）**。B2 确认同版合入；§3.3 重写为完整实施规格（设计决策 / 数据源 / 序列化 / 布局 / `play` 动作 / Manifest / 触发时机）；§8.2 三项 B2 待核验全部解决；新增 §6.6 测试；§0.2 扩为 5 步 |
 | 2026-09-22 | **1.3** | **P0-A 落地**。第 1 步（`RemainingTimeLogic` + 死代码清理）+ 第 2 步（mini_player 接线）合并入 PR #3；施工单 `mobile-v2-1-step-2-work-order.md` 入仓；§0.2 加 ✅ 标记；§2 状态总览「mini player 剩余时间」标注已实现。剩余：第 3 步（P0-B1 widget Material You + 深色模式）+ 第 4 步（P0-B2 widget Latest Episodes）+ 第 5 步（全量验证） |
+| 2026-09-22 | **1.4** | **设计就绪，代码待实施**。第 3 / 4 / 5 步施工单全部入仓（commits `4919bae` / `1fe68e7` / `99a6ff5` on `feat/v2-1-widget-b1`）；§0.2 加 🟡 标记 + 触发条件；§2 状态总览 widget 行加「施工单就绪」引用；release tracker `v2-1-release-tracker.md` 入仓作为 single source of truth。⚠️ Step 3 工单 §3.1 (b) `DeskWidgetSnapshot` 字段名 `empty` 与现场 `hasItem` 不符，动手 C1 时按现场 `hasItem` 改。剩余：B1 + B2 代码实施 + v2.1 release prep |
 
 ---
 
