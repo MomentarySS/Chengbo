@@ -7,7 +7,23 @@ import 'catalog_fetch_logic.dart';
 
 /// 加载本地精选国内电台列表。
 class CuratedStationsRepository {
+  Future<List<RadioStation>>? _stationsFuture;
+
+  /// 精选 JSON 只解析一次；失败不缓存，下次 reload 还能重试。
   Future<List<RadioStation>> loadStations() async {
+    final pending = _stationsFuture;
+    if (pending != null) return pending;
+    final future = _loadStations();
+    _stationsFuture = future;
+    try {
+      return await future;
+    } catch (_) {
+      _stationsFuture = null;
+      rethrow;
+    }
+  }
+
+  Future<List<RadioStation>> _loadStations() async {
     final raw = await rootBundle.loadString('assets/stations_cn.json');
     final list = jsonDecode(raw) as List<dynamic>;
     final stations = list

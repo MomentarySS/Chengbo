@@ -516,7 +516,9 @@ class _PodcastDetailScreenState extends ConsumerState<PodcastDetailScreen> {
           final filter = ref.watch(episodeListFilterProvider);
           ref.watch(listenedEpisodeGuidsSetProvider);
           ref.watch(favoriteEpisodeGuidsSetProvider);
-          ref.watch(podcastDownloadsProvider);
+          // 「已下载」判定只跟 records 有关，而下载进度 tick 会复用同一个
+          // records map：只订阅它，整页列表就不会跟着每块进度重排。
+          ref.watch(podcastDownloadsProvider.select((state) => state.records));
           final listEpisodes = _visibleEpisodes(detail, sort);
           if (listEpisodes.isEmpty && filter != EpisodeListFilter.all) {
             return Column(
@@ -816,10 +818,9 @@ class _EpisodeTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final progressAsync = ref.watch(podcastProgressProvider(episode.guid));
+    final progress = ref.watch(podcastProgressProvider(episode.guid));
     final current = ref.watch(currentPlaybackProvider);
     final isCurrent = NowPlayingIndicatorLogic.isCurrentEpisode(current, episode.guid);
-    final progress = progressAsync.asData?.value;
     final finished = PodcastPlaybackLogic.isFinished(
       progress: progress,
       duration: episode.duration,

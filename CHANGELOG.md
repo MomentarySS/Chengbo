@@ -6,6 +6,24 @@ Format follows [Keep a Changelog](https://keepachangelog.com/zh-CN/), and the pr
 
 ---
 
+## 2.0.2 / 2026-09-22
+
+播放性能与 I/O 优化，无新增功能，未改变对外行为。
+
+- **播客进度落盘**：不再按秒 fsync 整个状态文件——周期性写盘放宽到 5 秒且只交给系统页缓存，暂停 / 停止 / 播完 / 退出时仍强制同步落盘。代价是进程被强杀时最多丢 5 秒进度。
+- **下载进度节流**：进度变化 ≥1% 或间隔 ≥300ms 才更新界面；播客详情页只订阅已下载记录，单集列表不再跟着每个数据块重新排序和过滤。
+- **首次探测**：已找到数量改为增量计数，去掉每台一次的全量可见列表快照与 `urlOk` 全量复制。
+- **Windows 系统代理**：改用异步 `reg` 读取并在首帧前预热，不再在首个网络请求里同步起进程。
+- **精选电台 JSON**：只解析一次；失败不缓存，之后仍可重试。
+- **单集进度**：改为同步读取（数据本就在内存），`podcastProgressProvider` 加 `autoDispose`，逐集实例在行滚出屏幕后释放。
+- **启动**：主页各 tab 惰性构建，不再在启动时一次性构建四个页面。
+- **播客订阅**：`PodcastFeed` 按 id 判等，同一个节目不再重复拉取 RSS。
+- 修复：音频会话配置移回首帧前（`RadioAudioHandler` 启动即 music，否则首次播放电台不会 configure）。
+- User-Agent `Chengbo/2.0.2`
+- 产物 `chengbo-2.0.2.apk`、`chengbo-windows-2.0.2.zip`、`chengbo-windows-2.0.2.exe`（Android `versionCode` 38）
+
+---
+
 ## 2.0.1 / 2026-09-17
 
 在 2.0.0 基础上的稳定性与数据兼容更新。

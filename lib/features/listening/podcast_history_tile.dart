@@ -20,8 +20,7 @@ class PodcastHistoryTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final progressAsync = ref.watch(podcastProgressProvider(entry.episodeGuid));
-    final progress = progressAsync.asData?.value;
+    final progress = ref.watch(podcastProgressProvider(entry.episodeGuid));
     final duration = entry.duration;
     final isCurrent = NowPlayingIndicatorLogic.isCurrentEpisode(current, entry.episodeGuid);
     final finished = PodcastPlaybackLogic.isFinished(progress: progress, duration: duration);

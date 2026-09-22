@@ -3,7 +3,7 @@ abstract final class AppBrand {
   static const displayName = '澄波';
   static const englishSlug = 'Chengbo';
   static const tagline = '听国内广播';
-  static const version = '2.0.1';
+  static const version = '2.0.2';
   static const userAgent = 'Chengbo/$version (Flutter; chengbo radio)';
   static const podcastUserAgent = 'Chengbo/$version PodcastReader';
   static const podcastFallbackUserAgent =
