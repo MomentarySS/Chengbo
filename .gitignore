@@ -65,6 +65,13 @@ tools/gd_merge_report.json
 # Windows icon experiments
 windows/runner/resources/test_icon*.ico
 
+# Branding iteration workspace (icon candidates, not finished assets)
+/assets/branding/_candidates/
+
+# Stray nul files (PowerShell `> nul` / `2> nul` redirection accidents)
+/nul
+/android/nul
+
 # Local-only source lists (not for public repo; NSFW)
 /ADULT_SOURCES.md
 /SOURCES.md
