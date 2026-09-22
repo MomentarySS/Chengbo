@@ -6,15 +6,6 @@ abstract final class ArtworkUrlLogic {
     if (lower.endsWith('.ico') || lower.contains('favicon')) {
       return null;
     }
-    if (lower.contains('.jpg') ||
-        lower.contains('.jpeg') ||
-        lower.contains('.png') ||
-        lower.contains('.webp') ||
-        lower.contains('pic.qtfm.cn') ||
-        lower.contains('qingting.fm') ||
-        lower.contains('xmcdn.com')) {
-      return raw;
-    }
     return raw;
   }
 
