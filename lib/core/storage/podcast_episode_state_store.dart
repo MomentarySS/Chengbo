@@ -122,6 +122,9 @@ class PodcastEpisodeStateStore {
     return _state.progressFor(guid);
   }
 
+  /// 同步读取内存中的进度。数据本来就在内存里，UI 直接读可少一帧异步空档。
+  Duration? progressOf(String guid) => _state.progressFor(guid);
+
   /// [flush] 为 true 时同步落盘，用于暂停 / 停止 / 播完 / 退出等最终位置。
   /// 播放中的周期性写盘用默认的 false：只交给系统页缓存，
   /// 避免按秒 fsync 整个状态文件。

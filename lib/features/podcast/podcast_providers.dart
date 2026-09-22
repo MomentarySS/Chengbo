@@ -383,10 +383,13 @@ final playingEpisodeChaptersProvider = FutureProvider<List<PodcastChapter>>((ref
   }
 });
 
+/// 单集进度。数据本来就在内存里，同步读可以避免列表行首帧拿到 null 而闪一下；
+/// autoDispose 让每个单集的实例在行滚出屏幕后释放。
 final podcastProgressProvider =
-    FutureProvider.autoDispose.family<Duration?, String>((ref, episodeGuid) async {
-  final storage = await ref.watch(appStorageProvider.future);
-  return storage.getPodcastProgress(episodeGuid);
+    Provider.autoDispose.family<Duration?, String>((ref, episodeGuid) {
+  final storage = ref.watch(appStorageProvider).value;
+  if (storage == null) return null;
+  return storage.podcastProgressOf(episodeGuid);
 });
 
 /// 继续收听：最近播放且未听完的单集。

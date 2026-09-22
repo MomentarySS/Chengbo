@@ -15,8 +15,7 @@ class ResumeListeningCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
-    final progressAsync = ref.watch(podcastProgressProvider(entry.episodeGuid));
-    final progress = progressAsync.asData?.value;
+    final progress = ref.watch(podcastProgressProvider(entry.episodeGuid));
     final fraction = PodcastPlaybackLogic.progressFraction(
       progress: progress,
       duration: entry.duration,

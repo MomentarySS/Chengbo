@@ -144,6 +144,10 @@ class AppStorage {
     return _episodeStateStore.getPodcastProgress(episodeGuid);
   }
 
+  /// 同步读取播客进度，供 UI 直接使用（数据已在内存）。
+  Duration? podcastProgressOf(String episodeGuid) =>
+      _episodeStateStore.progressOf(episodeGuid);
+
   Future<void> setPodcastProgress(
     String episodeGuid,
     Duration position, {

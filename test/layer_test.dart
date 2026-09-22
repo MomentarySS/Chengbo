@@ -879,6 +879,8 @@ void main() {
     // 周期性写盘（flush: false）仍要立刻更新内存，否则暂停时读到的位置是旧的。
     await store.setPodcastProgress('ep-1', const Duration(seconds: 42));
     expect(await store.getPodcastProgress('ep-1'), const Duration(seconds: 42));
+    // UI 走同步这条路，必须和异步读一致。
+    expect(store.progressOf('ep-1'), const Duration(seconds: 42));
 
     await store.setPodcastProgress('ep-1', const Duration(seconds: 90), flush: true);
     expect(await store.getPodcastProgress('ep-1'), const Duration(seconds: 90));
@@ -886,10 +888,12 @@ void main() {
     // 归零等于清除，与旧行为一致。
     await store.setPodcastProgress('ep-1', Duration.zero);
     expect(await store.getPodcastProgress('ep-1'), isNull);
+    expect(store.progressOf('ep-1'), isNull);
 
     // 空 guid 不写入。
     await store.setPodcastProgress('', const Duration(seconds: 5));
     expect(await store.getPodcastProgress(''), isNull);
+    expect(store.progressOf(''), isNull);
   });
 
   test('AppStorage restoreBackup replaces owned prefs and keeps secrets', () async {
