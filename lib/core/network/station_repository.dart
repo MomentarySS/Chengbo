@@ -9,8 +9,18 @@ import 'catalog_fetch_logic.dart';
 class CuratedStationsRepository {
   Future<List<RadioStation>>? _stationsFuture;
 
-  Future<List<RadioStation>> loadStations() {
-    return _stationsFuture ??= _loadStations();
+  /// 精选 JSON 只解析一次；失败不缓存，下次 reload 还能重试。
+  Future<List<RadioStation>> loadStations() async {
+    final pending = _stationsFuture;
+    if (pending != null) return pending;
+    final future = _loadStations();
+    _stationsFuture = future;
+    try {
+      return await future;
+    } catch (_) {
+      _stationsFuture = null;
+      rethrow;
+    }
   }
 
   Future<List<RadioStation>> _loadStations() async {

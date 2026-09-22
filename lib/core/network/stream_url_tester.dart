@@ -186,13 +186,15 @@ class StreamUrlTester {
     } catch (_) {}
   }
 
-  /// 并行探测，只返回当前能连上的电台。可取消；每测完一个 URL 回调 [onUrlResult]。
+  /// 并行探测，只返回当前能连上的电台。可取消；每测完一个 URL 回调 [onUrlTested]。
+  ///
+  /// [onUrlTested] 拿到的是**仍在增量写入的同一个** urlOk map：调用方不要留存它，
+  /// 需要快照时自行复制。
   Future<List<RadioStation>> keepReachable(
     List<RadioStation> stations, {
     int concurrency = 4,
     CancelToken? cancel,
     void Function(int done, int total)? onProgress,
-    void Function(Map<String, bool> urlOk)? onUrlResult,
     void Function(
       String url,
       bool ok,
@@ -205,10 +207,7 @@ class StreamUrlTester {
     final total = unique.length;
     onProgress?.call(0, total);
     if (total == 0) return const [];
-    if (cancel?.isCancelled ?? false) {
-      onUrlResult?.call(const {});
-      return const [];
-    }
+    if (cancel?.isCancelled ?? false) return const [];
 
     final urlOk = <String, bool>{};
     var next = 0;
@@ -235,9 +234,6 @@ class StreamUrlTester {
         if (cancel?.isCancelled ?? false) return;
         done++;
         onProgress?.call(done, total);
-        // urlOk 只在此处增量写入；把同一个 map 引用交给调用方，避免每个
-        // URL 完成时复制一份越来越大的全量快照。
-        onUrlResult?.call(urlOk);
         onUrlTested?.call(url, urlOk[url] == true, done, total, urlOk);
       }
     }
