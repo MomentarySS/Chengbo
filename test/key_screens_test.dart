@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:chengbo/core/brand.dart';
 import 'package:chengbo/core/network/itunes_podcast_client.dart';
 import 'package:chengbo/core/network/network_status.dart';
 import 'package:chengbo/core/network/podcast_discovery.dart';
@@ -22,6 +23,7 @@ import 'package:chengbo/features/podcast/podcast_providers.dart';
 import 'package:chengbo/features/radio/radio_providers.dart';
 import 'package:chengbo/features/radio/radio_screen.dart';
 import 'package:chengbo/features/radio/station_catalog_setup_screen.dart';
+import 'package:chengbo/features/settings/about_screen.dart';
 import 'package:chengbo/features/settings/appearance_screen.dart';
 import 'package:chengbo/features/settings/data_management_screen.dart';
 import 'package:chengbo/shared/widgets/empty_state.dart';
@@ -230,5 +232,21 @@ void main() {
     );
     await tester.tap(find.text('显示全部'));
     expect(cleared, isTrue);
+  });
+
+  testWidgets('About screen renders tagline and brand slogan', (tester) async {
+    await tester.pumpWidget(
+      _app(
+        const Scaffold(body: AboutScreen()),
+      ),
+    );
+    // Full subtitle line (tagline + version) is one Text widget.
+    final subtitleLine =
+        '${AppBrand.displayName} · ${AppBrand.tagline} v${AppBrand.version}';
+    expect(find.text(subtitleLine), findsOneWidget);
+    // slogan is its own Text widget below the subtitle.
+    expect(find.text(AppBrand.slogan), findsOneWidget);
+    // tagline appears inside the subtitle (substring match).
+    expect(find.textContaining(AppBrand.tagline), findsAtLeastNWidgets(1));
   });
 }

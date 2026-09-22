@@ -18,7 +18,17 @@ class AboutScreen extends StatelessWidget {
           const ListTile(
             leading: Icon(Icons.info_outline),
             title: Text('关于'),
-            subtitle: Text('${AppBrand.displayName} · ${AppBrand.tagline} v${AppBrand.version}'),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  '${AppBrand.displayName} · ${AppBrand.tagline} v${AppBrand.version}',
+                ),
+                SizedBox(height: 2),
+                Text(AppBrand.slogan),
+              ],
+            ),
           ),
           ListTile(
             leading: const Icon(Icons.privacy_tip_outlined),
