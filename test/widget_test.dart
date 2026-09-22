@@ -819,6 +819,28 @@ Length1=-1
     expect(PodcastOpml.decode('not-opml'), isNull);
   });
 
+  test('PodcastFeed equality keys family providers by id', () {
+    const first = PodcastFeed(
+      id: 'feed-1',
+      title: '旧标题',
+      feedUrl: 'https://example.com/old.xml',
+    );
+    const refreshed = PodcastFeed(
+      id: 'feed-1',
+      title: '新标题',
+      feedUrl: 'https://example.com/new.xml',
+    );
+    const other = PodcastFeed(
+      id: 'feed-2',
+      title: '其他',
+      feedUrl: 'https://example.com/other.xml',
+    );
+
+    expect(first, refreshed);
+    expect(first.hashCode, refreshed.hashCode);
+    expect(first, isNot(other));
+  });
+
   test('RadioBrowserClient.mergeById keeps first occurrence', () {
     const first = RadioStation(id: '1', name: '甲', streamUrl: 'https://a.example/a.m3u8');
     const dup = RadioStation(id: '1', name: '乙', streamUrl: 'https://a.example/a2.m3u8');

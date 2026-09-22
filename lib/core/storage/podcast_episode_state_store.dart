@@ -122,7 +122,14 @@ class PodcastEpisodeStateStore {
     return _state.progressFor(guid);
   }
 
-  Future<void> setPodcastProgress(String guid, Duration position) async {
+  /// [flush] 为 true 时同步落盘，用于暂停 / 停止 / 播完 / 退出等最终位置。
+  /// 播放中的周期性写盘用默认的 false：只交给系统页缓存，
+  /// 避免按秒 fsync 整个状态文件。
+  Future<void> setPodcastProgress(
+    String guid,
+    Duration position, {
+    bool flush = false,
+  }) async {
     if (guid.isEmpty) return;
     final nextProgress = Map<String, Duration>.from(_state.progress);
     if (position <= Duration.zero) {
@@ -131,7 +138,7 @@ class PodcastEpisodeStateStore {
       nextProgress[guid] = position;
     }
     _state = _state.copyWith(progress: nextProgress);
-    await _persist();
+    await _persist(flush: flush);
   }
 
   Future<Set<String>> getListenedEpisodeGuids() async {
@@ -158,9 +165,10 @@ class PodcastEpisodeStateStore {
     await _persist();
   }
 
-  Future<void> _persist() async {
+  /// 默认同步落盘；只有播放中的周期性进度写盘才传 `flush: false`。
+  Future<void> _persist({bool flush = true}) async {
     final file = _file;
     if (file == null) return;
-    await file.writeAsString(jsonEncode(_state.toJson()), flush: true);
+    await file.writeAsString(jsonEncode(_state.toJson()), flush: flush);
   }
 }

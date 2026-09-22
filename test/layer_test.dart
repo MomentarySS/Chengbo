@@ -874,6 +874,24 @@ void main() {
     expect(PodcastEpisodeState.fromJson(merged.toJson()).toJson(), merged.toJson());
   });
 
+  test('PodcastEpisodeStateStore keeps in-memory progress when not flushing', () async {
+    final store = PodcastEpisodeStateStore.memory();
+    // 周期性写盘（flush: false）仍要立刻更新内存，否则暂停时读到的位置是旧的。
+    await store.setPodcastProgress('ep-1', const Duration(seconds: 42));
+    expect(await store.getPodcastProgress('ep-1'), const Duration(seconds: 42));
+
+    await store.setPodcastProgress('ep-1', const Duration(seconds: 90), flush: true);
+    expect(await store.getPodcastProgress('ep-1'), const Duration(seconds: 90));
+
+    // 归零等于清除，与旧行为一致。
+    await store.setPodcastProgress('ep-1', Duration.zero);
+    expect(await store.getPodcastProgress('ep-1'), isNull);
+
+    // 空 guid 不写入。
+    await store.setPodcastProgress('', const Duration(seconds: 5));
+    expect(await store.getPodcastProgress(''), isNull);
+  });
+
   test('AppStorage restoreBackup replaces owned prefs and keeps secrets', () async {
     SharedPreferences.setMockInitialValues({
       'favorite_station_ids': ['old'],
@@ -2653,6 +2671,57 @@ void main() {
     expect(
       PodcastDownloadLogic.episodeDownloadLabel(status: EpisodeDownloadStatus.none),
       isNull,
+    );
+  });
+
+  test('PodcastDownloadLogic.shouldNotifyProgress throttles download ticks', () {
+    const fresh = Duration.zero;
+    const stale = Duration(milliseconds: 300);
+
+    // 进度没怎么动、间隔也短：不通知（一次下载上千次回调里的绝大多数）。
+    expect(
+      PodcastDownloadLogic.shouldNotifyProgress(
+        next: 0.5005,
+        previous: 0.5,
+        sinceLast: const Duration(milliseconds: 40),
+      ),
+      isFalse,
+    );
+    // 进度变化达到 1%：通知。
+    expect(
+      PodcastDownloadLogic.shouldNotifyProgress(
+        next: 0.51,
+        previous: 0.5,
+        sinceLast: fresh,
+      ),
+      isTrue,
+    );
+    // 进度几乎没动，但已经过了间隔上限：兜底通知，避免慢速下载看起来卡住。
+    expect(
+      PodcastDownloadLogic.shouldNotifyProgress(
+        next: 0.5001,
+        previous: 0.5,
+        sinceLast: stale,
+      ),
+      isTrue,
+    );
+    // 进度回退也按绝对差处理。
+    expect(
+      PodcastDownloadLogic.shouldNotifyProgress(
+        next: 0.4,
+        previous: 0.5,
+        sinceLast: fresh,
+      ),
+      isTrue,
+    );
+    // 刚开始下、进度还很小：不通知。0% 已由 download() 在发起前预置。
+    expect(
+      PodcastDownloadLogic.shouldNotifyProgress(
+        next: 0.004,
+        previous: 0.0,
+        sinceLast: fresh,
+      ),
+      isFalse,
     );
   });
 

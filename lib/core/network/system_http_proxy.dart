@@ -27,6 +27,7 @@ abstract final class SystemHttpProxy {
   static WindowsIeProxy? Function()? debugWindowsProxyLoader;
   static WindowsIeProxy? _cachedWindows;
   static var _windowsLoaded = false;
+  static Future<WindowsIeProxy?>? _windowsLoadFuture;
   static String? _cachedLocalHttpProxy;
 
   /// Clash / Clash Verge / v2rayN / NekoBox 常见 HTTP 混合端口。
@@ -35,6 +36,7 @@ abstract final class SystemHttpProxy {
   static void resetCache() {
     _cachedWindows = null;
     _windowsLoaded = false;
+    _windowsLoadFuture = null;
     _cachedLocalHttpProxy = null;
   }
 
@@ -200,15 +202,48 @@ abstract final class SystemHttpProxy {
     return match?.group(1)?.trim();
   }
 
-  static WindowsIeProxy? readWindowsIeProxyFromRegistry() {
+  /// 异步加载 Windows Internet 选项，避免首次网络请求在主 isolate 同步
+  /// spawn 多个 `reg` 进程。
+  static Future<WindowsIeProxy?> preloadWindowsProxy() {
+    if (_windowsLoadFuture != null) return _windowsLoadFuture!;
+    if (_windowsLoaded) return Future.value(_cachedWindows);
+    _windowsLoaded = true;
+    final debugLoader = debugWindowsProxyLoader;
+    if (debugLoader != null) {
+      try {
+        _cachedWindows = debugLoader();
+      } catch (_) {
+        _cachedWindows = null;
+      }
+      return Future.value(_cachedWindows);
+    }
+    if (!Platform.isWindows) return Future.value(null);
+
+    final future = _readWindowsIeProxyFromRegistry();
+    _windowsLoadFuture = future.then((proxy) {
+      _cachedWindows = proxy;
+      return proxy;
+    });
+    return _windowsLoadFuture!;
+  }
+
+  static Future<WindowsIeProxy?> readWindowsIeProxyFromRegistry() {
+    return _readWindowsIeProxyFromRegistry();
+  }
+
+  static Future<WindowsIeProxy?> _readWindowsIeProxyFromRegistry() async {
     if (!Platform.isWindows) return null;
     try {
-      final enabled = parseRegDwordEnabled(_regQuery('ProxyEnable'));
+      final enabled = parseRegDwordEnabled(await _regQuery('ProxyEnable'));
       if (!enabled) return const WindowsIeProxy(enabled: false);
+      final values = await Future.wait([
+        _regQuery('ProxyServer'),
+        _regQuery('ProxyOverride'),
+      ]);
       return WindowsIeProxy(
         enabled: true,
-        server: parseRegSz(_regQuery('ProxyServer'), 'ProxyServer') ?? '',
-        override: parseRegSz(_regQuery('ProxyOverride'), 'ProxyOverride') ?? '',
+        server: parseRegSz(values[0], 'ProxyServer') ?? '',
+        override: parseRegSz(values[1], 'ProxyOverride') ?? '',
       );
     } catch (_) {
       return null;
@@ -257,14 +292,11 @@ abstract final class SystemHttpProxy {
     if (debugWindowsProxyLoader != null) {
       return debugWindowsProxyLoader!();
     }
-    if (_windowsLoaded) return _cachedWindows;
-    _windowsLoaded = true;
-    _cachedWindows = readWindowsIeProxyFromRegistry();
     return _cachedWindows;
   }
 
-  static String _regQuery(String value) {
-    final result = Process.runSync(
+  static Future<String> _regQuery(String value) async {
+    final result = await Process.run(
       'reg',
       [
         'query',

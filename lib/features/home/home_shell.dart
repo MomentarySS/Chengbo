@@ -33,6 +33,12 @@ class HomeShell extends ConsumerStatefulWidget {
 
 class _HomeShellState extends ConsumerState<HomeShell> {
   int _index = 0;
+  late final List<Widget?> _pages = <Widget?>[
+    const RadioScreen(),
+    null,
+    null,
+    null,
+  ];
 
   @override
   void initState() {
@@ -83,12 +89,19 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     ),
   ];
 
-  static const _pages = [
-    RadioScreen(),
-    PodcastScreen(),
-    ListeningScreen(),
-    SettingsScreen(),
-  ];
+  Widget _pageFor(int index) => switch (index) {
+        0 => const RadioScreen(),
+        1 => const PodcastScreen(),
+        2 => const ListeningScreen(),
+        _ => const SettingsScreen(),
+      };
+
+  void _selectPage(int index) {
+    if (_pages[index] == null) {
+      _pages[index] = _pageFor(index);
+    }
+    setState(() => _index = index);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -142,7 +155,9 @@ class _HomeShellState extends ConsumerState<HomeShell> {
           Expanded(
             child: IndexedStack(
               index: _index,
-              children: _pages,
+              children: [
+                for (final page in _pages) page ?? const SizedBox.shrink(),
+              ],
             ),
           ),
           MiniPlayer(
@@ -175,7 +190,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
               children: [
                 NavigationRail(
                   selectedIndex: _index,
-                  onDestinationSelected: (value) => setState(() => _index = value),
+                  onDestinationSelected: _selectPage,
                   labelType: NavigationRailLabelType.all,
                   destinations: _destinations
                       .map(
@@ -203,7 +218,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
           body: body,
           bottomNavigationBar: NavigationBar(
             selectedIndex: _index,
-            onDestinationSelected: (value) => setState(() => _index = value),
+            onDestinationSelected: _selectPage,
             destinations: _destinations,
           ),
         ),

@@ -384,7 +384,7 @@ final playingEpisodeChaptersProvider = FutureProvider<List<PodcastChapter>>((ref
 });
 
 final podcastProgressProvider =
-    FutureProvider.family<Duration?, String>((ref, episodeGuid) async {
+    FutureProvider.autoDispose.family<Duration?, String>((ref, episodeGuid) async {
   final storage = await ref.watch(appStorageProvider.future);
   return storage.getPodcastProgress(episodeGuid);
 });
@@ -475,12 +475,26 @@ class PodcastDownloadsNotifier extends StateNotifier<PodcastDownloadState> {
     final failed = Set<String>.from(state.failed)..remove(episode.guid);
     _inflightFeedByGuid[episode.guid] = feed.id;
     state = state.copyWith(progress: progress, failed: failed);
+    // Dio 按块回调进度，一次下载可能上千次。节流后只在进度变化 1%
+    // 或间隔 300ms 时更新状态，避免整页单集列表跟着重排。
+    var lastNotified = 0.0;
+    var lastNotifiedAt = DateTime.now();
     try {
       final store = await _ref.read(podcastDownloadStoreProvider.future);
       final record = await store.download(
         feed: feed,
         episode: episode,
         onProgress: (value) {
+          final now = DateTime.now();
+          if (!PodcastDownloadLogic.shouldNotifyProgress(
+            next: value,
+            previous: lastNotified,
+            sinceLast: now.difference(lastNotifiedAt),
+          )) {
+            return;
+          }
+          lastNotified = value;
+          lastNotifiedAt = now;
           final next = Map<String, double>.from(state.progress)..[episode.guid] = value;
           state = state.copyWith(progress: next);
         },

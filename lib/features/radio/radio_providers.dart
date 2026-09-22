@@ -231,31 +231,43 @@ class StationsNotifier extends StateNotifier<AsyncValue<List<RadioStation>>> {
       final cancel = CancelToken();
       _probeCancel = cancel;
       var testedUrlOk = <String, bool>{};
+      final stationCountByUrl = <String, int>{};
+      final previousVisibleCountByUrl = <String, int>{};
+      for (final station in catalog) {
+        if (station.source == StationSource.custom) continue;
+        final url = station.streamUrl.trim();
+        stationCountByUrl[url] = (stationCountByUrl[url] ?? 0) + 1;
+        if (previousIds.contains(station.id)) {
+          previousVisibleCountByUrl[url] =
+              (previousVisibleCountByUrl[url] ?? 0) + 1;
+        }
+      }
       List<RadioStation> snapshot() => StationProbeLogic.visibleDuringProbe(
             catalog: catalog,
             previousIds: previousIds,
             testedUrlOk: testedUrlOk,
           );
       if (!mounted) return StationReloadResult.skipped;
-      state = AsyncData(snapshot());
-      _publishProbeProgress(done: 0, total: 0, found: snapshot().length);
+      final initialVisible = snapshot();
+      var found = initialVisible.length;
+      state = AsyncData(initialVisible);
+      _publishProbeProgress(done: 0, total: 0, found: found);
 
       final probed = await tester.keepReachable(
         catalog,
         cancel: cancel,
-        onProgress: (done, total) {
-          _publishProbeProgress(done: done, total: total, found: snapshot().length);
-        },
-        onUrlResult: (urlOk) {
+        onUrlTested: (url, ok, done, total, urlOk) {
           testedUrlOk = urlOk;
+          final allStations = stationCountByUrl[url] ?? 0;
+          final previouslyVisible = previousVisibleCountByUrl[url] ?? 0;
+          found += ok ? allStations - previouslyVisible : -previouslyVisible;
           if (!mounted) return;
           final visible = snapshot();
           state = AsyncData(visible);
-          final progress = _ref.read(stationProbeProgressProvider);
           _publishProbeProgress(
-            done: progress.done,
-            total: progress.total,
-            found: visible.length,
+            done: done,
+            total: total,
+            found: found,
           );
         },
       );

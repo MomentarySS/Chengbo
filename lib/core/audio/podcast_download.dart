@@ -116,6 +116,22 @@ abstract final class PodcastDownloadLogic {
     return pending < max ? pending : max;
   }
 
+  /// 下载进度通知节流：Dio 按块回调，一次下载可能上千次。
+  /// 进度至少变化 [progressNotifyStep]，或距上次通知超过 [progressNotifyInterval]。
+  static const progressNotifyStep = 0.01;
+  static const progressNotifyInterval = Duration(milliseconds: 300);
+
+  static bool shouldNotifyProgress({
+    required double next,
+    required double previous,
+    required Duration sinceLast,
+    double step = progressNotifyStep,
+    Duration interval = progressNotifyInterval,
+  }) {
+    if ((next - previous).abs() >= step) return true;
+    return sinceLast >= interval;
+  }
+
   static bool shouldShowFailureNotice({
     required int? previousSeq,
     required int nextSeq,

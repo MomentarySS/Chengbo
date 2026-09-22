@@ -193,6 +193,13 @@ class StreamUrlTester {
     CancelToken? cancel,
     void Function(int done, int total)? onProgress,
     void Function(Map<String, bool> urlOk)? onUrlResult,
+    void Function(
+      String url,
+      bool ok,
+      int done,
+      int total,
+      Map<String, bool> urlOk,
+    )? onUrlTested,
   }) async {
     final unique = uniqueStreamUrls(stations);
     final total = unique.length;
@@ -228,7 +235,10 @@ class StreamUrlTester {
         if (cancel?.isCancelled ?? false) return;
         done++;
         onProgress?.call(done, total);
-        onUrlResult?.call(Map<String, bool>.from(urlOk));
+        // urlOk 只在此处增量写入；把同一个 map 引用交给调用方，避免每个
+        // URL 完成时复制一份越来越大的全量快照。
+        onUrlResult?.call(urlOk);
+        onUrlTested?.call(url, urlOk[url] == true, done, total, urlOk);
       }
     }
 

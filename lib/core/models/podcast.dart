@@ -30,6 +30,13 @@ class PodcastFeed {
   final String? description;
   final String? homepage;
   final String? imageUrl;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is PodcastFeed && other.id == id;
+
+  @override
+  int get hashCode => id.hashCode;
 }
 
 class PodcastEpisode {

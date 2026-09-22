@@ -606,9 +606,9 @@ class RadioAudioHandler extends BaseAudioHandler with SeekHandler {
     );
   }
 
-  /// 进度写盘节流：播放中最多每秒写一次 SharedPreferences，
-  /// 暂停 / 停止 / 播完时强制写，保证最终位置不丢。
-  static const _progressPersistInterval = Duration(seconds: 1);
+  /// 进度写盘节流：播放中最多每 [_progressPersistInterval] 写一次。
+  /// 暂停 / 停止 / 播完 / 退出时强制同步落盘，保证最终位置不丢。
+  static const _progressPersistInterval = Duration(seconds: 5);
   DateTime? _lastProgressPersistAt;
 
   Future<void> _persistProgress(PlaybackItem? item, {bool force = false}) async {
@@ -620,7 +620,11 @@ class RadioAudioHandler extends BaseAudioHandler with SeekHandler {
       return;
     }
     _lastProgressPersistAt = now;
-    await _storage.setPodcastProgress(item!.episodeGuid!, _player.position);
+    await _storage.setPodcastProgress(
+      item!.episodeGuid!,
+      _player.position,
+      flush: force,
+    );
   }
 
   Future<void> _ensureSession(PlaybackKind kind) async {
@@ -684,6 +688,8 @@ class RadioAudioHandler extends BaseAudioHandler with SeekHandler {
   }
 
   Future<void> dispose() async {
+    // 退出前把最后一次进度同步落盘，避免周期性写盘的间隔造成丢位置。
+    await _persistProgress(_currentItem, force: true);
     await _networkSubscription?.cancel();
     await _devicesSubscription?.cancel();
     _bufferWatchdog?.cancel();

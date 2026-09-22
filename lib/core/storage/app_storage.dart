@@ -144,8 +144,16 @@ class AppStorage {
     return _episodeStateStore.getPodcastProgress(episodeGuid);
   }
 
-  Future<void> setPodcastProgress(String episodeGuid, Duration position) async {
-    await _episodeStateStore.setPodcastProgress(episodeGuid, position);
+  Future<void> setPodcastProgress(
+    String episodeGuid,
+    Duration position, {
+    bool flush = false,
+  }) async {
+    await _episodeStateStore.setPodcastProgress(
+      episodeGuid,
+      position,
+      flush: flush,
+    );
   }
 
   Future<List<PodcastHistoryEntry>> getPodcastHistory() async {
