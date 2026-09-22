@@ -63,7 +63,9 @@ Known gaps (not shipped):
 
 ## Brand Commitments
 
-- Display name: **澄波**. English slug: **Chengbo**. Tagline: **听国内广播**.
+- Display name: **澄波**. English slug: **Chengbo**. Tagline: **听国内广播**. Brand slogan: **静水之上，波声不息**.
+- Tagline 是产品描述（"做什么"）：README 顶头与商店副标题已用；UA 只报产品名，不含 tagline。
+- Brand slogan 是品牌口号（"气质是什么"）：关于页已落地；Splash 与官网首屏尚未实现。两层并存，不要互相替换。
 - UI copy is Chinese.
 - User-Agent: `Chengbo/2.0.2 (Flutter; chengbo radio)`.
 - License: MIT.

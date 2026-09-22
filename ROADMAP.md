@@ -17,7 +17,6 @@
 
 ### 听感与手势
 
-- 通知 / 锁屏封面不用 favicon.ico
 - Android 直播缓冲优化
 - 电台 / 单集滑动手势（仅 Android）
 - 迷你条左右滑切台 / 跳秒
@@ -38,6 +37,22 @@
 - 按节目自动下载最新一集
 - 章节上一章 / 下一章
 - 时间戳书签
+
+### UI 升级（已出计划，待实施）
+
+计划文档在 `docs/design/`。**未实施，不要当成已发布能力。**
+
+- **v2.1 移动端**（[计划已就绪 v1.2](docs/design/mobile-v2-1-plan.md)）
+  - mini player 播客精确剩余时间（**仅播客**；电台无剩余时长语义）
+  - Android widget 视觉重做：Material You 动态色 + 深色模式 + M3 图标
+  - 新增 Android「待听」widget（4×2 cell，未听单集列表 + 点击直接播放）
+  - 原「通知 / 锁屏封面不用 favicon.ico」**已于 1.6.x 实现**，条目已移除
+- **v2.2 桌面侧栏窗口**（[计划已就绪 v1.1](docs/design/desktop-sidebar-window-plan.md)）
+  - Windows 720×540 无边框侧栏窗口（当前播放 / 队列 / 收藏 三栏）
+  - 三种窗口形态互斥：浮条 / 侧栏 / 完整窗口
+  - 磁吸贴边 + 工作区避让；Ctrl+Shift+S 切换
+  - 完成后接 P1：桌面 hover 态、键盘导航面板
+- 研究输入：[移动端 UX 升级研究（2026-09）](docs/design/mobile-research-2026-09.md)
 
 ---
 
