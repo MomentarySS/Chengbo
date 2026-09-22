@@ -9,6 +9,7 @@ import '../../core/audio/list_swipe.dart';
 import '../../core/audio/playback_logic.dart';
 import '../../core/audio/now_playing_hero.dart';
 import '../../core/audio/radio_audio_handler.dart';
+import '../../core/audio/remaining_time.dart';
 import '../../core/models/radio_station.dart';
 import '../../features/radio/radio_providers.dart';
 import '../../core/providers/app_providers.dart';
@@ -50,6 +51,8 @@ class MiniPlayer extends ConsumerWidget {
             final skin = context.chengboSkin;
             final tags = isPodcast ? const ['播客'] : [current.subtitle];
             final sleepActive = ref.watch(sleepTimerProvider).isActive;
+            final showRemaining =
+                isPodcast && !sleepActive && !loading && !hasError;
 
             return SafeArea(
               top: false,
@@ -112,13 +115,23 @@ class MiniPlayer extends ConsumerWidget {
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         mainAxisSize: MainAxisSize.min,
                                         children: [
-                                          Text(
-                                            current.title,
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                                                  fontWeight: FontWeight.w600,
+                                          Row(
+                                            children: [
+                                              Expanded(
+                                                child: Text(
+                                                  current.title,
+                                                  maxLines: 1,
+                                                  overflow: TextOverflow.ellipsis,
+                                                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                                        fontWeight: FontWeight.w600,
+                                                      ),
                                                 ),
+                                              ),
+                                              if (showRemaining) ...[
+                                                const SizedBox(width: 6),
+                                                _RemainingTime(handler: handler, current: current),
+                                              ],
+                                            ],
                                           ),
                                           const SizedBox(height: 2),
                                           _IcyStatusLine(
@@ -282,6 +295,36 @@ class _MiniProgressBar extends StatelessWidget {
           minHeight: 3,
           backgroundColor: colorScheme.surfaceContainerHighest,
           color: colorScheme.primary,
+        );
+      },
+    );
+  }
+}
+
+class _RemainingTime extends StatelessWidget {
+  const _RemainingTime({required this.handler, required this.current});
+
+  final RadioAudioHandler handler;
+  final PlaybackItem current;
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return StreamBuilder<Duration>(
+      stream: handler.player.positionStream,
+      builder: (context, snapshot) {
+        final label = RemainingTimeLogic.label(
+          duration: current.duration ?? handler.player.duration,
+          position: snapshot.data ?? Duration.zero,
+        );
+        if (label == null) return const SizedBox.shrink();
+        return Text(
+          label,
+          maxLines: 1,
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+                fontFeatures: const [FontFeature.tabularFigures()],
+              ),
         );
       },
     );
