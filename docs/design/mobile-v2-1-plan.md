@@ -73,6 +73,8 @@
 3. **测试**：`test/remaining_time_test.dart`（§6.5 全部条目）
 4. 提交
 
+> ✅ **完成**：PR #3 commit `5e86f65`。`RemainingTimeLogic`（10/10 测试）+ `ArtworkUrlLogic` 死分支清理。
+
 ### 第 2 步：mini player 接线（P0-A）
 
 5. `lib/shared/widgets/mini_player.dart`：
@@ -80,6 +82,8 @@
    - `showRemaining = isPodcast && !sleepActive && !loading && !hasError`
    - 新增 `_RemainingTime` widget（`StreamBuilder` on `handler.player.positionStream`）
 6. 提交
+
+> ✅ **完成**：PR #3 commits `85c27f5`（施工单 `mobile-v2-1-step-2-work-order.md` 入仓）+ `c0f9cae`（mini_player.dart 接线）。117/117 测试通过，analyze 0 issues。
 
 ### 第 3 步：widget 视觉（P0-B1）
 
@@ -149,7 +153,7 @@
 | 维度 | 现状（v2.0.2） | 目标（v2.1） |
 |---|---|---|
 | mini player 副文 | `_IcyStatusLine`：ICY 曲名（电台）/ 节目名（播客）/ 状态（缓冲、错误） | 不变 |
-| mini player 剩余时间 | 无 | 播客在标题行右侧显示 `剩余 mm:ss` |
+| mini player 剩余时间 | 无 | 播客在标题行右侧显示 `剩余 mm:ss`（**P0-A 已实现**：PR #3 / `5e86f65` + `85c27f5` + `c0f9cae`）|
 | 剩余时间数据源 | `_MiniProgressBar` 已用 `current.duration ?? handler.player.duration` | 复用同一套 |
 | widget 配色 | 硬编码 `@color/widget_background` = `#0D4F8C`（深澄蓝），**无深色变体、无动态色** | 跟随 App 的壁纸配色开关；深色模式有变体 |
 | widget 图标 | `android.R.drawable.ic_media_play` / `pause` / `next`（系统默认） | 自绘 M3 vector drawable |
@@ -779,6 +783,7 @@ ref.listen<List<InboxItem>>(inboxProvider, (_, next) => publishEpisodes(next));
 | 2026-09-22 | 1.0 | 初稿。勘察发现 P0-1 已实现（范围从 3 项收窄为 2 项）；建议拆分 P0-B1 / P0-B2；含 §0.2 实施顺序与全部语义边界 |
 | 2026-09-22 | 1.1 | §8 八项待核验全部完成（§8.1）；额外发现 `inboxProvider` 已存在，B2 规模由「大」下调为「中」（§8.2）；§3.3 / §6.2 相应更正 |
 | 2026-09-22 | **1.2** | **实施就绪（三项全含）**。B2 确认同版合入；§3.3 重写为完整实施规格（设计决策 / 数据源 / 序列化 / 布局 / `play` 动作 / Manifest / 触发时机）；§8.2 三项 B2 待核验全部解决；新增 §6.6 测试；§0.2 扩为 5 步 |
+| 2026-09-22 | **1.3** | **P0-A 落地**。第 1 步（`RemainingTimeLogic` + 死代码清理）+ 第 2 步（mini_player 接线）合并入 PR #3；施工单 `mobile-v2-1-step-2-work-order.md` 入仓；§0.2 加 ✅ 标记；§2 状态总览「mini player 剩余时间」标注已实现。剩余：第 3 步（P0-B1 widget Material You + 深色模式）+ 第 4 步（P0-B2 widget Latest Episodes）+ 第 5 步（全量验证） |
 
 ---
 
