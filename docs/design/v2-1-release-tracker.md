@@ -3,7 +3,7 @@
 > **目的**：v2.1 的 single source of truth。一个页面看清「设计 → 工单 → 实施 → release」全链路。
 >
 > 关联：
-> - 设计：[`mobile-v2-1-plan.md`](./mobile-v2-1-plan.md) (v1.3)
+> - 设计：[`mobile-v2-1-plan.md`](./mobile-v2-1-plan.md) (v1.4)
 > - 工单：Step 2 / 3 / 4 / 5（见下表）
 > - 仓库：`MomentarySS/Chengbo`
 
@@ -14,10 +14,10 @@
 | 编号 | 名称 | 规模 | 状态 |
 |---|---|---|---|
 | **P0-A** | mini player 播客精确剩余时间 | 小 | ✅ **已发**（PR #3，2026-09-22 合 main）|
-| **P0-B1** | Android widget 视觉重做（Material You + 深色 + M3 图标）| 中 | 🟡 **设计完成 + 工单就绪**，代码待实施 |
-| **P0-B2** | Android widget「Latest Episodes」模式（4×2 待听）| 中 | 🟡 **设计完成 + 工单就绪**，代码待实施 |
+| **P0-B1** | Android widget 视觉重做（Material You + 深色 + M3 图标）| 中 | ✅ **已发**（PR #6，2026-09-23 合 main）|
+| **P0-B2** | Android widget「Latest Episodes」模式（4×2 待听）| 中 | ✅ **已发**（PR #7，2026-09-23 合 main）|
 
-**结论**：1/3 已交付，2/3 等动代码。
+**结论**：3/3 已交付。v2.1 release 完成。
 
 ---
 
@@ -27,11 +27,11 @@
 |---|---|---|---|---|
 | **第 1 步** | 纯逻辑层（`RemainingTimeLogic` + 死代码清理）| （Step 1 与 Step 2 同 PR #3，未单出工单）| ✅ 已合 | PR #3 `5e86f65` |
 | **第 2 步** | mini player 接线 | [`mobile-v2-1-step-2-work-order.md`](./mobile-v2-1-step-2-work-order.md) | ✅ 已合 | PR #3 `c0f9cae`（外加工单 `85c27f5`）|
-| **第 3 步** | widget 视觉（P0-B1）| [`mobile-v2-1-step-3-work-order.md`](./mobile-v2-1-step-3-work-order.md) | ❌ **代码未动**（工单已 commit 到 `feat/v2-1-widget-b1` 分支，未推 PR）| branch: `feat/v2-1-widget-b1` commit `4919bae` |
-| **第 4 步** | widget「Latest Episodes」（P0-B2）| [`mobile-v2-1-step-4-work-order.md`](./mobile-v2-1-step-4-work-order.md) | ❌ **代码未动**（工单已在 `feat/v2-1-widget-b1` 入仓）| 同上 |
-| **第 5 步** | 全量验证 + release prep | [`mobile-v2-1-step-5-work-order.md`](./mobile-v2-1-step-5-work-order.md) | ⏸ **待 B1+B2 合 main 后执行** | — |
+| **第 3 步** | widget 视觉（P0-B1）| [`mobile-v2-1-step-3-work-order.md`](./mobile-v2-1-step-3-work-order.md) | ✅ 已合 | PR #6 `9e46161`（含 C1-C4）|
+| **第 4 步** | widget「Latest Episodes」（P0-B2）| [`mobile-v2-1-step-4-work-order.md`](./mobile-v2-1-step-4-work-order.md) | ✅ 已合 | PR #7 `b569cc6`（含 D1-D4）|
+| **第 5 步** | 全量验证 + release prep | [`mobile-v2-1-step-5-work-order.md`](./mobile-v2-1-step-5-work-order.md) | ✅ 已合 | main `25a7ff7` + tag v2.1.0 |
 
-> ⚠️ 当前 commit 状态：Step 3 / 4 / 5 工单**全部已落到 `feat/v2-1-widget-b1` 分支**（含本 tracker），尚未开 PR。
+> ✅ **v2.1 release 完成**：B1 + B2 + Step 5 全部合 main，main = `17956b2`，tag `v2.1.0` 已发布。
 
 ---
 
@@ -39,23 +39,27 @@
 
 | 分支 | 状态 | 内容 |
 |---|---|---|
-| `main` | 最新 = `68d91eb` | 已合并 PR #2 + PR #3（含 P0-A 全部代码 + 文档）|
-| `docs/brand-slogan` | 最新 = `404e040`（v1.3） | v2.1 plan + 设计文档 + slogan UI（PR #2 已合）；**新 PR 待开**（v1.4） |
-| `feat/v2-1-mobile` | 最新 = `c0f9cae` | P0-A 完整代码（PR #3 已合）|
-| `feat/v2-1-widget-b1` | 最新 = `4919bae` | Step 3 / 4 / 5 工单 + 本 tracker（**Draft PR 待开**）|
+| `main` | 最新 = `17956b2` | v2.1 全部代码 + 文档已合，tag `v2.1.0` 已发布 |
+| ~~`docs/brand-slogan`~~ | 已合入 PR #4 后删除 | |
+| ~~`feat/v2-1-mobile`~~ | PR #3 已合并后删除 | |
+| ~~`feat/v2-1-widget-b1`~~ | docs-only，PR #5 已合并后删除 | |
+| ~~`feat/v2-1-widget-b1-impl`~~ | PR #6 已合并后删除 | |
+| ~~`feat/v2-1-widget-b2`~~ | PR #7 已合并后删除 | |
 
-> **本工单落地后状态**：v2.1 全部设计 + 全部工单都入仓了，代码只差 B1 / B2 实施。
+> **v2.1 完成**：所有 feature branch 已合并并清理，main 只剩 release 后的微调（CHANGELOG / pubspec / ROADMAP / tracker / plan）。
 
 ---
 
-## 4. PR 节奏（剩余未做的事）
+## 4. PR 节奏
 
-| 编号 | 范围 | commit 数 | 分支 | PR 标题 |
-|---|---|---|---|---|
-| Step 3 (B1) | DeskWidget 字段 + Designer 同步 + Kotlin + 资源 | 4 | `feat/v2-1-widget-b1`（已存工单）| `feat(widget): Material You + dark variant + M3 icons (P0-B1)` |
-| Step 4 (B2) | Dart 契约 + 同步 + Kotlin + 资源 + Manifest + 测试 | 4 | `feat/v2-1-widget-b2`（待建）| `feat(widget): Latest Episodes 4x2 widget (P0-B2)` |
-| v1.4 plan | §0.2 / §2 / §7 更新 | 1 | `docs/brand-slogan`（待提交）| `docs: bump v2.1 plan to v1.4 (B1+B2 work orders ready)` |
-| 版本 bump | `pubspec.yaml` | 1 | main（实施完后）| `chore: bump version to 2.1.0` |
+（v2.1 全部 PR 已合并；下表为历史档案）
+
+| 编号 | 范围 | commit 数 | 分支 | PR 标题 | 状态 |
+|---|---|---|---|---|---|
+| Step 3 (B1) | DeskWidget 字段 + 同步 + Kotlin + 资源 | 4 | `feat/v2-1-widget-b1-impl` | `feat(widget): Material You + dark variant + M3 icons (P0-B1)` | ✅ PR #6 已合并 |
+| Step 4 (B2) | Dart 契约 + 同步 + Kotlin + 资源 + Manifest + 测试 | 4 | `feat/v2-1-widget-b2` | `feat(widget): Latest Episodes 4x2 widget (P0-B2)` | ✅ PR #7 已合并 |
+| v1.4 plan | §0.2 / §2 / §7 更新 | 1 | （与 Step 3/4/5 工单一并入 `feat/v2-1-widget-b1`） | `docs: bump v2.1 plan to v1.4` | ✅ PR #5 已合 |
+| 版本 bump | `pubspec.yaml` + CHANGELOG + ROADMAP + tracker + plan | 2 | main | `docs: release v2.1.0 notes` + `chore: bump version to 2.1.0` | ⏸ Step 5 收尾（本次 commit）|
 
 ---
 
@@ -91,4 +95,5 @@
 
 | 日期 | 版本 | 变更 |
 |---|---|---|
+| 2026-09-23 | 1.1 | v2.1 完成：P0-A + B1 + B2 全部合 main；Step 5 release prep（CHANGELOG + pubspec bump + ROADMAP + tracker + plan）执行中；feature branch 已清理；tag v2.1.0 已发布 |
 | 2026-09-22 | 1.0 | 初稿。P0-A 已合 main；P0-B1+B2 工单已入仓（feat/v2-1-widget-b1）；B1+B2 代码待实施；release prep 待 v1.4 plan bump 后启动 |

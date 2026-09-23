@@ -6,6 +6,39 @@ Format follows [Keep a Changelog](https://keepachangelog.com/zh-CN/), and the pr
 
 ---
 
+## [2.1.0] - 2026-09-23
+
+mobile player 升级与 Android widget 视觉重做（[计划](../../docs/design/mobile-v2-1-plan.md) v1.4，
+[实施追踪](../../docs/design/v2-1-release-tracker.md)）。
+
+### Added
+- mini player 标题行右侧显示播客单集精确剩余时间（`剩余 mm:ss` / `剩余 h:mm:ss`）。
+  睡眠倒计时激活 / 缓冲中 / 出错时整块隐藏
+- Android 桌面 widget 跟随系统壁纸配色（Material You 动态色；尊重 App 内「壁纸 / 系统配色」
+  开关，关闭时退回品牌深澄蓝）
+- Android 桌面 widget 深色系统模式配色变体（之前只有浅色）
+- Android 桌面 widget 采用 Material 3 矢量图标（替代旧系统 `ic_media_*` 拟物图标）
+- 新增 Android「待听」桌面 widget（4×2 cell）：列出 inbox 前 4 个未听单集（标题 + 节目名），
+  点击直接播放；空 inbox 显示「暂无未听单集 · 点此打开澄波」
+- 关于页展示品牌口号（沿用 tagline 之后的扩展文案）
+
+### Changed
+- mini player 剩余时间数据源复用现有 `_MiniProgressBar` 的同一套 `positionStream`
+  （两个 `StreamBuilder` 并发订阅安全）
+- widget 颜色与「壁纸 / 系统配色」开关联动（关闭时退回品牌深澄蓝；不再硬编码深澄蓝）
+- widget 根背景 / 文字色受深色系统模式影响（之前只有浅色变体；新增 `values-night/colors.xml`）
+
+### Fixed
+- 清理 `ArtworkUrlLogic.resolve` 中的死分支（jpg/jpeg/png/webp + 3 个 CDN host 的 if 块与
+  fall-through 等价）—— 行为不变
+- 修正 ROADMAP 中「电台累计」条目的错误语义（电台直播流没有「总时长」概念）
+
+### Known issues
+- widget 续播按钮宽度 40dp 低于 Android 无障碍建议的 48dp（既有问题，本版不修）
+- widget 配色跟系统深色模式，不跟 App 内「外观」开关（已知不一致，本版不修）
+
+---
+
 ## 2.0.2 / 2026-09-22
 
 播放性能与 I/O 优化，无新增功能，未改变对外行为。
