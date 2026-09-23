@@ -79,6 +79,10 @@ Future<void> handleDeskWidgetLaunch(WidgetRef ref) async {
         await ref.read(stationSkipProvider).skip(1);
       case DeskWidgetAction.resume:
         await _resumeFromWidget(ref);
+      case DeskWidgetAction.play:
+        // B2 待听 widget：完整实现见 desk_widget_sync.dart 的 _playFromWidget
+        // （与 publishEpisodes 一起在 D2 引入，避免 D1 单独加 publish 路径时缺函数）。
+        break;
       case DeskWidgetAction.open:
       case DeskWidgetAction.none:
         break;
