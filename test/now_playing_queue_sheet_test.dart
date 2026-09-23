@@ -7,7 +7,7 @@ import 'package:chengbo/core/providers/app_providers.dart';
 import 'package:chengbo/features/radio/radio_providers.dart';
 import 'package:chengbo/shared/widgets/now_playing_queue_sheet.dart';
 
-final _stations = [
+const _stations = [
   RadioStation(
     id: 's1',
     name: '东莞阳光1008',
@@ -33,9 +33,9 @@ Widget _harness() {
   return ProviderScope(
     overrides: [
       currentPlaybackProvider.overrideWith((ref) => PlaybackItem.fromStation(_stations.first)),
-      visibleStationsProvider.overrideWith((ref) => AsyncData(_stations)),
-      filteredStationsProvider.overrideWith((ref) => AsyncData(_stations)),
-      favoriteStationsProvider.overrideWith((ref) => AsyncData(_stations)),
+      visibleStationsProvider.overrideWith((ref) => const AsyncData(_stations)),
+      filteredStationsProvider.overrideWith((ref) => const AsyncData(_stations)),
+      favoriteStationsProvider.overrideWith((ref) => const AsyncData(_stations)),
     ],
     child: const MaterialApp(home: _Launcher()),
   );
