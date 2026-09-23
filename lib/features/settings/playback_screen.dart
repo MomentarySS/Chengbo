@@ -164,6 +164,27 @@ class PlaybackSettingsScreen extends ConsumerWidget {
                   ),
                 ),
           PlaybackSettingsScreen.sectionLabel('播客', context),
+          // 全局下载开关。原先挂在「某个节目」的详情页里 —— 语义错位，且占着
+          // 最高频的浏览路径；它属于「下载策略」，与下面的自动清理同组。
+          ref.watch(downloadWifiOnlyProvider).when(
+                data: (enabled) => SwitchListTile(
+                  secondary: const Icon(Icons.wifi_outlined),
+                  title: const Text('仅WiFi下载'),
+                  subtitle: const Text('蜂窝网络下不自动开始下载'),
+                  value: enabled,
+                  onChanged: (value) => ref.read(downloadWifiOnlyProvider.notifier).set(value),
+                ),
+                loading: () => const ListTile(
+                  leading: Icon(Icons.wifi_outlined),
+                  title: Text('仅WiFi下载'),
+                  trailing: SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2)),
+                ),
+                error: (error, _) => ListTile(
+                  leading: const Icon(Icons.wifi_outlined),
+                  title: const Text('仅WiFi下载'),
+                  subtitle: Text('加载失败: $error'),
+                ),
+              ),
           ListTile(
             leading: const Icon(Icons.fast_forward_outlined),
             title: const Text('快进 / 快退秒数'),
