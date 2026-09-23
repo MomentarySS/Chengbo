@@ -431,7 +431,7 @@ class _TransportRow extends ConsumerWidget {
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
             IconButton(
-              tooltip: '睡眠定时',
+              tooltip: sleepActive ? '关闭睡眠定时' : '睡眠定时',
               style: auxiliary,
               iconSize: 30,
               isSelected: sleepActive,
@@ -439,7 +439,10 @@ class _TransportRow extends ConsumerWidget {
                 sleepActive ? Icons.bedtime : Icons.bedtime_outlined,
                 color: iconColor,
               ),
-              onPressed: () => showSleepTimerSheet(context),
+              // 定时开着时再点一下就是关闭（想改时长再点一次开面板）。
+              onPressed: sleepActive
+                  ? () => ref.read(sleepTimerProvider.notifier).cancel()
+                  : () => showSleepTimerSheet(context),
             ),
             IconButton(
               tooltip: '上一台',
