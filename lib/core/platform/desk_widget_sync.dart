@@ -38,11 +38,18 @@ final deskWidgetSyncProvider = Provider<void>((ref) {
         snapshot.subtitle,
       );
       await HomeWidget.saveWidgetData<bool>(DeskWidgetLogic.playingKey, snapshot.playing);
+      // B1 动态色开关：仅 Kotlin 读取后生效；当前 Kotlin 未读 → 静默写入无害。
+      await HomeWidget.saveWidgetData<bool>(
+        DeskWidgetLogic.useDynamicColorKey,
+        snapshot.useDynamicColor,
+      );
       await HomeWidget.updateWidget(name: DeskWidgetLogic.androidName);
     } catch (_) {}
   }
 
   ref.listen<PlaybackItem?>(currentPlaybackProvider, (_, __) => publish());
+  // B1：开关变化时重发 widget（Kotlin 未读时也无副作用，仅多写一次 key）。
+  ref.listen<AsyncValue<bool>>(dynamicColorProvider, (_, __) => publish());
   ref.listen<AsyncValue<RadioAudioHandler>>(audioHandlerProvider, (previous, next) {
     sub?.cancel();
     sub = null;
