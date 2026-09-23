@@ -4,7 +4,7 @@
 
 工程包名为 `chengbo`，Windows 可执行文件为 `Chengbo.exe`，Android 应用 ID 为 `com.chengbo.chengbo`。
 
-当前版本：`2.0.2+38`（2026-09-22）。相对 2.0.1 为播放性能与 I/O 优化，无新增功能（细项见 [CHANGELOG](CHANGELOG.md)）。相对 1.5.4：发现播客（iTunes + 中文热榜）、版权库拦截、氛围包、台标与通知栏封面、Android 缓冲/手势/章节跳转、本机备份、车机播客、未听 inbox、按节目自动下载最新一集、时间戳书签、Windows 托盘、快捷键、开机启动与启动即迷你窗、Android 小组件下一台 / 续播；Android 播客开播切 speech 会话、蓝牙连回续播（默认关）、紧凑列表（默认标准）、正在播放静态图标、首次探测可取消/先听已测到的、关键页面 widget 测试；暂停后保留前台服务，进度与已听状态迁移到独立存储并纳入备份；精选约 409 台。
+当前版本：`2.1.0+39`（2026-09-23）。相对 2.0.2：mini player 标题行右侧显示播客精确剩余时间；Android 桌面 widget 跟随系统壁纸配色（Material You 动态色）+ 深色系统配色变体；M3 矢量图标替换旧系统拟物图标；新增 Android「待听」桌面 widget（4×2 cell，未听单集列表 + 点击直接播放）；关于页展示品牌口号（细项见 [CHANGELOG](CHANGELOG.md)）。相对 1.5.4：发现播客（iTunes + 中文热榜）、版权库拦截、氛围包、台标与通知栏封面、Android 缓冲/手势/章节跳转、本机备份、车机播客、未听 inbox、按节目自动下载最新一集、时间戳书签、Windows 托盘、快捷键、开机启动与启动即迷你窗、Android 小组件下一台 / 续播；Android 播客开播切 speech 会话、蓝牙连回续播（默认关）、紧凑列表（默认标准）、正在播放静态图标、首次探测可取消/先听已测到的、关键页面 widget 测试；暂停后保留前台服务，进度与已听状态迁移到独立存储并纳入备份；精选约 409 台。
 
 ## 功能
 
@@ -79,7 +79,7 @@ flutter pub get
 | Android SDK 目录表与 NDK     | 腾讯云 `mirrors.cloud.tencent.com/AndroidSDK` |
 | Windows NuGet                | 华为云 NuGet                                  |
 
-产物在 `dist/`，文件名跟 `pubspec.yaml` 的 `x.y.z` 走（当前为 `chengbo-2.0.2.apk`、`chengbo-windows-2.0.2.zip`、`chengbo-windows-2.0.2.exe`）。改版本后需重新 `.\scripts\pack.ps1`。本机有 `android/key.properties` 时 APK 用正式密钥签名；没有则回退 debug 签名。`minSdk` 23。Windows 双击 `.exe` 安装包安装，安装后从开始菜单启动；安装包支持卸载（控制面板 / 设置 → 应用）。
+产物在 `dist/`，文件名跟 `pubspec.yaml` 的 `x.y.z` 走（当前为 `chengbo-2.1.0.apk`、`chengbo-windows-2.1.0.zip`、`chengbo-windows-2.1.0.exe`）。改版本后需重新 `.\scripts\pack.ps1`。本机有 `android/key.properties` 时 APK 用正式密钥签名；没有则回退 debug 签名。`minSdk` 23。Windows 双击 `.exe` 安装包安装，安装后从开始菜单启动；安装包支持卸载（控制面板 / 设置 → 应用）。
 
 正式密钥在 `android/upload-keystore.jks`，密码在 `android/key.properties`，两份都已被 git 忽略。请复制到仓库外备份；丢了就无法再发「同一个 App」的更新。以前用 debug 签名装过的手机，不能直接覆盖安装，需先卸载（收藏等本机数据会清掉）。
 
@@ -184,7 +184,7 @@ test/                   # widget_test + layer_test
 ## 注意事项
 
 - 部分第三方流会失效，优先改 JSON 或在 App 内手动添加替代源
-- Radio Browser 会动态解析镜像；User-Agent 为 `Chengbo/2.0.2 (Flutter; chengbo radio)`
+- Radio Browser 会动态解析镜像；User-Agent 为 `Chengbo/2.1.0 (Flutter; chengbo radio)`
 - Windows 订阅境外 RSS（如 SoundOn）会走系统代理，并探测本机 Clash 常见端口；手机请用 Clash / NekoBox 的 VPN/TUN，并把澄波加入代理名单
 - Android 后台播放需通知权限（Android 13+）；系统要求 `minSdk` 23
 - Windows 需 `just_audio_windows`；中文路径编译已在 CMake 加 `/utf-8`
