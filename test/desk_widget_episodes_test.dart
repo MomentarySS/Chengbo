@@ -14,13 +14,13 @@ void main() {
 
     test('1 个 item → 1 元素数组，含 title / subtitle / guid', () {
       final items = [
-        InboxItem(
-          feed: const PodcastFeed(
+        const InboxItem(
+          feed: PodcastFeed(
             id: 'f1',
             title: '节目 A',
             feedUrl: 'https://example.com/rss',
           ),
-          episode: const PodcastEpisode(
+          episode: PodcastEpisode(
             guid: 'g1',
             title: '单集 1',
             audioUrl: 'https://example.com/ep1.mp3',
@@ -60,13 +60,13 @@ void main() {
 
     test('含特殊字符（引号 / emoji / 中文）→ 正确转义 + 还原', () {
       final items = [
-        InboxItem(
-          feed: const PodcastFeed(
+        const InboxItem(
+          feed: PodcastFeed(
             id: 'f1',
             title: '她说：「再见」👋',
             feedUrl: 'https://example.com/rss',
           ),
-          episode: const PodcastEpisode(
+          episode: PodcastEpisode(
             guid: 'g"with"quote',
             title: '第 1 集：你好 "世界" 🌍',
             audioUrl: 'https://example.com/ep1.mp3',
@@ -83,13 +83,13 @@ void main() {
 
     test('episode.title 为空串 → 仍输出该行（不崩）', () {
       final items = [
-        InboxItem(
-          feed: const PodcastFeed(
+        const InboxItem(
+          feed: PodcastFeed(
             id: 'f1',
             title: '节目 A',
             feedUrl: 'https://example.com/rss',
           ),
-          episode: const PodcastEpisode(
+          episode: PodcastEpisode(
             guid: 'g1',
             title: '',
             audioUrl: 'https://example.com/ep1.mp3',
