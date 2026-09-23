@@ -1023,8 +1023,12 @@ void _showEpisodeMenu(
   showModalBottomSheet<void>(
     context: context,
     showDragHandle: true,
+    // 这个菜单有 8–9 条（含「查看简介」时 9 条），标题还可能占两行。
+    // 默认 sheet 高度上限是屏幕的 9/16，超出的部分会被直接裁掉且滚不到
+    // ——「复制地址」/「分享」就是这样消失的。放开上限并让内容可滚。
+    isScrollControlled: true,
     builder: (sheetContext) => SafeArea(
-      child: Padding(
+      child: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
