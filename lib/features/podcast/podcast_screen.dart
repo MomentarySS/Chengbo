@@ -458,11 +458,6 @@ class _PodcastDetailScreenState extends ConsumerState<PodcastDetailScreen> {
                     },
             ),
           ] else ...[
-            IconButton(
-              tooltip: '选择多项',
-              icon: const Icon(Icons.checklist),
-              onPressed: _enterSelect,
-            ),
             PopupMenuButton<_DetailMoreAction>(
               tooltip: '更多',
               onSelected: (action) async {
