@@ -107,17 +107,17 @@
 
 | 编号 | 名称 | 工单 | 代码状态 |
 |---|---|---|---|
-| P1 | 播客详情页 + 播客播放器页瘦身（8 条）| [`mobile-v2-2-density-work-order.md`](./mobile-v2-2-density-work-order.md) | 🟡 工单已就绪，代码待实施 |
+| P1 | 播客详情页 + 播客播放器页瘦身（8 条）| [`mobile-v2-2-density-work-order.md`](./mobile-v2-2-density-work-order.md) | 🟡 **代码已实施**（7 commit `9238f2d`…`e6de631`），PR 待开 |
 | R3 | v2.2.0 收尾（版本 bump / CHANGELOG / ROADMAP / tag / `gh release` / `pack.ps1` 产物）| 待出 | ⏸ 最后一步，动前问用户 |
 
-### 7.3 基线（P1 起点）
+### 7.3 基线（P1 起点）与实施后
 
-| 项 | 值 |
-|---|---|
-| main | `dd8990c` |
-| 分支 | `feat/podcast-density` |
-| `flutter test` | 143/143 |
-| `flutter analyze` | 23 info（既有基线，非修复目标）|
+| 项 | P1 起点 | P1 实施后 |
+|---|---|---|
+| main | `dd8990c` | `dd8990c`（未动）|
+| 分支 | `feat/podcast-density` | `feat/podcast-density` |
+| `flutter test` | 143/143 | **152/152**（+2 纯逻辑 +7 widget）|
+| `flutter analyze` | 23 info（既有基线，非修复目标）| **23 info**（持平；改到的文件 0 issue）|
 
 ### 7.4 设计产物（效果图）
 
@@ -134,6 +134,7 @@
 
 | 日期 | 版本 | 变更 |
 |---|---|---|
+| 2026-09-23 | 1.5 | **P1 实施完成**（分支 `feat/podcast-density`，7 commit `9238f2d` D1 / `c6cb813` D3 / `5156e50` P2 / `fa8ac30` P1+P3 / `7aa62f1` D2 / `316039d` D4 / `e6de631` 守卫测试）。§7.2 的 P1 状态改为「代码已实施，PR 待开」，§7.3 改为「起点 / 实施后」双列：`flutter test` 143→**152**、`flutter analyze` 23→**23**（持平）。有牙验证 6 处改坏全部按预期理由失败，记录在工单 §11 |
 | 2026-09-23 | 1.4 | 加 **§7.4 设计产物（效果图）**：把两张 before/after 效果图从 gitignored 的 `dist/` 挪进 `docs/design/` 并在此登记 —— `radio-nowplaying-design.html`（R1 封面方案三选一，选定 A）、`podcast-density-design.html`（P1 的 8 条）。此前 `radio-nowplaying-design.html` 无任何引用，属孤儿文件 |
 | 2026-09-23 | 1.3 | 补 **§7 v2.2 段**：记录已合 main 的 PR #9（电台页三处 + 两页共享播放器规格）与 PR #10（单集菜单尾部裁切），并登记进行中的 P1（播客两页瘦身，工单 `mobile-v2-2-density-work-order.md`）与 R3（v2.2.0 收尾）。此前 tracker 停留在 v2.1.1，未记录 v2.2 的两条 PR |
 | 2026-09-23 | 1.2 | **v2.1.1 补丁**（分支 `fix/v2-1-1-radio-mini-bar`）。两处修复：① `lib/core/brand.dart` 版本常量停在 `2.0.2`（v2.1.0 release prep 漏 bump，`layer_test` 版本守卫一直红；影响关于页 / 隐私说明 / 备份 JSON / 全部网络 UA）② 移除电台迷你条底部 3px 主色条（无信息量 + 圆角裁切后像残留色带）。版本 bump 到 `2.1.1+40`，含 pubspec + brand.dart + .iss |

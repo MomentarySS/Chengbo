@@ -321,7 +321,7 @@ flutter test      # 基线 143/143；本工单新增后总数 = 143 + 新增
 5. 播放器：辅助行无 `ActionChip` 文本（`睡眠定时` / `书签` / `停止` / `跳过片头/尾` 均 `findsNothing`）；`find.byTooltip('睡眠定时')` / `find.byTooltip('书签')` 各 `findsOneWidget`
 6. 迷你条：`find.byTooltip('停止')` 仍在（守卫「停止仍有入口」）
 
-> 播放器 widget 测试需要真实 `RadioAudioHandler` 实例；若成本过高，把 5 / 6 降级为「对 `podcast_now_playing.dart` 的静态断言」（`ActionChip` 不出现 + 每个 `IconButton` 都有 `tooltip`），并在 commit message 里注明降级原因。
+> **实施结果（1.1）**：播放器页与迷你条**已降级为源码结构断言** —— 两者都要 `audioHandlerProvider` 给一个真的 `RadioAudioHandler`，而它的构造会起 just_audio 平台通道，widget 测试里拿不到（全仓测试都没有实例化过它）。详情页 5 条 + 播放器 2 条，共 7 条，全部落地在 `test/podcast_density_test.dart`。
 
 ### 6.3 「测试有牙」验证（**必做，不许跳过**）
 
@@ -419,4 +419,5 @@ flutter test      # 基线 143/143；本工单新增后总数 = 143 + 新增
 
 | 日期 | 版本 | 变更 |
 |---|---|---|
+| 2026-09-23 | 1.1 | **8 条已实施**（分支 `feat/podcast-density`，7 个 commit：`9238f2d` D1 / `c6cb813` D3 / `5156e50` P2 / `fa8ac30` P1+P3 / `7aa62f1` D2 / `316039d` D4 / `e6de631` 守卫测试）。验证：`flutter test` **152/152**（143 基线 + 2 纯逻辑 + 7 widget），`flutter analyze` **23 info**（与基线持平，改到的文件 0 issue）。§10 待拍板项按「我的默认」执行：1 → 播放与收听；2 → 嵌套打开现有 skip sheet；3 → 只显示非默认态；4 / 5 / 6 → **不做**。§6.3 有牙验证 6 处改坏全部以预期理由失败（面板 `isScrollControlled` 关掉 → 尾部跑出屏外；摘要分隔符改空格 → layer_test；`maxLines` 去掉 → 标题守卫；睡眠定时 tooltip 去掉 → 图标守卫；「选择多项」图标加回 → 顶栏守卫；设置页文案改掉 → D3 守卫）。§6.2 的播放器 2 条按预案降级为源码结构断言（理由见该节）|
 | 2026-09-23 | 1.0 | 初稿。基于效果图 `docs/design/podcast-density-design.html` 的 8 条已批准改动落成可施工工单。起点 main = `dd8990c`；基线 `flutter test` 143/143、`flutter analyze` 23 info（均已本机核实）|
