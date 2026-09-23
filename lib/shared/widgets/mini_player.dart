@@ -200,12 +200,7 @@ class MiniPlayer extends ConsumerWidget {
                         ],
                       ),
                       if (isPodcast)
-                        _MiniProgressBar(handler: handler, current: current)
-                      else if (playing && !loading)
-                        Container(
-                          height: 3,
-                          color: colorScheme.primary.withValues(alpha: 0.85),
-                        ),
+                        _MiniProgressBar(handler: handler, current: current),
                     ],
                   ),
                   ),
