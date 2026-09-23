@@ -10,7 +10,7 @@ abstract final class AppBrand {
   /// 与 [tagline] 并列，不要互相替换 —— 见 PRODUCT.md 的 Brand Commitments。
   static const slogan = '静水之上，波声不息';
 
-  static const version = '2.0.2';
+  static const version = '2.1.0';
   static const userAgent = 'Chengbo/$version (Flutter; chengbo radio)';
   static const podcastUserAgent = 'Chengbo/$version PodcastReader';
   static const podcastFallbackUserAgent =
