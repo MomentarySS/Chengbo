@@ -426,16 +426,22 @@ flutter test      # 基线 143/143；本工单新增后总数 = 143 + 新增
 - **代价**：无（高度收益不变）。
 - **当时的漏判**：§10 第 2 项只问了「跳过片头/尾 用哪种形态放进这个面板」，没问「面板的名字还成立吗」—— 名字与内容一起看才自洽。
 
-### 11.2 睡眠定时：倒计时移到封面之上 + 封面外沿随时间消失的光圈
+### 11.2 睡眠定时：倒计时移到封面之上（封面光圈已按反馈取消）
 
 - **起因**：定时开启后倒计时压在控制行下面，多出一行在最底部，视觉上很难看。
-- **做法**：
-  - 倒计时移到**封面之上**（`NowPlayingTopBar` 与 `_Cover` 之间），底部那份删除。
-  - `SleepTimerRing` 贴封面外沿画一圈：圆角沿用 `anchorRadius`，描边画在 child 盒子**外面**（封面本来就有外投影，说明这里不会被裁），**不占布局**。
-  - 剩余比例由 `SleepTimerState.startedAt` + `total` 推出的 `SleepTimerLogic.ringFraction` 算，`Stream.periodic(1s)` 驱动。字段只在分钟型 / 小睡时写入。
-- **刻意简化**：`ringFraction` 在没有连续时钟时返回 `null` —— 「本集结束」与「再听 N 集」画**静态**环，不假装有进度。要升级成「本集结束按单集进度收缩」「再听 N 集按 N 段离散弧」，需要把播放器进度接进环里，留作可选后续。
-- **两页差异（已知）**：电台页的倒计时仍在控制行下面、也没有光圈 —— 本次只动播客页（`radio_now_playing.dart` 是本 PR 的红线外）。要统一得另开改动。
-- **守卫**：`layer_test` 的 `ringFraction` 取值矩阵（0.5 / 1.0 / 0.0 / 过期不为负 / 无时钟为 null / 总时长 0 为 null）；播放器侧仍是源码结构断言（「倒计时只有一处且在封面之前」「封面套了光圈且复用封面圆角」）。
+- **保留的做法**：倒计时移到**封面之上**（`NowPlayingTopBar` 与 `_Cover` 之间），底部那份删除。
+- **已取消**（commit `0350a72`）：曾在封面外沿加过一圈随时间消失的 `SleepTimerRing`，用户看过真机后认为「读起来是干扰而不是计时」，**已整体移除** —— 连带 `SleepTimerState.startedAt` / `total` 与纯函数 `SleepTimerLogic.ringFraction` 一起删掉（不留死代码）。想要回来可以从 `379fde5` 取。
+- **两页差异（已知）**：电台页的倒计时仍在控制行下面 —— 本次只动播客页（`radio_now_playing.dart` 是本 PR 的红线外）。要统一得另开改动。
+- **守卫**：播放器侧是源码结构断言（「倒计时只有一处且在封面之前」）。
+
+### 11.3 跳过片头/尾面板：裁切 + 首帧崩溃（commit `b1e2390`）
+
+真机反馈「跳过片头/尾的栏显示不完整」，查下去是**两个独立故障**：
+
+1. **静默裁切**：`showPodcastSkipSheet` 既没设 `isScrollControlled`、也没有滚动容器。两组各 10 个 chip 在窄屏上要换 3 行，内容约 600px，而 9/16 高度上限在 360×800 上是 450px → 底部「保存」被裁掉且**滚不到**。
+2. **首帧崩溃**：`_introSeconds` / `_outroSeconds` 是 `late int`，却由异步 `_load()` 赋值 —— **首帧 build 跑在 await 之前**，读未初始化的 late 字段会抛 `LateInitializationError`，面板先闪一个错误块。更糟的是若存储慢、用户在加载完成前点「保存」，会把已设的值写成 0。现在改成可空 + 加载中转圈 + 未加载完时 `_save()` 空操作。
+
+守卫：`test/podcast_density_test.dart` 新增 widget 测试（360×800 下打开面板 → 「保存」必须在屏内 + `takeException()` 为 null）。两处都做了有牙验证：关掉 `isScrollControlled` → 「保存」落在 938px（屏高 800）失败；恢复 `late int` → 以 `LateInitializationError` 失败。
 
 ---
 
@@ -443,6 +449,7 @@ flutter test      # 基线 143/143；本工单新增后总数 = 143 + 新增
 
 | 日期 | 版本 | 变更 |
 |---|---|---|
+| 2026-09-23 | 1.5 | **真机第二轮反馈的两处改动**：`0350a72` 取消封面光圈（连带 `startedAt`/`total`/`ringFraction` 一并删掉，不留死代码；倒计时保留在封面之上）；`b1e2390` 修跳过片头/尾面板的**静默裁切**（缺 `isScrollControlled` + 无滚动容器，「保存」被裁且滚不到）与**首帧 `LateInitializationError`**（`late int` 由异步 `_load()` 赋值）。`flutter test` **156/156**、`flutter analyze` **17 info**（比基线低 6：本次改到的 `podcast_skip_sheet.dart` 的 4 条 + 之前两个文件各 1 条 + 光圈代码移除）。两处新守卫都做过有牙验证。另新增 `scripts/git-proxy.ps1`（探测本地代理端口再执行 git/gh，见 §12）|
 | 2026-09-23 | 1.4 | **追加两条真机评审后的改动**（§11）：`653922d`… 之后的 `ee20dbd`（「下载设置」→「节目设置」+ 下载/播放分组，文件与函数同步改名）与 `379fde5`（倒计时移到封面之上 + 封面外沿随时间消失的 `SleepTimerRing`，`SleepTimerState` 加 `startedAt`/`total` + 纯函数 `ringFraction`）。`flutter test` **157/157**、`flutter analyze` **21 info**（比基线**低 2**：顺手清掉了 `app_providers.dart` 与 `sleep_timer_sheet.dart` 里既有的 `prefer_const_constructors`，因为本次改到了这两个文件）。三条新守卫都做过有牙验证：`ringFraction` 无时钟返回 `1.0` → layer_test 失败；底部倒计时加回来 → 「只有一处」失败；封面去掉光圈 → 光圈守卫失败 |
 | 2026-09-23 | 1.3 | **修一处 D3 引入的回归**（commit `653922d`）：`downloadWifiOnlyProvider` 是**懒创建**的 `AsyncValue` —— 第一次读它才现场创建，那一刻是 `AsyncLoading`、`.value == null`。详情页原先那个常驻的「仅WiFi下载」开关在 `watch` 它，顺手把 provider 预热了；D3 把开关搬去设置后**没人预热**，于是 `ensureCanDownload` 读到 null → 当成「没开」→ **移动网络下「全部下载」照下不误、也没有提示**。修法：新增 `resolveDownloadWifiOnly()`，provider 没加载完时直接问存储（存储就是它的数据源）；`ensureCanDownload` 与 `PodcastDownloadsNotifier.download()`（自动下载那条路有同样的潜在竞态）都改用它。守卫：新增 widget 测试「在移动网络下点『全部下载』且此前没人 watch 过该 provider」→ 旧代码以预期理由失败。`flutter test` **154/154**、`flutter analyze` 23 info 持平。**又是真机测试抓出来的** —— §5 自查表第 1 条预测了这个场景，但自动化测不出真实网络状态，我也没设备 |
 | 2026-09-23 | 1.2 | **修一处 P1 引入的缺陷**（commit `d3fb718`）：图标行把电台页的**视觉**（实心月亮 + `关闭睡眠定时` tooltip）搬了过来，却没搬**行为** —— `onPressed` 永远只是打开面板，于是 tooltip 在说谎、关闭要多点一次。现在与电台页一致：定时开着时点一下直接 `cancel()`（想改时长再点一次开面板）。守卫加在 `test/podcast_density_test.dart`，并把电台页钉为基准。`flutter test` **153/153**、`flutter analyze` 23 info 持平。**这是真机测试抓出来的，自动化没覆盖到** —— 该行为在播放器页，而播放器页的守卫是源码结构断言（见 §6.2），挡不住「逻辑写错」只挡得住「文案/结构被删」|
