@@ -3,7 +3,6 @@ package com.chengbo.chengbo
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
 import android.content.Context
-import android.net.Uri
 import android.os.Build
 import android.view.View
 import android.widget.RemoteViews
@@ -73,7 +72,7 @@ class ChengboWidgetEpisodesProvider : AppWidgetProvider() {
                             rowId,
                             ChengboWidgetProvider.buildLaunchPendingIntent(
                                 context,
-                                Uri.parse("chengbo://play?guid=$guid"),
+                                "chengbo://play?guid=$guid",
                                 // 每个 row 独立 requestCode，避免 PendingIntent 被 FLAG_UPDATE_CURRENT 覆盖
                                 100 + i,
                             ),
@@ -89,7 +88,7 @@ class ChengboWidgetEpisodesProvider : AppWidgetProvider() {
                 R.id.widget_ep_root,
                 ChengboWidgetProvider.buildLaunchPendingIntent(
                     context,
-                    Uri.parse("chengbo://open"),
+                    "chengbo://open",
                     0,
                 ),
             )
