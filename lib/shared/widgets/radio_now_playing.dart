@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:just_audio/just_audio.dart';
 
 import '../../core/audio/icy_now_playing.dart';
-import '../../core/audio/now_playing_hero.dart';
 import '../../core/audio/radio_audio_handler.dart';
 import '../../core/models/radio_station.dart';
 import '../../core/models/station_source_label.dart';
@@ -68,10 +67,12 @@ class RadioNowPlayingSheet extends ConsumerWidget {
             end: Alignment.bottomCenter,
             colors: [
               wash,
-              colorScheme.surface,
+              wash,
               colorScheme.surface,
             ],
-            stops: const [0, 0.45, 1],
+            // wash 只铺到 45% 会让浅色模式下下半屏直接掉到近纯白（整页读作「白」）；
+            // 延到 62% 保住上半屏色调。
+            stops: const [0, 0.62, 1],
           ),
         ),
         child: SafeArea(
@@ -83,12 +84,7 @@ class RadioNowPlayingSheet extends ConsumerWidget {
                 children: [
                   const NowPlayingTopBar(),
                   const SizedBox(height: 8),
-                  Expanded(
-                    child: AspectRatio(
-                      aspectRatio: 1,
-                      child: _Cover(current: current),
-                    ),
-                  ),
+                  Expanded(child: _StationCard(current: current)),
                   const SizedBox(height: 20),
                   _StationHeader(
                     handler: handler,
@@ -158,60 +154,74 @@ class RadioNowPlayingSheet extends ConsumerWidget {
   }
 }
 
-/// 大圆角封面：有图标显示台标，无图标显示占位。
-class _Cover extends StatelessWidget {
-  const _Cover({required this.current});
+/// 生成式台名卡：替代台标封面。
+///
+/// 底色取该台**确定性的**渐变（`StationArtwork.gradientColors`，与列表无封面占位
+/// 同一套 → 全应用一致），卡内是 2 字缩写 + 分类图标（同样共用
+/// `StationArtwork.monogram` / `categoryIcon`）。不依赖网络，也不受台标画质影响；
+/// 圆角跟随当前氛围包的 `playerRadius`，避免与致敬包的小圆角语言冲突。
+class _StationCard extends StatelessWidget {
+  const _StationCard({required this.current});
 
   final PlaybackItem current;
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final tags = [current.subtitle];
+    final colors = StationArtwork.gradientColors(name: current.title, tags: tags);
+    final label = StationArtwork.monogram(name: current.title);
+    final glyph = StationArtwork.categoryIcon(tags: tags);
+    final radius = context.chengboSkin.playerRadius + 8;
+
     return LayoutBuilder(
       builder: (context, constraints) {
         final side = math.min(
           math.min(constraints.maxWidth, constraints.maxHeight),
-          360.0,
+          300.0,
         );
-        if (side < 48) return const SizedBox.shrink();
+        if (side < 96) return const SizedBox.shrink();
         return Center(
-          child: Hero(
-            tag: NowPlayingHero.tagFor(current.id),
-            child: Material(
-              color: Colors.transparent,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: SizedBox(
-                  width: side,
-                  height: side,
-                  child: _artwork(context, colorScheme, side),
-                ),
+          child: Container(
+            width: side,
+            height: side,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(radius),
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: colors,
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: colors.first.withValues(alpha: 0.28),
+                  blurRadius: 28,
+                  offset: const Offset(0, 12),
+                ),
+              ],
+            ),
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Icon(
+                  glyph,
+                  size: side * 0.42,
+                  color: Colors.white.withValues(alpha: 0.18),
+                ),
+                Text(
+                  label,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: side * 0.18,
+                    fontWeight: FontWeight.w700,
+                    height: 1,
+                    letterSpacing: 2,
+                  ),
+                ),
+              ],
             ),
           ),
         );
       },
-    );
-  }
-
-  Widget _artwork(BuildContext context, ColorScheme colorScheme, double side) {
-    final url = current.artworkUrl;
-    if (url == null || url.isEmpty) {
-      return Container(
-        color: colorScheme.surfaceContainerHighest,
-        child: Icon(
-          Icons.radio,
-          size: side * 0.4,
-          color: colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-        ),
-      );
-    }
-    return StationArtwork(
-      url: url,
-      name: current.title,
-      size: side,
-      borderRadius: 12,
-      icon: Icons.radio,
     );
   }
 }

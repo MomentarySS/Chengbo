@@ -103,7 +103,12 @@ class StationArtwork extends StatelessWidget {
     );
   }
 
-  String _displayLabel() {
+  String _displayLabel() => monogram(name: name);
+
+  IconData _pickIcon() => categoryIcon(tags: tags, fallback: icon);
+
+  /// 台名缩写（最多 2 字）：列表占位与播放页台名卡共用同一套规则。
+  static String monogram({String? name}) {
     final value = name?.trim();
     if (value == null || value.isEmpty) return 'FM';
     final stripped = value
@@ -114,13 +119,17 @@ class StationArtwork extends StatelessWidget {
     return stripped.characters.take(2).toString();
   }
 
-  IconData _pickIcon() {
+  /// 分类图标：列表占位与播放页台名卡共用同一套规则。
+  static IconData categoryIcon({
+    required List<String> tags,
+    IconData fallback = Icons.radio,
+  }) {
     if (tags.contains('音乐')) return Icons.music_note_rounded;
     if (tags.contains('新闻')) return Icons.newspaper_rounded;
     if (tags.contains('交通')) return Icons.directions_car_filled_rounded;
     if (tags.contains('财经')) return Icons.trending_up_rounded;
-    if (tags.contains('播客') || icon == Icons.podcasts) return Icons.podcasts_rounded;
-    return icon;
+    if (tags.contains('播客') || fallback == Icons.podcasts) return Icons.podcasts_rounded;
+    return fallback;
   }
 
   List<Color> _gradientColors() => gradientColors(name: name, tags: tags);
