@@ -10,13 +10,15 @@ import '../../features/podcast/podcast_providers.dart';
 import '../../features/podcast/podcast_screen.dart' show ensureCanDownload;
 import 'podcast_skip_sheet.dart';
 
-/// 「下载设置」面板：详情页入口行的内容。
+/// 「节目设置」面板：详情页入口行的内容。
 ///
-/// 这三项（全部下载 / 自动下载最新一集 / 最近几集）都是设一次就不动的低频
-/// 策略，却占着详情页最高频的浏览路径，所以收进面板。
+/// 收在这里的都是**按节目**、设一次就不动的低频项，却占着详情页最高频的浏览
+/// 路径。分成两组：
+/// - 下载：全部下载 / 自动下载最新一集 / 最近几集
+/// - 播放：跳过片头/尾（按节目的持久设置，不是播放动作，所以不在播放器里）
 ///
 /// **不含「仅WiFi下载」** —— 那是全局开关，归属 `设置 → 播放与收听`。
-Future<void> showPodcastDownloadSettingsSheet(
+Future<void> showPodcastSettingsSheet(
   BuildContext context, {
   required PodcastFeed feed,
   required List<PodcastEpisode> episodes,
@@ -38,17 +40,34 @@ Future<void> showPodcastDownloadSettingsSheet(
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 0, 16, 4),
               child: Text(
-                '下载设置',
+                '节目设置',
                 style: Theme.of(sheetContext).textTheme.titleMedium,
               ),
             ),
+            _sectionLabel(sheetContext, '下载'),
             _DownloadAllSwitch(feed: feed, episodes: episodes),
             _DownloadLatestSwitch(feed: feed, episodes: episodes),
             _DownloadRecentTile(feed: feed, episodes: episodes),
+            _sectionLabel(sheetContext, '播放'),
             _SkipIntroOutroTile(feed: feed),
           ],
         ),
       ),
+    ),
+  );
+}
+
+/// 分组标题。样式跟 `设置 → 播放与收听` 的分节标题一致。
+Widget _sectionLabel(BuildContext context, String label) {
+  final colorScheme = Theme.of(context).colorScheme;
+  return Padding(
+    padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+    child: Text(
+      label,
+      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+            color: colorScheme.primary,
+            fontWeight: FontWeight.w600,
+          ),
     ),
   );
 }

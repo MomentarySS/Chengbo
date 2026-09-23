@@ -22,7 +22,7 @@ import '../../core/theme.dart';
 import '../../shared/widgets/empty_state.dart';
 import '../../shared/widgets/episode_bookmark_sheet.dart';
 import '../../shared/widgets/now_playing_leading.dart';
-import '../../shared/widgets/podcast_download_settings_sheet.dart';
+import '../../shared/widgets/podcast_settings_sheet.dart';
 import '../../shared/widgets/resume_listening_card.dart';
 import '../../shared/widgets/station_artwork.dart';
 import 'episode_notes_sheet.dart';
@@ -582,7 +582,7 @@ class _PodcastDetailScreenState extends ConsumerState<PodcastDetailScreen> {
                   );
                 }
                 if (showDownloadBar && index == (header.isEmpty ? 0 : 1)) {
-                  return _DownloadSettingsTile(feed: detail.feed, episodes: detail.episodes);
+                  return _ShowSettingsTile(feed: detail.feed, episodes: detail.episodes);
                 }
                 final episode = listEpisodes[index - leadingCount];
                 return _EpisodeTile(
@@ -651,15 +651,14 @@ class _EpisodeFilterBar extends ConsumerWidget {
   }
 }
 
-/// 详情页的「下载设置」入口行。
+/// 详情页的「节目设置」入口行。
 ///
-/// 三个下载策略（全部下载 / 自动下载最新一集 / 最近几集）都是设一次就不动的
-/// 低频项，却占着最高频的浏览路径，所以收进
-/// [showPodcastDownloadSettingsSheet]，本行只留一行状态摘要。
+/// 收在这里的都是**按节目**、设一次就不动的低频项（三个下载策略 + 跳过片头/尾），
+/// 却占着最高频的浏览路径，所以进面板，本行只留一行状态摘要。
 ///
 /// 注意：只显示摘要 → 必须**单行**，否则吃回省下的高度。
-class _DownloadSettingsTile extends ConsumerWidget {
-  const _DownloadSettingsTile({required this.feed, required this.episodes});
+class _ShowSettingsTile extends ConsumerWidget {
+  const _ShowSettingsTile({required this.feed, required this.episodes});
 
   final PodcastFeed feed;
   final List<PodcastEpisode> episodes;
@@ -696,7 +695,7 @@ class _DownloadSettingsTile extends ConsumerWidget {
 
     return ListTile(
       leading: const Icon(Icons.download_for_offline_outlined),
-      title: const Text('下载设置'),
+      title: const Text('节目设置'),
       subtitle: Text(
         PodcastDownloadLogic.downloadSettingsSummary(
           total: episodes.length,
@@ -711,7 +710,7 @@ class _DownloadSettingsTile extends ConsumerWidget {
         overflow: TextOverflow.ellipsis,
       ),
       trailing: const Icon(Icons.chevron_right),
-      onTap: () => showPodcastDownloadSettingsSheet(
+      onTap: () => showPodcastSettingsSheet(
         context,
         feed: feed,
         episodes: episodes,

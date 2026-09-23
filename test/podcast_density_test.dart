@@ -107,8 +107,7 @@ void main() {
       // 旧的两个 SwitchListTile 不该再出现在页面上。
       expect(find.widgetWithText(SwitchListTile, '全部下载'), findsNothing);
       expect(find.widgetWithText(SwitchListTile, '自动下载最新一集'), findsNothing);
-
-      final entry = find.text('下载设置');
+      final entry = find.text('节目设置');
       expect(entry, findsOneWidget);
       // 默认态摘要：没有下载、两个开关都关、没设跳过片头尾。
       expect(find.text('按需下载'), findsOneWidget);
@@ -120,6 +119,9 @@ void main() {
       expect(find.text('自动下载最新一集'), findsOneWidget);
       expect(find.text('下载最近几集'), findsOneWidget);
       expect(find.text('跳过片头/尾'), findsOneWidget);
+      // 分组标题：跳过片头/尾 属于「播放」，不是下载 —— 面板名与分组要能自洽。
+      expect(find.text('下载'), findsOneWidget);
+      expect(find.text('播放'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
 
@@ -132,7 +134,7 @@ void main() {
 
       await tester.pumpWidget(_app());
       await tester.pumpAndSettle();
-      await tester.tap(find.text('下载设置'));
+      await tester.tap(find.text('节目设置'));
       await tester.pumpAndSettle();
 
       final screenHeight = tester.view.physicalSize.height / tester.view.devicePixelRatio;
@@ -202,7 +204,7 @@ void main() {
       );
       await tester.pumpAndSettle();
 
-      await tester.tap(find.text('下载设置'));
+      await tester.tap(find.text('节目设置'));
       await tester.pumpAndSettle();
 
       final downloadAll = find.widgetWithText(SwitchListTile, '全部下载');
