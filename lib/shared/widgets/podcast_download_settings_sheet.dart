@@ -4,9 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/audio/podcast_download.dart';
+import '../../core/audio/podcast_playback.dart';
 import '../../core/models/podcast.dart';
 import '../../features/podcast/podcast_providers.dart';
 import '../../features/podcast/podcast_screen.dart' show ensureCanDownload;
+import 'podcast_skip_sheet.dart';
 
 /// 「下载设置」面板：详情页入口行的内容。
 ///
@@ -43,6 +45,7 @@ Future<void> showPodcastDownloadSettingsSheet(
             _DownloadAllSwitch(feed: feed, episodes: episodes),
             _DownloadLatestSwitch(feed: feed, episodes: episodes),
             _DownloadRecentTile(feed: feed, episodes: episodes),
+            _SkipIntroOutroTile(feed: feed),
           ],
         ),
       ),
@@ -182,6 +185,42 @@ class _DownloadRecentTile extends ConsumerWidget {
           unawaited(ref.read(podcastDownloadsProvider.notifier).downloadEpisodes(feed, pending));
         },
       ),
+    );
+  }
+}
+
+/// 跳过片头/尾：**按节目**的持久设置，不是播放动作 —— 所以从播放器搬到这里。
+///
+/// 编辑仍走原有的 [showPodcastSkipSheet]；存储层没动，已设过的值不会丢。
+/// `AppStorage` 是可变对象、写入不会通知 Riverpod，所以 sheet 关闭后要手动
+/// `invalidate` 一次，否则本行与详情页入口行的摘要都不会刷新。
+class _SkipIntroOutroTile extends ConsumerWidget {
+  const _SkipIntroOutroTile({required this.feed});
+
+  final PodcastFeed feed;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final skipAsync = ref.watch(podcastSkipSettingsProvider(feed.id));
+    final skip = skipAsync.value;
+    final intro = skip?.intro ?? 0;
+    final outro = skip?.outro ?? 0;
+    final subtitle = skipAsync.isLoading
+        ? '读取中…'
+        : (intro == 0 && outro == 0)
+            ? '未设置'
+            : '片头 ${PodcastPlaybackLogic.skipDurationLabel(intro)}'
+                ' · 片尾 ${PodcastPlaybackLogic.skipDurationLabel(outro)}';
+
+    return ListTile(
+      leading: const Icon(Icons.skip_next_outlined),
+      title: const Text('跳过片头/尾'),
+      subtitle: Text(subtitle),
+      onTap: () async {
+        await showPodcastSkipSheet(context, feedId: feed.id);
+        if (!context.mounted) return;
+        ref.invalidate(podcastSkipSettingsProvider(feed.id));
+      },
     );
   }
 }
