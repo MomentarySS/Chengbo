@@ -355,11 +355,16 @@ class _EpisodeChips extends ConsumerWidget {
           ),
         IconButton(
           tooltip: sleepActive ? '关闭睡眠定时' : '睡眠定时',
+          isSelected: sleepActive,
           icon: Icon(
             sleepActive ? Icons.bedtime : Icons.bedtime_outlined,
             color: sleepActive ? colorScheme.primary : null,
           ),
-          onPressed: () => showSleepTimerSheet(context),
+          // 与电台页一致：定时开着时再点一下就是**关闭**（想改时长再点一次
+          // 开面板）。只开面板会让上面那句 tooltip 说谎。
+          onPressed: sleepActive
+              ? () => ref.read(sleepTimerProvider.notifier).cancel()
+              : () => showSleepTimerSheet(context),
         ),
         IconButton(
           tooltip: bookmarkCount > 0 ? '书签 · $bookmarkCount' : '书签',

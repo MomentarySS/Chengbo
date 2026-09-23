@@ -208,5 +208,27 @@ void main() {
       expect(nowPlaying.contains("label: '已下载'"), isTrue);
       expect(nowPlaying.contains('_StaticActionIcon'), isTrue);
     });
+
+    test('睡眠定时图标在开启时点一下就是关闭（与电台页一致）', () {
+      expect(nowPlaying.contains("'关闭睡眠定时'"), isTrue);
+      // 关定时不能只靠面板里那个「关闭定时」—— 否则图标上的 tooltip 在说谎，
+      // 而且会比电台页多一次点击。电台页就是这条行为的基准。
+      expect(
+        nowPlaying.contains('sleepTimerProvider.notifier).cancel()'),
+        isTrue,
+        reason: '睡眠定时开着时，播客播放器的图标应该直接取消',
+      );
+      expect(
+        miniPlayerSleepBaseline(),
+        isTrue,
+        reason: '电台页的月亮图标不再直接取消了 —— 两页行为又分叉了',
+      );
+    });
   });
+}
+
+/// 电台页「月亮图标开着时直接取消」这条基准还在不在。
+bool miniPlayerSleepBaseline() {
+  final radio = File('lib/shared/widgets/radio_now_playing.dart').readAsStringSync();
+  return radio.contains('sleepTimerProvider.notifier).cancel()');
 }
