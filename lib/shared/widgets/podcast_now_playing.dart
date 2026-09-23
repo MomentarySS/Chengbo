@@ -63,15 +63,9 @@ class PodcastNowPlayingSheet extends ConsumerWidget {
         width: double.infinity,
         height: double.infinity,
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              wash,
-              colorScheme.surface,
-              colorScheme.surface,
-            ],
-            stops: const [0, 0.45, 1],
+          gradient: context.chengboSkin.nowPlayingBackdrop(
+            surface: colorScheme.surface,
+            wash: wash,
           ),
         ),
         child: SafeArea(
@@ -84,10 +78,7 @@ class PodcastNowPlayingSheet extends ConsumerWidget {
                   const NowPlayingTopBar(),
                   const SizedBox(height: 8),
                   Expanded(
-                    child: AspectRatio(
-                      aspectRatio: 1,
-                      child: _Cover(current: current),
-                    ),
+                    child: _Cover(current: current, accent: accent.first),
                   ),
                   const SizedBox(height: 20),
                   _EpisodeHeader(current: current, handler: handler),
@@ -141,19 +132,27 @@ class PodcastNowPlayingSheet extends ConsumerWidget {
 }
 
 /// 大圆角封面：有图显示封面，无图显示声波占位。
+///
+/// 外框规格（最大边长 / 圆角 / 投影）与电台页的台名卡共用
+/// [ChengboSkinTheme.anchorMaxSide] / `anchorRadius` —— 内容各不同（真封面 vs
+/// 生成卡），但两页的「视觉锚点」必须读作同一个组件。
 class _Cover extends StatelessWidget {
-  const _Cover({required this.current});
+  const _Cover({required this.current, required this.accent});
 
   final PlaybackItem current;
+
+  /// 投影色，与电台台名卡一样取该内容的确定性渐变首色。
+  final Color accent;
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final radius = context.chengboSkin.anchorRadius;
     return LayoutBuilder(
       builder: (context, constraints) {
         final side = math.min(
           math.min(constraints.maxWidth, constraints.maxHeight),
-          360.0,
+          ChengboSkinTheme.anchorMaxSide,
         );
         if (side < 48) return const SizedBox.shrink();
         return Center(
@@ -161,12 +160,22 @@ class _Cover extends StatelessWidget {
             tag: NowPlayingHero.tagFor(current.id),
             child: Material(
               color: Colors.transparent,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: SizedBox(
-                  width: side,
-                  height: side,
-                  child: _artwork(context, colorScheme, side),
+              child: Container(
+                width: side,
+                height: side,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(radius),
+                  boxShadow: [
+                    BoxShadow(
+                      color: accent.withValues(alpha: 0.28),
+                      blurRadius: 28,
+                      offset: const Offset(0, 12),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(radius),
+                  child: _artwork(context, colorScheme, side, radius),
                 ),
               ),
             ),
@@ -176,7 +185,7 @@ class _Cover extends StatelessWidget {
     );
   }
 
-  Widget _artwork(BuildContext context, ColorScheme colorScheme, double side) {
+  Widget _artwork(BuildContext context, ColorScheme colorScheme, double side, double radius) {
     final url = current.artworkUrl;
     if (url == null || url.isEmpty) {
       return Container(
@@ -192,7 +201,7 @@ class _Cover extends StatelessWidget {
       url: url,
       name: current.title,
       size: side,
-      borderRadius: 12,
+      borderRadius: radius,
       icon: Icons.podcasts,
     );
   }
