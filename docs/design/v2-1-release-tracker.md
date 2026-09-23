@@ -119,12 +119,22 @@
 | `flutter test` | 143/143 |
 | `flutter analyze` | 23 info（既有基线，非修复目标）|
 
+### 7.4 设计产物（效果图）
+
+> 两个都是**自包含 HTML**（唯一外部依赖是 Google Fonts），双击即可在浏览器打开。
+
+| 文件 | 内容 | 对应 |
+|---|---|---|
+| [`radio-nowplaying-design.html`](./radio-nowplaying-design.html) | 电台 Now Playing 封面替代方案三选一：A 生成式台名卡 / B 大字号台名排版 / A+C 呼吸光环 | R1（选定 **A**；C 未做，是独立一层，以后可加）|
+| [`podcast-density-design.html`](./podcast-density-design.html) | 播客详情页 + 播放器页 before/after 对比、首屏高度账、逐条取舍表 | P1（8 条，见 §7.2）|
+
 ---
 
 ## 8. 变更记录
 
 | 日期 | 版本 | 变更 |
 |---|---|---|
+| 2026-09-23 | 1.4 | 加 **§7.4 设计产物（效果图）**：把两张 before/after 效果图从 gitignored 的 `dist/` 挪进 `docs/design/` 并在此登记 —— `radio-nowplaying-design.html`（R1 封面方案三选一，选定 A）、`podcast-density-design.html`（P1 的 8 条）。此前 `radio-nowplaying-design.html` 无任何引用，属孤儿文件 |
 | 2026-09-23 | 1.3 | 补 **§7 v2.2 段**：记录已合 main 的 PR #9（电台页三处 + 两页共享播放器规格）与 PR #10（单集菜单尾部裁切），并登记进行中的 P1（播客两页瘦身，工单 `mobile-v2-2-density-work-order.md`）与 R3（v2.2.0 收尾）。此前 tracker 停留在 v2.1.1，未记录 v2.2 的两条 PR |
 | 2026-09-23 | 1.2 | **v2.1.1 补丁**（分支 `fix/v2-1-1-radio-mini-bar`）。两处修复：① `lib/core/brand.dart` 版本常量停在 `2.0.2`（v2.1.0 release prep 漏 bump，`layer_test` 版本守卫一直红；影响关于页 / 隐私说明 / 备份 JSON / 全部网络 UA）② 移除电台迷你条底部 3px 主色条（无信息量 + 圆角裁切后像残留色带）。版本 bump 到 `2.1.1+40`，含 pubspec + brand.dart + .iss |
 | 2026-09-23 | 1.1 | v2.1 完成：P0-A + B1 + B2 全部合 main；Step 5 release prep（CHANGELOG + pubspec bump + ROADMAP + tracker + plan）执行中；feature branch 已清理；tag v2.1.0 已发布 |
