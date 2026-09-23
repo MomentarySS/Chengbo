@@ -310,6 +310,11 @@ class _EpisodeChips extends ConsumerWidget {
     return Wrap(
       spacing: 8,
       runSpacing: 8,
+      // 「已下载」是唯一用 Chip + VisualDensity.compact 的（布局盒 40，兄弟都是
+      // ActionChip 的 48）。Wrap 默认 WrapCrossAlignment.start 按顶对齐，会把它
+      // 的标签中心顶高 4 逻辑 px，看起来「被抬起来」。居中后既保留它略小的状态
+      // 样式，又与兄弟标签中心对齐。改这里前先确认 已下载 chip 仍然对齐。
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         if (hasNotes)
           ActionChip(
