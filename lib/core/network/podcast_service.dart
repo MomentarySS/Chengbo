@@ -29,8 +29,11 @@ class PodcastService {
 
   final Dio _dio;
 
-  Future<PodcastDetail> fetchFeed(PodcastFeed feed) async {
-    final url = PodcastFeedLogic.resolveUrl(feed.feedUrl);
+  Future<PodcastDetail> fetchFeed(PodcastFeed feed, {bool forNewSubscription = false}) async {
+    final url = PodcastFeedLogic.resolveUrl(
+      feed.feedUrl,
+      enforceCatalogPolicy: forNewSubscription,
+    );
     try {
       final body = await _getBody(url, AppBrand.podcastUserAgent);
       return _parseRss(body, feed, url);

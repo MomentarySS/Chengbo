@@ -392,7 +392,7 @@ class _PodcastDiscoveryScreenState extends ConsumerState<PodcastDiscoveryScreen>
           return Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: Text(
-              '中文热榜来自 xyzrank 公开 JSON，点订阅才写入本机。版权库会标成无法订阅。',
+              '中文热榜来自 xyzrank 公开 JSON，点订阅才写入本机。第三方转接源会标成无法订阅。',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
@@ -490,7 +490,7 @@ class _DiscoveryHitTile extends StatelessWidget {
           if (hit.author.isNotEmpty) hit.author,
           if (hit.genre.isNotEmpty) hit.genre,
           if (hit.explicit) '可能含不适宜内容',
-          if (hit.denied) '版权库 / 转接源',
+          if (hit.denied) '第三方转接源',
           if (hit.feedUrl != null) hit.feedUrl!,
         ].join(' · '),
         maxLines: 2,

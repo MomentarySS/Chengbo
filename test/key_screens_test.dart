@@ -62,8 +62,13 @@ class _FakeItunes extends ItunesPodcastClient {
         author: '作者',
       ),
       PodcastDiscoveryHit(
+        title: '转接源',
+        feedUrl: 'https://rsshub.app/podcast/x/1',
+        author: 'RSSHub',
+      ),
+      PodcastDiscoveryHit(
         title: '喜马专辑',
-        feedUrl: 'https://www.ximalaya.com/album/123',
+        feedUrl: 'https://www.ximalaya.com/album/123.xml',
         author: '喜马',
       ),
     ];
@@ -76,7 +81,7 @@ class _FakeRank extends XyzrankCatalogClient {
   @override
   Future<XyzrankPage> fetchPodcasts({required int offset}) async {
     return XyzrankPage(
-      items: [
+      items: const [
         PodcastDiscoveryHit(title: '热榜节目', feedUrl: 'https://rank.example/rss.xml'),
       ],
       total: 1,
@@ -183,7 +188,10 @@ void main() {
     await tester.testTextInput.receiveAction(TextInputAction.search);
     await tester.pumpAndSettle();
     expect(find.text('公开节目', skipOffstage: false), findsOneWidget);
+    // 只有第三方转接源被标成无法订阅；喜马拉雅这种平台自己的 RSS 出口放行。
     expect(find.text('无法在澄波订阅', skipOffstage: false), findsOneWidget);
+    expect(find.text('喜马专辑', skipOffstage: false), findsOneWidget);
+    expect(find.text('订阅', skipOffstage: false), findsNWidgets(2));
 
     await tester.tap(find.text('中文热榜'));
     await tester.pump();

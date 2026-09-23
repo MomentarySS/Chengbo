@@ -965,25 +965,48 @@ void main() {
     );
     expect(PodcastFeedLogic.shouldRetryWithFallbackUa(400), isTrue);
     expect(PodcastFeedLogic.shouldRetryWithFallbackUa(404), isFalse);
+    // 第三方转接源：只有 RSSHub 被拦。
+    expect(PodcastFeedLogic.isDeniedCatalogFeed('https://rsshub.app/xiaoyuzhou/123'), isTrue);
+    expect(PodcastFeedLogic.isDeniedCatalogFeed('https://rsshub.app/x/1'), isTrue);
+    // 平台自己的 RSS 出口：喜马拉雅 / 荔枝 / 蜻蜓 全部放行。
     expect(
       PodcastFeedLogic.isDeniedCatalogFeed('https://www.ximalaya.com/album/123.xml'),
-      isTrue,
+      isFalse,
     );
-    expect(PodcastFeedLogic.isDeniedCatalogFeed('https://rsshub.app/xiaoyuzhou/123'), isTrue);
-    expect(PodcastFeedLogic.isDeniedCatalogFeed('https://rss.lizhi.fm/rss/1.xml'), isTrue);
+    expect(PodcastFeedLogic.isDeniedCatalogFeed('https://rss.lizhi.fm/rss/1.xml'), isFalse);
+    expect(
+      PodcastFeedLogic.isDeniedCatalogFeed('https://c.qingting.fm/podcast/v1/vchannels/1'),
+      isFalse,
+    );
     expect(
       PodcastFeedLogic.isDeniedCatalogFeed('https://feed.xyzfm.space/hwen8wf69c6g'),
       isFalse,
     );
+    // 拦截只在**新增订阅**时施加；读取路径（已订阅的节目刷新）不能再拦 ——
+    // 否则用户已有的订阅会变成打不开的死链。
     expect(
-      () => PodcastFeedLogic.resolveUrl('https://www.ximalaya.com/album/991.xml'),
-      throwsA(
-        isA<PodcastFeedException>().having(
-          (e) => e.message,
-          'message',
-          PodcastFeedLogic.catalogDeniedMessage,
-        ),
+      () => PodcastFeedLogic.resolveUrl(
+        'https://rsshub.app/xiaoyuzhou/123',
+        enforceCatalogPolicy: true,
       ),
+      throwsA(
+        isA<PodcastFeedException>()
+            .having((e) => e.message, 'message', PodcastFeedLogic.catalogDeniedMessage)
+            .having((e) => e.saveAddress, 'saveAddress', isFalse),
+      ),
+    );
+    expect(
+      PodcastFeedLogic.resolveUrl('https://rsshub.app/xiaoyuzhou/123'),
+      'https://rsshub.app/xiaoyuzhou/123',
+    );
+    // 喜马拉雅：裸专辑页自动补平台自己的 RSS 出口；带 .xml 的原样通过。
+    expect(
+      PodcastFeedLogic.resolveUrl('https://www.ximalaya.com/album/56109512'),
+      'https://www.ximalaya.com/album/56109512.xml',
+    );
+    expect(
+      PodcastFeedLogic.resolveUrl('https://www.ximalaya.com/album/56109512.xml'),
+      'https://www.ximalaya.com/album/56109512.xml',
     );
   });
 
@@ -1008,14 +1031,14 @@ void main() {
             'trackExplicitness': 'explicit',
           },
           {
-            'collectionName': '喜马转接',
-            'feedUrl': 'https://www.ximalaya.com/album/1.xml',
+            'collectionName': '转接源',
+            'feedUrl': 'https://rsshub.app/podcast/ximalaya/1',
           },
         ],
       },
       hideExplicit: true,
     );
-    expect(itunes.map((h) => h.title), ['故事FM', '喜马转接']);
+    expect(itunes.map((h) => h.title), ['故事FM', '转接源']);
     expect(itunes.first.canSubscribe, isTrue);
     expect(itunes.last.denied, isTrue);
     expect(itunes.last.canSubscribe, isFalse);
@@ -1035,9 +1058,9 @@ void main() {
           ],
         },
         {
-          'name': '版权库',
+          'name': '转接源',
           'links': [
-            {'name': 'rss', 'url': 'https://www.ximalaya.com/album/9.xml'},
+            {'name': 'rss', 'url': 'https://rsshub.app/podcast/x/9'},
           ],
         },
       ],
@@ -1135,18 +1158,25 @@ void main() {
     );
   });
 
-  test('OPML merge skips denied catalog feeds', () {
+  test('OPML merge skips denied catalog feeds but keeps platform feeds', () {
     final result = PodcastOpml.merge(
       existing: const [],
       incoming: const [
         PodcastFeed(id: 'ok', title: '故事', feedUrl: 'https://feeds.storyfm.cn/storyfm.xml'),
-        PodcastFeed(id: 'bad', title: '喜马', feedUrl: 'https://www.ximalaya.com/album/1.xml'),
+        PodcastFeed(id: 'bad', title: '转接', feedUrl: 'https://rsshub.app/podcast/x/1'),
+        PodcastFeed(id: 'ximalaya', title: '喜马', feedUrl: 'https://www.ximalaya.com/album/1.xml'),
       ],
       newId: () => 'n1',
     );
-    expect(result.added, 1);
+    expect(result.added, 2);
     expect(result.skipped, 1);
-    expect(result.feeds.single.feedUrl, 'https://feeds.storyfm.cn/storyfm.xml');
+    expect(
+      result.feeds.map((f) => f.feedUrl),
+      containsAll(<String>[
+        'https://feeds.storyfm.cn/storyfm.xml',
+        'https://www.ximalaya.com/album/1.xml',
+      ]),
+    );
   });
 
   test('Android load control is construction-only and skipped on Windows', () {

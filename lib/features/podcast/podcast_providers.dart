@@ -90,7 +90,9 @@ class SubscribedFeedsNotifier extends StateNotifier<AsyncValue<List<PodcastFeed>
       imageUrl: imageUrl,
     );
     try {
-      final detail = await _ref.read(podcastServiceProvider).fetchFeed(draft);
+      final detail = await _ref
+          .read(podcastServiceProvider)
+          .fetchFeed(draft, forNewSubscription: true);
       final feed = PodcastFeed(
         id: draft.id,
         title: draft.title == '自定义播客' ? detail.feed.title : draft.title,
@@ -119,7 +121,9 @@ class SubscribedFeedsNotifier extends StateNotifier<AsyncValue<List<PodcastFeed>
     await _persist(result.feeds);
     for (final feed in result.addedFeeds) {
       try {
-        final detail = await _ref.read(podcastServiceProvider).fetchFeed(feed);
+        final detail = await _ref
+            .read(podcastServiceProvider)
+            .fetchFeed(feed, forNewSubscription: true);
         final keepTitle = feed.title.trim().isNotEmpty && feed.title != feed.feedUrl;
         await updateFeedMeta(
           PodcastFeed(

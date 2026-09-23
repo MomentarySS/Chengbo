@@ -227,7 +227,11 @@ class _PodcastScreenState extends ConsumerState<PodcastScreen> {
       feedUrl: draft.url,
     );
     try {
-      final detail = await ref.read(podcastServiceProvider).fetchFeed(feed          );
+      // 新增订阅：第三方转接源在这里拦下（saveAddress: false → 连地址都不留）。
+      final detail = await ref.read(podcastServiceProvider).fetchFeed(
+            feed,
+            forNewSubscription: true,
+          );
       await ref.read(subscribedFeedsProvider.notifier).addFeed(
             PodcastFeed(
               id: feed.id,
