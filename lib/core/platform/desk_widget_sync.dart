@@ -9,6 +9,7 @@ import 'package:home_widget/home_widget.dart';
 import '../audio/desk_widget.dart';
 import '../audio/radio_audio_handler.dart';
 import '../models/radio_station.dart';
+import '../podcast/feed_cache.dart';
 import '../providers/app_providers.dart';
 import '../../features/podcast/podcast_providers.dart';
 import '../../features/radio/radio_providers.dart';
@@ -40,6 +41,16 @@ final deskWidgetSyncProvider = Provider<void>((ref) {
     } catch (_) {}
   }
 
+  Future<void> publishEpisodes(List<InboxItem> items) async {
+    try {
+      await HomeWidget.saveWidgetData<String>(
+        DeskWidgetLogic.episodesKey,
+        DeskWidgetLogic.episodesPayload(items),
+      );
+      await HomeWidget.updateWidget(name: DeskWidgetLogic.episodesAndroidName);
+    } catch (_) {}
+  }
+
   ref.listen<PlaybackItem?>(currentPlaybackProvider, (_, __) => publish());
   ref.listen<AsyncValue<RadioAudioHandler>>(audioHandlerProvider, (previous, next) {
     sub?.cancel();
@@ -48,7 +59,10 @@ final deskWidgetSyncProvider = Provider<void>((ref) {
       sub = handler.playbackState.listen((_) => publish());
     });
   });
+  // B2 待听 widget：inbox 变化时（含订阅/听标记）刷新 widget。
+  ref.listen<List<InboxItem>>(inboxProvider, (_, next) => publishEpisodes(next));
   publish();
+  publishEpisodes(ref.read(inboxProvider));
 });
 
 Future<void> handleDeskWidgetLaunch(WidgetRef ref) async {
@@ -79,6 +93,8 @@ Future<void> handleDeskWidgetLaunch(WidgetRef ref) async {
         await ref.read(stationSkipProvider).skip(1);
       case DeskWidgetAction.resume:
         await _resumeFromWidget(ref);
+      case DeskWidgetAction.play:
+        await _playFromWidget(ref, uri?.queryParameters['guid']);
       case DeskWidgetAction.open:
       case DeskWidgetAction.none:
         break;
@@ -127,4 +143,27 @@ Future<void> _resumeFromWidget(WidgetRef ref) async {
       ref.read(audioHandlerProvider).value?.playbackState.value.playing ?? false;
   if (playing || ref.read(currentPlaybackProvider) == null) return;
   await controller.resume();
+}
+
+/// B2 待听 widget 点击：按 guid 在 inbox 中反查并播放。
+/// 静默降级：guid 为空 / inbox 不命中 / publish 窗口外（点击已被听）→ 直接返回，
+/// 不弹 SnackBar（App 已被 widget intent 拉起，弹提示反而突兀；计划 §5 #11）。
+Future<void> _playFromWidget(WidgetRef ref, String? guid) async {
+  if (guid == null || guid.isEmpty) return;
+  final item = ref
+      .read(inboxProvider)
+      .where((i) => i.episode.guid == guid)
+      .firstOrNull;
+  if (item == null) return;
+  await ref.read(playerControllerProvider).play(
+        PlaybackItem.fromPodcastEpisode(
+          podcastTitle: item.feed.title,
+          episodeTitle: item.episode.title,
+          audioUrl: item.episode.audioUrl,
+          episodeGuid: item.episode.guid,
+          artworkUrl: item.episode.imageUrl ?? item.feed.imageUrl,
+          duration: item.episode.duration,
+          feedId: item.feed.id,
+        ),
+      );
 }

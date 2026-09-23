@@ -49,16 +49,23 @@ class ChengboWidgetProvider : AppWidgetProvider() {
         }
     }
 
-    private fun launch(context: Context, uri: String, requestCode: Int): PendingIntent {
-        val intent = Intent(context, MainActivity::class.java).apply {
-            data = Uri.parse(uri)
-            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+    private fun launch(context: Context, uri: String, requestCode: Int): PendingIntent =
+        buildLaunchPendingIntent(context, uri, requestCode)
+
+    companion object {
+        // 暴露给 B2 待听 widget provider 复用（计划 §4.3）。B1+B2 都合后再考虑抽 helper。
+        @JvmStatic
+        fun buildLaunchPendingIntent(context: Context, uri: String, requestCode: Int): PendingIntent {
+            val intent = Intent(context, MainActivity::class.java).apply {
+                data = Uri.parse(uri)
+                flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+            }
+            return PendingIntent.getActivity(
+                context,
+                requestCode,
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
         }
-        return PendingIntent.getActivity(
-            context,
-            requestCode,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
     }
 }

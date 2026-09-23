@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import '../models/radio_station.dart';
+import '../podcast/feed_cache.dart';
 
 /// Android 桌面小组件要显示的字段。
 class DeskWidgetSnapshot {
@@ -22,7 +25,7 @@ class DeskWidgetSnapshot {
   );
 }
 
-enum DeskWidgetAction { open, toggle, next, resume, none }
+enum DeskWidgetAction { open, toggle, next, resume, play, none }
 
 enum DeskWidgetResumeTarget { continueEpisode, lastSession, none }
 
@@ -36,6 +39,23 @@ abstract final class DeskWidgetLogic {
   static const toggleHost = 'toggle';
   static const nextHost = 'next';
   static const resumeHost = 'resume';
+  static const playHost = 'play';
+
+  // ----- B2 待听 widget ---------------------------------------------------
+  /// 改这里必须同步 `ChengboWidgetEpisodesProvider.kt` 第 N 行的字面量
+  /// (计划 §5 #8 跨语言契约)。
+  static const episodesKey = 'widget_episodes';
+  static const episodesAndroidName = 'ChengboWidgetEpisodesProvider';
+
+  /// 字面量字符串用于 Kotlin 端空态兜底；正式运行时优先走
+  /// `R.string.widget_episodes_empty_title` / `widget_episodes_empty_subtitle`
+  ///（Android 端本地化路径）。Dart 常量仅作 fallback / 单测断言用。
+  static const episodesEmptyTitle = '暂无未听单集';
+  static const episodesEmptySubtitle = '点此打开澄波';
+
+  /// 4×2 cell 容纳 4 行；`FeedCacheLogic.maxInboxItems = 20` 是 inbox 上限，
+  /// widget 取前 4（计划 §3.3.1）。
+  static const maxEpisodes = 4;
 
   static DeskWidgetSnapshot snapshot({
     required PlaybackItem? item,
@@ -50,12 +70,24 @@ abstract final class DeskWidgetLogic {
     );
   }
 
+  /// 序列化为 JSON 字符串。空列表返回 `[]`（原生侧据此显示空态）。
+  /// `take(max)` 语义：超过 max 截断。
+  static String episodesPayload(List<InboxItem> items, {int max = maxEpisodes}) {
+    final rows = items.take(max).map((item) => {
+          'title': item.episode.title,
+          'subtitle': item.feed.title,
+          'guid': item.episode.guid,
+        },);
+    return jsonEncode(rows.toList());
+  }
+
   static DeskWidgetAction actionForUri(Uri? uri) {
     return switch (uri?.host) {
       openHost => DeskWidgetAction.open,
       toggleHost => DeskWidgetAction.toggle,
       nextHost => DeskWidgetAction.next,
       resumeHost => DeskWidgetAction.resume,
+      playHost => DeskWidgetAction.play,
       _ => DeskWidgetAction.none,
     };
   }

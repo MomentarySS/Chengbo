@@ -1,4 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="widget_description">显示当前电台或单集，可播放、暂停、下一台或续播</string>
+
+    <!-- B2 待听 widget -->
+    <string name="widget_episodes_description">澄波 · 待听单集</string>
+    <string name="widget_episodes_title">待听</string>
+    <string name="widget_episodes_empty_title">暂无未听单集</string>
+    <string name="widget_episodes_empty_subtitle">点此打开澄波</string>
 </resources>
