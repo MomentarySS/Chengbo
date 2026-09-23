@@ -39,8 +39,8 @@ class ChengboWidgetProvider : AppWidgetProvider() {
             views.setTextColor(R.id.widget_resume, onColor)
             views.setImageViewResource(
                 R.id.widget_toggle,
-                if (playing) android.R.drawable.ic_media_pause
-                else android.R.drawable.ic_media_play
+                if (playing) R.drawable.ic_widget_pause
+                else R.drawable.ic_widget_play
             )
             views.setOnClickPendingIntent(
                 R.id.widget_root,
