@@ -6,6 +6,7 @@ import android.appwidget.AppWidgetProvider
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.widget.RemoteViews
 import es.antonborri.home_widget.HomeWidgetPlugin
 
@@ -19,11 +20,23 @@ class ChengboWidgetProvider : AppWidgetProvider() {
         val title = data.getString("widget_title", "澄波")
         val subtitle = data.getString("widget_subtitle", "点此打开")
         val playing = data.getBoolean("widget_playing", false)
+        // B1 动态色开关：缺省走品牌色；App 开关 + API >= 31 才走 Material You accent1。
+        val useDynamic = data.getBoolean("widget_use_dynamic_color", false)
+        val dynamicOk = useDynamic && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+        val bgRes = if (dynamicOk) android.R.color.system_accent1_600
+                    else            R.color.widget_background
+        val onRes = if (dynamicOk) android.R.color.system_accent1_0
+                    else            R.color.widget_on_background
 
         appWidgetIds.forEach { widgetId ->
             val views = RemoteViews(context.packageName, R.layout.chengbo_widget)
             views.setTextViewText(R.id.widget_title, title)
             views.setTextViewText(R.id.widget_subtitle, subtitle)
+            views.setInt(R.id.widget_root, "setBackgroundColor", context.getColor(bgRes))
+            val onColor = context.getColor(onRes)
+            views.setTextColor(R.id.widget_title, onColor)
+            views.setTextColor(R.id.widget_subtitle, onColor)
+            views.setTextColor(R.id.widget_resume, onColor)
             views.setImageViewResource(
                 R.id.widget_toggle,
                 if (playing) android.R.drawable.ic_media_pause
