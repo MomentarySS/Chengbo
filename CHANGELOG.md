@@ -6,6 +6,19 @@ Format follows [Keep a Changelog](https://keepachangelog.com/zh-CN/), and the pr
 
 ---
 
+## [2.1.1] - 2026-09-23
+
+修复 v2.1.0 的两处问题。
+
+### Fixed
+- **版本号不一致（v2.1.0 引入）**：`lib/core/brand.dart` 的版本常量停留在 `2.0.2`，导致 v2.1.0 的「关于」页显示 `v2.0.2`、隐私说明页显示 `User-Agent Chengbo/2.0.2`、本机备份 JSON 记录 `appVersion: 2.0.2`，且所有网络请求（电台流 / RSS / 目录 / 下载）的 User-Agent 都是 `Chengbo/2.0.2`。现与 `pubspec.yaml` 对齐
+- **电台迷你条底部的 3px 主色条**：纯装饰、不承载信息（电台直播流没有时长语义），且被卡片圆角裁切后更像一条残留的背景色带；澄波皮肤无边框时尤其明显。现移除
+
+### Changed
+- 电台迷你条不再随播放 / 暂停跳变 3px 高度（移除的那条只在播放中出现）
+
+---
+
 ## [2.1.0] - 2026-09-23
 
 mobile player 升级与 Android widget 视觉重做（[计划](../../docs/design/mobile-v2-1-plan.md) v1.4，
