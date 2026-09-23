@@ -21,12 +21,24 @@ Future<void> showNowPlayingQueueSheet(BuildContext context) {
     context: context,
     showDragHandle: true,
     isScrollControlled: true,
-    builder: (sheetContext) => const _NowPlayingQueueSheet(),
+    // 半屏起、可上拖到近全屏。expand: false 让 sheet 只占 initialChildSize 的高度
+    // —— 之前 Column 里的 Expanded 会把 sheet 撑满整屏（一打开就是全屏）。
+    builder: (sheetContext) => DraggableScrollableSheet(
+      expand: false,
+      initialChildSize: 0.55,
+      minChildSize: 0.32,
+      maxChildSize: 0.95,
+      builder: (context, scrollController) =>
+          _NowPlayingQueueSheet(scrollController: scrollController),
+    ),
   );
 }
 
 class _NowPlayingQueueSheet extends ConsumerWidget {
-  const _NowPlayingQueueSheet();
+  const _NowPlayingQueueSheet({required this.scrollController});
+
+  /// 由 [DraggableScrollableSheet] 提供。必须挂到主列表上，拖动列表才能带动 sheet。
+  final ScrollController scrollController;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -50,8 +62,8 @@ class _NowPlayingQueueSheet extends ConsumerWidget {
           if (current != null)
             Expanded(
               child: current.kind == PlaybackKind.podcast
-                  ? _PodcastQueue(current: current)
-                  : _RadioQueue(current: current),
+                  ? _PodcastQueue(current: current, scrollController: scrollController)
+                  : _RadioQueue(current: current, scrollController: scrollController),
             ),
         ],
       ),
@@ -90,7 +102,13 @@ class _ManualQueue extends ConsumerWidget {
           ),
         ),
         SizedBox(
-          height: (56.0 * queue.items.length).clamp(56.0, 56.0 * 8),
+          // 半屏 sheet 下不能让手动队列占满：原上限 448px 会挤掉下面的电台 /
+          // 单集列表（0.55 屏高约 418px → 直接 RenderFlex 溢出）。上限取屏幕高的
+          // 26% 与 448 的较小值，并不低于一行的高度。
+          height: (56.0 * queue.items.length).clamp(
+            56.0,
+            (MediaQuery.sizeOf(context).height * 0.26).clamp(56.0, 448.0).toDouble(),
+          ),
           child: ReorderableListView.builder(
             shrinkWrap: true,
             physics: queue.items.length > 8
@@ -134,9 +152,10 @@ class _ManualQueue extends ConsumerWidget {
 }
 
 class _RadioQueue extends ConsumerWidget {
-  const _RadioQueue({required this.current});
+  const _RadioQueue({required this.current, required this.scrollController});
 
   final PlaybackItem current;
+  final ScrollController scrollController;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -155,6 +174,7 @@ class _RadioQueue extends ConsumerWidget {
               message: '没有可切换的电台',
             )
           : _JumpingList(
+              controller: scrollController,
               currentIndex: queue.indexWhere((station) => station.id == stationId),
               itemCount: queue.length,
               itemBuilder: (context, index) {
@@ -201,9 +221,10 @@ class _RadioQueue extends ConsumerWidget {
 }
 
 class _PodcastQueue extends ConsumerWidget {
-  const _PodcastQueue({required this.current});
+  const _PodcastQueue({required this.current, required this.scrollController});
 
   final PlaybackItem current;
+  final ScrollController scrollController;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -244,6 +265,7 @@ class _PodcastQueue extends ConsumerWidget {
           }
           final currentGuid = current.episodeGuid;
           return _JumpingList(
+            controller: scrollController,
             currentIndex: episodes.indexWhere((episode) => episode.guid == currentGuid),
             itemCount: episodes.length,
             itemBuilder: (context, index) {
@@ -306,27 +328,24 @@ class _QueueScaffold extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final height = MediaQuery.sizeOf(context).height * 0.72;
+    // 高度交给外层 DraggableScrollableSheet，这里不再写死（原来是屏幕高的 0.72）。
     return SafeArea(
-      child: SizedBox(
-        height: height,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
-              child: Text(
-                title,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-              ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
+            child: Text(
+              title,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
             ),
-            Expanded(child: child),
-          ],
-        ),
+          ),
+          Expanded(child: child),
+        ],
       ),
     );
   }
@@ -337,22 +356,29 @@ class _JumpingList extends StatefulWidget {
     required this.itemCount,
     required this.itemBuilder,
     required this.currentIndex,
+    this.controller,
   });
 
   final int itemCount;
   final int currentIndex;
   final IndexedWidgetBuilder itemBuilder;
 
+  /// 外部传入时（[DraggableScrollableSheet] 的 controller）由外部负责 dispose。
+  final ScrollController? controller;
+
   @override
   State<_JumpingList> createState() => _JumpingListState();
 }
 
 class _JumpingListState extends State<_JumpingList> {
-  final _controller = ScrollController();
+  ScrollController? _owned;
+
+  ScrollController get _controller => widget.controller ?? _owned!;
 
   @override
   void initState() {
     super.initState();
+    if (widget.controller == null) _owned = ScrollController();
     WidgetsBinding.instance.addPostFrameCallback((_) => _jumpToCurrent());
   }
 
@@ -365,7 +391,8 @@ class _JumpingListState extends State<_JumpingList> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    // 只销毁自己创建的那个；外部传进来的归 DraggableScrollableSheet 管。
+    _owned?.dispose();
     super.dispose();
   }
 
