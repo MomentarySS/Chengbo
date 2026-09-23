@@ -62,7 +62,12 @@ Future<bool> ensureCanDownload(BuildContext context, WidgetRef ref) async {
     }
     return false;
   }
-  final wifiOnly = ref.read(downloadWifiOnlyProvider).value ?? false;
+  // 不能直接读 `.value`：第一次读会现场创建 provider，此刻还是 AsyncLoading
+  // —— 见 resolveDownloadWifiOnly 的注释。
+  final wifiOnly = await resolveDownloadWifiOnly(
+    ref.read(downloadWifiOnlyProvider),
+    storage: ref.read(appStorageProvider.future),
+  );
   if (wifiOnly) {
     final allowed = await ref.read(networkMonitorProvider).allowsWifiOnlyDownload;
     if (!allowed) {

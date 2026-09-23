@@ -57,6 +57,18 @@ class _OnlineMonitor extends NetworkMonitor {
   Stream<bool> changes() => Stream<bool>.value(false);
 }
 
+/// 移动网络：仅WiFi下载必须拦住。
+class _CellularMonitor extends NetworkMonitor {
+  @override
+  Future<bool> get isOffline async => false;
+
+  @override
+  Future<bool> get allowsWifiOnlyDownload async => false;
+
+  @override
+  Stream<bool> changes() => Stream<bool>.value(false);
+}
+
 List<Override> _overrides() {
   return [
     appStorageProvider.overrideWith((ref) async => AppStorage(await SharedPreferences.getInstance())),
@@ -178,6 +190,31 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('仅WiFi下载'), findsOneWidget);
       expect(tester.widget<SwitchListTile>(find.widgetWithText(SwitchListTile, '仅WiFi下载')).value, isFalse);
+    });
+
+    testWidgets('仅WiFi下载开着时，移动网络下「全部下载」被拦住', (tester) async {
+      // 关键：`downloadWifiOnlyProvider` 在这次点击之前**从未被 watch 过**
+      // （详情页那个常驻开关搬走之后就没人预热它了）。修复前 `ref.read` 会拿到
+      // `AsyncLoading`、`.value == null` → 当成「没开」→ 在移动网络下照下不误。
+      SharedPreferences.setMockInitialValues({'download_wifi_only': true});
+      await tester.pumpWidget(
+        _app(extra: [networkMonitorProvider.overrideWith((ref) => _CellularMonitor())]),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.text('下载设置'));
+      await tester.pumpAndSettle();
+
+      final downloadAll = find.widgetWithText(SwitchListTile, '全部下载');
+      await tester.tap(downloadAll);
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text(NetworkStatusLogic.wifiOnlyBlocked),
+        findsOneWidget,
+        reason: '移动网络下没有拦住「全部下载」—— 仅WiFi下载被当成了「没开」',
+      );
+      expect(tester.widget<SwitchListTile>(downloadAll).value, isFalse);
     });
   });
 

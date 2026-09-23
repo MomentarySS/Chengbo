@@ -23,6 +23,7 @@ import '../../core/network/podcast_service.dart';
 import '../../core/network/xyzrank_catalog_client.dart';
 import '../../core/providers/app_providers.dart';
 import '../../core/providers/podcast_history_provider.dart';
+import '../../core/storage/app_storage.dart';
 
 final podcastServiceProvider = Provider<PodcastService>((ref) => PodcastService());
 
@@ -447,6 +448,23 @@ class DownloadWifiOnlyNotifier extends StateNotifier<AsyncValue<bool>> {
   }
 }
 
+/// 仅WiFi下载开关的**权威**取值。
+///
+/// `downloadWifiOnlyProvider` 是 `AsyncValue<bool>`，而且**第一次读它才会现场
+/// 创建**：那一刻状态是 `AsyncLoading`、`.value == null`。把这个 null 当成
+/// 「没开」就会在蜂窝网下放行下载。
+///
+/// 详情页原先有个常驻的「仅WiFi下载」开关在 `watch` 它，顺手把 provider 预热了；
+/// v2.2 把那个开关搬去设置之后（D3）没人预热，「全部下载」在移动网络下就会照下
+/// 不误。所以**没加载完时直接问存储** —— 存储本来就是它的数据源。
+Future<bool> resolveDownloadWifiOnly(
+  AsyncValue<bool> cached, {
+  required Future<AppStorage> storage,
+}) async {
+  if (cached.hasValue) return cached.value ?? false;
+  return (await storage).getDownloadWifiOnly();
+}
+
 /// 某个节目的「跳过片头/尾」持久值（秒）。
 ///
 /// `AppStorage` 是可变对象：`setPodcastSkipIntro/Outro` 不会让 Riverpod 收到
@@ -483,8 +501,11 @@ class PodcastDownloadsNotifier extends StateNotifier<PodcastDownloadState> {
         state.statusFor(episode.guid) == EpisodeDownloadStatus.ready) {
       return;
     }
-    final wifiOnlyAsync = _ref.read(downloadWifiOnlyProvider);
-    if (wifiOnlyAsync.value == true) {
+    final wifiOnly = await resolveDownloadWifiOnly(
+      _ref.read(downloadWifiOnlyProvider),
+      storage: _ref.read(appStorageProvider.future),
+    );
+    if (wifiOnly) {
       final allowed = await _ref.read(networkMonitorProvider).allowsWifiOnlyDownload;
       if (!allowed) return;
     }
