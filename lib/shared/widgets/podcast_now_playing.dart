@@ -75,6 +75,18 @@ class PodcastNowPlayingSheet extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const NowPlayingTopBar(),
+                  // 倒计时放封面**之上**：原来挂在控制行下面，会多出一行压在最
+                  // 底部，既挤又难看。配合封面外圈的 SleepTimerRing 一起读。
+                  if (sleepActive)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: SleepTimerCountdown(
+                        style: context.chengboSkin.countdownStyle(
+                          textTheme.labelLarge,
+                          colorScheme.primary,
+                        ),
+                      ),
+                    ),
                   const SizedBox(height: 8),
                   Expanded(
                     child: _Cover(current: current, accent: accent.first),
@@ -92,16 +104,6 @@ class PodcastNowPlayingSheet extends ConsumerWidget {
                     current: current,
                     onToggle: () => ref.read(playerControllerProvider).togglePlayPause(),
                   ),
-                  if (sleepActive)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 12),
-                      child: SleepTimerCountdown(
-                        style: context.chengboSkin.countdownStyle(
-                          textTheme.labelLarge,
-                          colorScheme.primary,
-                        ),
-                      ),
-                    ),
                   if (hasError)
                     Padding(
                       padding: const EdgeInsets.only(top: 16),
@@ -159,22 +161,26 @@ class _Cover extends StatelessWidget {
             tag: NowPlayingHero.tagFor(current.id),
             child: Material(
               color: Colors.transparent,
-              child: Container(
-                width: side,
-                height: side,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(radius),
-                  boxShadow: [
-                    BoxShadow(
-                      color: accent.withValues(alpha: 0.28),
-                      blurRadius: 28,
-                      offset: const Offset(0, 12),
-                    ),
-                  ],
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(radius),
-                  child: _artwork(context, colorScheme, side, radius),
+              // 定时开着时，封面外沿多一圈随时间消失的光圈（不占布局）。
+              child: SleepTimerRing(
+                radius: radius,
+                child: Container(
+                  width: side,
+                  height: side,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(radius),
+                    boxShadow: [
+                      BoxShadow(
+                        color: accent.withValues(alpha: 0.28),
+                        blurRadius: 28,
+                        offset: const Offset(0, 12),
+                      ),
+                    ],
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(radius),
+                    child: _artwork(context, colorScheme, side, radius),
+                  ),
                 ),
               ),
             ),

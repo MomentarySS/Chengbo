@@ -147,11 +147,13 @@ class SleepTimerNotifier extends StateNotifier<SleepTimerState> {
     await _restoreVolume();
     if (!mounted) return;
     final clamped = SleepTimerLogic.clampDuration(duration);
-    final endsAt = DateTime.now().add(clamped);
-    state = SleepTimerState(endsAt: endsAt);
+    final now = DateTime.now();
+    final endsAt = now.add(clamped);
+    // startedAt + total 供进度环算剩余比例。
+    state = SleepTimerState(endsAt: endsAt, startedAt: now, total: clamped);
     unawaited(_remember(SleepLastValue.minutes(clamped.inMinutes)));
     _timer = Timer(clamped, () => unawaited(stopBecauseTimer()));
-    final fadeDelay = clamped - Duration(seconds: SleepTimerLogic.fadeOutSeconds);
+    final fadeDelay = clamped - const Duration(seconds: SleepTimerLogic.fadeOutSeconds);
     if (fadeDelay > Duration.zero) {
       _fadeTimer = Timer(fadeDelay, () => unawaited(_beginFadeOut()));
     } else if (clamped > Duration.zero) {
@@ -221,9 +223,12 @@ class SleepTimerNotifier extends StateNotifier<SleepTimerState> {
     await _ref.read(playerControllerProvider).pause();
     if (!mounted) return;
     final snoozeFor = SleepTimerLogic.snoozeDuration;
+    final now = DateTime.now();
     state = SleepTimerState(
-      endsAt: DateTime.now().add(snoozeFor),
-      snoozedUntil: DateTime.now(),
+      endsAt: now.add(snoozeFor),
+      startedAt: now,
+      total: snoozeFor,
+      snoozedUntil: now,
     );
     _timer = Timer(snoozeFor, () => unawaited(_resumeAfterSnooze()));
   }

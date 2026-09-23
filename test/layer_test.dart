@@ -1577,6 +1577,70 @@ void main() {
     );
   });
 
+  test('SleepTimerLogic.ringFraction only reports progress when there is a clock', () {
+    final now = DateTime(2026, 9, 23, 22, 0, 0);
+
+    double? fraction({
+      DateTime? endsAt,
+      DateTime? startedAt,
+      Duration? total,
+      bool untilEpisodeEnd = false,
+      int? remainingEpisodes,
+    }) {
+      return SleepTimerLogic.ringFraction(
+        SleepTimerState(
+          endsAt: endsAt,
+          startedAt: startedAt,
+          total: total,
+          untilEpisodeEnd: untilEpisodeEnd,
+          remainingEpisodes: remainingEpisodes,
+        ),
+        now: now,
+      );
+    }
+
+    // 30 分钟定时，走了一半 → 0.5；刚开 → 1.0；到点 → 0.0。
+    expect(
+      fraction(
+        startedAt: now.subtract(const Duration(minutes: 15)),
+        endsAt: now.add(const Duration(minutes: 15)),
+        total: const Duration(minutes: 30),
+      ),
+      0.5,
+    );
+    expect(
+      fraction(startedAt: now, endsAt: now.add(const Duration(minutes: 30)), total: const Duration(minutes: 30)),
+      1.0,
+    );
+    expect(
+      fraction(
+        startedAt: now.subtract(const Duration(minutes: 30)),
+        endsAt: now,
+        total: const Duration(minutes: 30),
+      ),
+      0.0,
+    );
+    // 到点之后（endsAt 已过去）不能变成负数。
+    expect(
+      fraction(
+        startedAt: now.subtract(const Duration(minutes: 40)),
+        endsAt: now.subtract(const Duration(minutes: 10)),
+        total: const Duration(minutes: 30),
+      ),
+      0.0,
+    );
+
+    // 没有连续时钟 → null（画静态环，不假装有进度）。
+    expect(fraction(untilEpisodeEnd: true), isNull);
+    expect(fraction(remainingEpisodes: 2), isNull);
+    // 字段缺失 / 总时长为 0 也返回 null。
+    expect(fraction(endsAt: now.add(const Duration(minutes: 5))), isNull);
+    expect(
+      fraction(startedAt: now, endsAt: now.add(const Duration(minutes: 5)), total: Duration.zero),
+      isNull,
+    );
+  });
+
   test('PodcastPlaybackLogic.skipDurationLabel formats mm:ss', () {
     expect(PodcastPlaybackLogic.skipDurationLabel(0), '0:00');
     expect(PodcastPlaybackLogic.skipDurationLabel(5), '0:05');
