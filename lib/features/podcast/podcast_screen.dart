@@ -796,6 +796,10 @@ class _EpisodeTile extends ConsumerWidget {
             Expanded(
               child: Text(
                 episode.title,
+                // 长标题原本能占 3 行，把列表撑得很松。要读全文可以长按 ——
+                // 菜单第一行就是完整标题。
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: !selecting && isCurrent ? const TextStyle(fontWeight: FontWeight.w600) : null,
               ),
             ),
