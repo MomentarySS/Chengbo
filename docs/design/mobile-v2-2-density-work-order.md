@@ -443,13 +443,21 @@ flutter test      # 基线 143/143；本工单新增后总数 = 143 + 新增
 
 守卫：`test/podcast_density_test.dart` 新增 widget 测试（360×800 下打开面板 → 「保存」必须在屏内 + `takeException()` 为 null）。两处都做了有牙验证：关掉 `isScrollControlled` → 「保存」落在 938px（屏高 800）失败；恢复 `late int` → 以 `LateInitializationError` 失败。
 
+### 11.4 仅WiFi下载：在节目设置面板里露一行**只读**状态（commit `732131f`）
+
+- **起因**：用户找不到它 —— 它在 `设置 → 播放与收听 →「播客」分组`（D3 的落点，正确：它是**全局**开关）。但它在下载路径上完全不可见，用户在移动网络下点下载只会被拦一下、事先没有任何提示。
+- **做法**：`_WifiOnlyStatusTile` —— 一行不可点的 `ListTile`：`仅WiFi下载` + 副文「在 设置 → 播放与收听 里修改」+ 右侧 `开`/`关`。**故意不可点**：不把全局开关复制进按节目的面板。
+- **同一类坑的复用**：值没加载完时显示 `…` 而不是「关」—— 就是 §11.3 那个 `AsyncLoading` 误判的同一形状。
+- **副作用与补偿**：这一行 `watch` 了 `downloadWifiOnlyProvider`，等于把它预热了 → 原来那条「竞态」widget 测试（靠「此前没人 watch 过它」制造 AsyncLoading）**失去牙齿**。补偿：新增直接测 `resolveDownloadWifiOnly(AsyncLoading, …)` 的单元测试（改坏实现 → 以「AsyncLoading 被当成『没开』了」失败），widget 测试降级为端到端行为守卫并在注释里写明分工。
+
 ---
 
 ## 12. 变更记录
 
 | 日期 | 版本 | 变更 |
 |---|---|---|
-| 2026-09-23 | 1.5 | **真机第二轮反馈的两处改动**：`0350a72` 取消封面光圈（连带 `startedAt`/`total`/`ringFraction` 一并删掉，不留死代码；倒计时保留在封面之上）；`b1e2390` 修跳过片头/尾面板的**静默裁切**（缺 `isScrollControlled` + 无滚动容器，「保存」被裁且滚不到）与**首帧 `LateInitializationError`**（`late int` 由异步 `_load()` 赋值）。`flutter test` **156/156**、`flutter analyze` **17 info**（比基线低 6：本次改到的 `podcast_skip_sheet.dart` 的 4 条 + 之前两个文件各 1 条 + 光圈代码移除）。两处新守卫都做过有牙验证。另新增 `scripts/git-proxy.ps1`（探测本地代理端口再执行 git/gh，见 §12）|
+| 2026-09-23 | 1.6 | **§11.4 仅WiFi下载只读状态行**（commit `732131f`）：在「节目设置」面板的「下载」分组末尾加一行不可点的 `仅WiFi下载 · 开/关`，副文指向设置页 —— 开关本身仍在 `设置 → 播放与收听`（全局开关不复制进按节目面板），但下载路径上终于看得见它的状态。值未加载完显示 `…`（不显示「关」）。副作用：该行 `watch` 了 provider → 原竞态 widget 测试失去牙齿，改用 `resolveDownloadWifiOnly(AsyncLoading, …)` 单元测试顶上（已做有牙验证）。`flutter test` **157/157**、`flutter analyze` **17 info** |
+| 2026-09-23 | 1.5 | **真机第二轮反馈的两处改动**：`0350a72` 取消封面光圈（连带 `startedAt`/`total`/`ringFraction` 一并删掉，不留死代码；倒计时保留在封面之上）；`b1e2390` 修跳过片头/尾面板的**静默裁切**（缺 `isScrollControlled` + 无滚动容器，「保存」被裁且滚不到）与**首帧 `LateInitializationError`**（`late int` 由异步 `_load()` 赋值）。`flutter test` **156/156**、`flutter analyze` **17 info**（比基线低 6：本次改到的 `podcast_skip_sheet.dart` 的 4 条 + 之前两个文件各 1 条 + 光圈代码移除）。两处新守卫都做过有牙验证。另新增 `scripts/git-proxy.ps1`（探测本地代理端口再执行 git/gh）|
 | 2026-09-23 | 1.4 | **追加两条真机评审后的改动**（§11）：`653922d`… 之后的 `ee20dbd`（「下载设置」→「节目设置」+ 下载/播放分组，文件与函数同步改名）与 `379fde5`（倒计时移到封面之上 + 封面外沿随时间消失的 `SleepTimerRing`，`SleepTimerState` 加 `startedAt`/`total` + 纯函数 `ringFraction`）。`flutter test` **157/157**、`flutter analyze` **21 info**（比基线**低 2**：顺手清掉了 `app_providers.dart` 与 `sleep_timer_sheet.dart` 里既有的 `prefer_const_constructors`，因为本次改到了这两个文件）。三条新守卫都做过有牙验证：`ringFraction` 无时钟返回 `1.0` → layer_test 失败；底部倒计时加回来 → 「只有一处」失败；封面去掉光圈 → 光圈守卫失败 |
 | 2026-09-23 | 1.3 | **修一处 D3 引入的回归**（commit `653922d`）：`downloadWifiOnlyProvider` 是**懒创建**的 `AsyncValue` —— 第一次读它才现场创建，那一刻是 `AsyncLoading`、`.value == null`。详情页原先那个常驻的「仅WiFi下载」开关在 `watch` 它，顺手把 provider 预热了；D3 把开关搬去设置后**没人预热**，于是 `ensureCanDownload` 读到 null → 当成「没开」→ **移动网络下「全部下载」照下不误、也没有提示**。修法：新增 `resolveDownloadWifiOnly()`，provider 没加载完时直接问存储（存储就是它的数据源）；`ensureCanDownload` 与 `PodcastDownloadsNotifier.download()`（自动下载那条路有同样的潜在竞态）都改用它。守卫：新增 widget 测试「在移动网络下点『全部下载』且此前没人 watch 过该 provider」→ 旧代码以预期理由失败。`flutter test` **154/154**、`flutter analyze` 23 info 持平。**又是真机测试抓出来的** —— §5 自查表第 1 条预测了这个场景，但自动化测不出真实网络状态，我也没设备 |
 | 2026-09-23 | 1.2 | **修一处 P1 引入的缺陷**（commit `d3fb718`）：图标行把电台页的**视觉**（实心月亮 + `关闭睡眠定时` tooltip）搬了过来，却没搬**行为** —— `onPressed` 永远只是打开面板，于是 tooltip 在说谎、关闭要多点一次。现在与电台页一致：定时开着时点一下直接 `cancel()`（想改时长再点一次开面板）。守卫加在 `test/podcast_density_test.dart`，并把电台页钉为基准。`flutter test` **153/153**、`flutter analyze` 23 info 持平。**这是真机测试抓出来的，自动化没覆盖到** —— 该行为在播放器页，而播放器页的守卫是源码结构断言（见 §6.2），挡不住「逻辑写错」只挡得住「文案/结构被删」|
