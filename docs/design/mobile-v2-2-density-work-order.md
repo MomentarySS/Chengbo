@@ -1,0 +1,422 @@
+# v2.2 实施工单 — 播客详情页 + 播客播放器页瘦身（8 条）
+
+> 范围：播客**详情页**与播客**播放器页**的高度瘦身，共 8 条（用户已逐条批准）。
+> 上游效果图：[`../../dist/podcast-density-design.html`](../../dist/podcast-density-design.html)（before/after + 逐条取舍，浏览器打开）
+> 关联设计：[`mobile-v2-1-plan.md`](./mobile-v2-1-plan.md) §9「不做」清单
+> 状态总览：[`v2-1-release-tracker.md`](./v2-1-release-tracker.md)
+> 前置：PR #9（`feat/radio-page`：两页共享规格 + 电台页三处）、PR #10（`fix/podcast-episode-menu`）**均已合 main**，main = `dd8990c`
+> **不在本工单**：版本 bump / CHANGELOG / ROADMAP / tag / `gh release` / `pack.ps1` 重建产物 —— v2.2.0 收尾另起，动前先问用户
+
+---
+
+## 1. 目标
+
+两个页面都不缺功能，缺的是**层级**：低频设置与重复入口占了最高频的位置。
+
+| 页面 | 指标 | 现状 | 目标 | 收益 |
+|---|---|---|---|---|
+| 详情页 | 头部 chrome 高度 | 394px（52% 屏高）| 228px（30%）| 首屏 2.5 条 → 4–5 条单集 |
+| 播放器页 | 内容高度 | 754px（99%，刚好塞满）| 573px（75%）| 余量 ~25%，矮屏不再挤 |
+
+（760dp 屏估算，见效果图「首屏高度账」）
+
+### 8 条一览
+
+| # | 页面 | 改动 | 省 | 取舍 |
+|---|---|---|---|---|
+| D1 | 详情页 | 三个下载开关 → 一行「下载设置」入口 + bottom sheet | ~145px | 低频项从常驻变一次点击 |
+| D2 | 详情页 | 单集标题 `maxLines: 2` | ~24px/行 | 长标题要长按看全（菜单里有完整标题）|
+| D3 | 详情页 | `仅WiFi下载` 移到设置 | ~48px | 全局开关不再挂在本页 |
+| D4 | 详情页 | 顶栏去掉「选择多项」图标 | — | 批量下载：1 次点击 → 长按 + 1 次点击 |
+| P1 | 播放器 | 5–6 个 chip → 一行纯图标按钮 | ~72px | 可发现性下降，靠 tooltip + Semantics 兜 |
+| P2 | 播放器 | `跳过片头/尾` 移出 → 详情页「下载设置」面板 | — | 入口变远；已设值不丢 |
+| P3 | 播放器 | `停止` 去掉 | — | 全屏页少一个停止入口（迷你条 ✕ 覆盖）|
+| P4 | 播放器 | 封面限高 | 已由 PR #9 覆盖 | 是否更激进（屏高 38%）→ 待拍板 |
+
+---
+
+## 2. 起点与基线（已在本机核实）
+
+| 项 | 值 | 核实方式 |
+|---|---|---|
+| main | `dd8990c`（PR #9 + #10 已合）| `git log --oneline -3 origin/main` |
+| 新分支 | `feat/podcast-density`（已从 main 开）| `git branch --show-current` |
+| `flutter test` | **143/143 通过** | `flutter test` |
+| `flutter analyze` | **23 info**（全仓，0 warning / 0 error）| `flutter analyze` |
+
+23 条 info 分布（**全部为既有基线，不是本工单的修复目标**）：
+
+- `test/layer_test.dart` 13 条（`prefer_const_constructors`）
+- `lib/shared/widgets/podcast_skip_sheet.dart` 4 条（`unnecessary_brace_in_string_interps`）
+- `test/key_screens_test.dart` 1 条、`lib/core/audio/playback_session.dart` 1 条、`lib/core/providers/app_providers.dart` 1 条、`lib/core/storage/device_backup.dart` 1 条、`lib/features/radio/radio_screen.dart` 1 条、`lib/shared/widgets/sleep_timer_sheet.dart` 1 条
+
+**本工单目标：改到的文件 0 issue；全仓 ≤ 23 info（不许涨）。**
+
+---
+
+## 3. 逐条改法
+
+### 3.1 D1 —— 三个下载开关收成一行「下载设置」入口
+
+**现状**（`lib/features/podcast/podcast_screen.dart`）：
+
+- `_DownloadAllTile`（:653–800）在 ListView 里占 **1 个 item**，内部是 `Column`：
+  - `SwitchListTile 全部下载`（:682–708）
+  - `SwitchListTile 自动下载最新一集`（:709–727）
+  - 一行 `仅WiFi下载 开关 + 最近几集 下拉`（:729–796）
+- 挂载点：:583–585；`leadingCount`（:552–553）已按「1 个 item」计数 → **改后计数不变**
+
+**改法**：
+
+1. `_DownloadAllTile` → `_DownloadSettingsTile`，只渲染**一行** `ListTile`：
+   - `leading: Icon(Icons.download_for_offline_outlined)`（沿用现有图标）
+   - `title: Text('下载设置')`
+   - `subtitle:` 一行状态摘要（见下），`maxLines: 1, overflow: TextOverflow.ellipsis` —— **必须单行**，否则吃回省下的高度
+   - `trailing: Icon(Icons.chevron_right)`
+   - `onTap: () => showPodcastDownloadSettingsSheet(context, feed: feed, episodes: episodes)`
+
+2. 新建 `lib/shared/widgets/podcast_download_settings_sheet.dart`：
+   - `showModalBottomSheet(..., showDragHandle: true, isScrollControlled: true, builder: (ctx) => SafeArea(child: SingleChildScrollView(child: Column(mainAxisSize: MainAxisSize.min, ...))))`
+   - **必守**（见 §7 已知坑）：① 内容**不能有 flex 子项**（`Expanded` / `Flexible`），否则撑满全屏；② 必须 `isScrollControlled: true` + 自带滚动容器，否则尾部被屏高 9/16 上限**静默裁掉**
+   - 条目（4 条，顺序固定）：
+
+     | 条目 | 控件 | 说明 |
+     |---|---|---|
+     | 全部下载 | `SwitchListTile` | 沿用 :682–708 的文案与逻辑；打开前 `ensureCanDownload(context, ref)` **不能丢** |
+     | 自动下载最新一集 | `SwitchListTile` | 沿用 :709–727；打开前同样过 `ensureCanDownload` |
+     | 最近几集 | `ListTile` + `trailing: DropdownButton<int>`（3 / 5 / 10）| 沿用 :746–793 的 `recentPendingForDownload` 与两条 SnackBar 文案；同样过 `ensureCanDownload` |
+     | 跳过片头/尾 | `ListTile`（副文显示当前值）| 点开现有 `showPodcastSkipSheet`，见 §3.6 |
+
+   - **`仅WiFi下载` 不进这个面板** —— D3 把它挪到设置
+
+3. 状态摘要用**纯函数**（新增到 `lib/core/audio/podcast_download.dart` 的 `PodcastDownloadLogic`，便于 `layer_test` 守卫）：
+
+```dart
+/// 「下载设置」入口行的一行摘要。默认态给「按需下载」，非默认态逐项追加；
+/// 任何状态组合下都保持**单行**可读，且不显示未发生的状态。
+static String downloadSettingsSummary({
+  required int total,
+  required int ready,
+  required int downloading,
+  required bool allEnabled,
+  required bool latestEnabled,
+  required int skipIntroSeconds,
+  required int skipOutroSeconds,
+}) {
+  final parts = <String>[
+    if (downloading > 0) '正在下载 ${ready + downloading}/$total',
+    if (downloading == 0 && ready > 0) '已下载 $ready/$total 集',
+    if (allEnabled) '全部下载 开',
+    if (latestEnabled) '自动下载最新 开',
+    if (skipIntroSeconds > 0) '跳过片头 ${PodcastPlaybackLogic.skipDurationLabel(skipIntroSeconds)}',
+    if (skipOutroSeconds > 0) '跳过片尾 ${PodcastPlaybackLogic.skipDurationLabel(skipOutroSeconds)}',
+  ];
+  return parts.isEmpty ? '按需下载' : parts.join(' · ');
+}
+```
+
+   - `skipDurationLabel(int seconds)` 是**新增**的纯函数（放在 `PodcastPlaybackLogic`，`lib/core/audio/podcast_playback.dart`，与 `skipDurationOptions` :41 相邻）：`0 → '0:00'`、`30 → '0:30'`、`90 → '1:30'`、`120 → '2:00'`。与 `podcast_skip_sheet.dart` 的私有 `_formatSeconds` 口径一致，但**不改那个文件**（见 §9 冲突面）
+
+**语义边界**：
+
+- 摘要必须**随状态实时变** → `_DownloadSettingsTile` 要 `ref.watch` 全部 4 个来源：`podcastDownloadAllFeedsProvider` / `podcastDownloadLatestFeedsProvider` / `podcastDownloadsProvider`（仅 `select(records)`）/ 跳过片头尾存储值
+- 下载进度 tick 会高频重绘：沿用 :519–521 的既有约定 —— 只 `select((s) => s.records)`，**不要** watch 整个 `podcastDownloadsProvider`，否则每块进度都重排整页列表
+- `_selecting == true` 时该行仍不渲染（`showDownloadBar = !_selecting`，:552 不变）
+- 跳过片头尾值来自 `AppStorage`（异步）→ 摘要用 `appStorageProvider.future` 读取；读取完成前显示不含跳过段的摘要（**不要**整行消失）
+
+### 3.2 D2 —— 单集标题 `maxLines: 2`
+
+**现状**：`_EpisodeTile` 的 `title: Row(...)`（:873–891）里 `Text(episode.title, ...)` **无 maxLines** → 长标题占 3 行。
+
+**改法**：给该 `Text` 加 `maxLines: 2, overflow: TextOverflow.ellipsis`（:876–879）。`Row` + `Expanded` + 星标结构不动。
+
+**语义边界**：
+
+- 长按菜单第 1 行是 `Text(episode.title)`（:1037，无 maxLines）→ **完整标题仍可见**，这是本条的取舍前提
+- `紧凑列表`（`listDensityCompactProvider`，:859–861）必须继续生效；2 行标题 + `visualDensity.compact` 下 `ListTile` **不得溢出**（用 §6 守卫测试断言 `tester.takeException()` 为 null）
+- 副标题（:892–922）含进度条，`ListTile` 高度本来就随内容增长 → 多 1 行标题不会触发 `isThreeLine` 类断言
+
+### 3.3 D3 —— `仅WiFi下载` 移到设置
+
+**现状**：只出现在 :729–745（读 `downloadWifiOnlyProvider`，定义在 `lib/features/podcast/podcast_providers.dart:426`）。它是**全局**开关 —— 全局设置挂在「某个节目」页里 = 语义错位。
+
+**改法**：
+
+1. 删除详情页 :729–745 的 `仅WiFi下载` 开关（`最近几集` 迁入下载设置面板，见 §3.1）
+2. 在 `lib/features/settings/playback_screen.dart` 的「播客」section（:166 起）**首条**插入：
+
+```dart
+ref.watch(downloadWifiOnlyProvider).when(
+      data: (enabled) => SwitchListTile(
+        secondary: const Icon(Icons.wifi_outlined),
+        title: const Text('仅WiFi下载'),
+        subtitle: const Text('蜂窝网络下不自动开始下载'),
+        value: enabled,
+        onChanged: (value) => ref.read(downloadWifiOnlyProvider.notifier).set(value),
+      ),
+      loading: () => const ListTile(
+        leading: Icon(Icons.wifi_outlined),
+        title: Text('仅WiFi下载'),
+        trailing: SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2)),
+      ),
+      error: (error, _) => ListTile(
+        leading: const Icon(Icons.wifi_outlined),
+        title: const Text('仅WiFi下载'),
+        subtitle: Text('加载失败: $error'),
+      ),
+    ),
+```
+
+   - `playback_screen.dart` 已 import `../podcast/podcast_providers.dart`（:16）→ **无需新增 import**
+   - 三态写法与同页其它开关一致（:186–231 为范式）
+
+**语义边界**（**这条最容易做漏**）：
+
+- `ensureCanDownload`（:54–77）读的就是 `downloadWifiOnlyProvider` → **「全部下载」打开时仍然遵守它**。D3 只搬 UI，**不改校验**。搬到设置后，用户在蜂窝网下开「全部下载」会收到既有 SnackBar（`NetworkStatusLogic.wifiOnlyBlocked`）—— 行为与今天一致
+- 播客播放器页的下载图标走同一个 `ensureCanDownload` → 不受影响
+- `podcast_providers.dart` 的 `downloadLatestIfEnabled` / 后台自动下载也读同一个 provider（:472）→ 不受影响
+
+### 3.4 D4 —— 顶栏去掉「选择多项」图标
+
+**现状**：:459–464 的 `IconButton(tooltip: '选择多项', icon: Icons.checklist, onPressed: _enterSelect)`。
+
+**改法**：删除该 `IconButton`；非选择态的 `else ...[` 分支只留 `PopupMenuButton<_DetailMoreAction>`。
+
+**语义边界**：
+
+- 长按菜单第 4 项就是 `选择多项`（:1069–1076，调 `onEnterSelect()`）→ **入口仍存在**，`_enterSelect` 不会变死代码
+- 选择态（`_selecting == true`）下的 `全选 / 下载所选` 两个按钮（:431–458）**不动**
+- Windows 端鼠标右键也能开菜单（`GestureDetector.onSecondaryTap`，:856）→ 桌面端批量下载仍可达
+
+### 3.5 P1 —— chips 收成一行纯图标按钮
+
+**现状**：`_EpisodeChips`（`lib/shared/widgets/podcast_now_playing.dart:271–396`）是 `Wrap`，两行 ~120px，最多 6 个 `ActionChip`：简介 / 已下载 / 取消下载 / 下载 / 睡眠定时 / 跳过片头尾 / 书签 / 停止。
+
+**改法**：`Wrap` → 一行 `Row(mainAxisAlignment: MainAxisAlignment.spaceEvenly)`，纯图标：
+
+| 原 chip | 新图标 | 交互 | 无障碍 |
+|---|---|---|---|
+| 简介（`hasNotes`）| `Icons.notes_outlined` | `IconButton` → `showPlaybackNotesSheet` | `tooltip: '简介'` |
+| 下载 / 重新下载 | `Icons.download_outlined` | `IconButton` → `startDownload`（保留 `ensureCanDownload`）| `tooltip: '下载'` / `'重新下载'` |
+| 取消下载（downloading）| `Icons.cancel_outlined` | `IconButton` → `cancel(guid)` | `tooltip: '取消下载'` |
+| 已下载（ready）| `Icons.download_done` | **静态 `Icon`**（现状也是不可点的 `Chip`）+ `Tooltip` + `Semantics(label: '已下载')` | 不引入「可点但无动作」的假按钮 |
+| 睡眠定时 | `Icons.bedtime_outlined` / `Icons.bedtime`（active 时主色）| `IconButton` → `showSleepTimerSheet` | `tooltip: '睡眠定时'` / `'关闭睡眠定时'` |
+| 书签 | `Icons.bookmark_outline` | `IconButton` → `showEpisodeBookmarkSheet`（`guid == null` 时 `onPressed: null`）| `tooltip: '书签'` / `'书签 · N'` |
+
+**语义边界**：
+
+- **每个图标必须保留 `tooltip`**；`:322–325` 那条「已下载 chip 与兄弟标签中心对齐」的长注释随 `Wrap` 一起删（新布局不再有 `WrapCrossAlignment` 问题）
+- 书签数 `bookmarkCount > 0` 时用 badge 小点或 `IconButton.isSelected` 表达；**不要**在图标旁塞文字（会破坏单行）
+- 图标数量随状态在 **2–4 个**之间浮动（简介 / 下载态 / 书签）→ `Row` 用 `spaceEvenly`，**不要** `Expanded`（数量变化时不会互相拉扯）
+- 移除「停止」后本文件不再调 `playerControllerProvider.stop()`；`playerControllerProvider` 仍被 `_TransportRow.onToggle` 使用 → **import 保留**
+
+### 3.6 P2 —— `跳过片头/尾` 移出播放器
+
+**现状**：`podcast_now_playing.dart:364–369` 的 chip → `showPodcastSkipSheet(context, feedId: current.feedId!)`。它是**按节目**的持久设置（`AppStorage.getPodcastSkipIntro/Outro`，key 前缀 `podcast_skip_intro_` / `podcast_skip_outro_`，`lib/core/storage/app_storage.dart:482–495`），不是播放动作。
+
+**改法**：
+
+1. 删除播放器里的该 chip（:364–369）**及** `podcast_skip_sheet.dart` 的 import（否则 analyze 报 unused import）
+2. 在「下载设置」面板里加一条 `ListTile`：
+   - `leading: Icon(Icons.skip_next_outlined)`、`title: Text('跳过片头/尾')`
+   - 副文显示当前值（如 `片头 0:30 · 片尾 0:00`；都未设时 `未设置`）
+   - `onTap:` `await showPodcastSkipSheet(context, feedId: feed.id);` **返回后重新读存储刷新副文**
+3. 存储层与 `showPodcastSkipSheet` 本体**不改** → 已设值天然不丢
+
+**语义边界**：
+
+- 副文需在嵌套 sheet 关闭后刷新 → 面板做成 `ConsumerStatefulWidget`：`_load()` 读 `appStorageProvider.future`，`await` 嵌套 sheet 后再次 `_load()`
+- **嵌套 sheet** 是本次唯一的交互取舍（面板之上再 push 一个 sheet）。备选：把两组 `ChoiceChip` 直接嵌进面板（复用 `PodcastPlaybackLogic.skipDurationOptions`）→ 面板变高，靠 `SingleChildScrollView` 兜住。见 §10 待拍板 #2
+- 移出后播放器**不再**有跳过片头尾入口；**自动跳过行为完全不变**（`radio_audio_handler.dart:46–56`、`:302`、`:479–488`）
+
+### 3.7 P3 —— `停止` 去掉
+
+**现状**：`podcast_now_playing.dart:387–392` 的 chip → `playerControllerProvider.stop()`。
+
+**改法**：删除该 chip。
+
+**语义边界**：
+
+- **迷你条 ✕ 就是同一个动作**：`lib/shared/widgets/mini_player.dart:195–199`，`tooltip: '停止'`，`onPressed: playerControllerProvider.stop()` —— 语义完全一致，且迷你条常驻 home shell（`home_shell.dart:163`）
+- 电台播放器控制行本来就没有停止键（`radio_now_playing.dart:425–479`：睡眠定时 / 上一台 / 播放 / 下一台 / 播放列表）→ 去掉后**两页一致**，这正是本次的既定目标
+- 播放器页是全屏路由，迷你条被盖住 → 想停止需**先关播放器页再按 ✕**（两步）。这是用户已知并接受的取舍，列入 §6.4 真机确认清单
+
+### 3.8 P4 —— 封面限高（**已由 PR #9 覆盖**）
+
+**现状**：`_Cover`（`podcast_now_playing.dart:151–186`）已是 `math.min(min(maxWidth, maxHeight), ChengboSkinTheme.anchorMaxSide)`，`anchorMaxSide = 300`（`lib/core/theme/app_skin.dart:307`）→ 随可用高度收缩，两页共用同一规格。
+
+**本工单动作**：**不改代码**。是否再收一档（效果图写的「屏高 38%」≈ 290px）留 §10 待拍板 —— 若做，**必须只改 `anchorMaxSide` 一处**（两页同生效），**不允许**在播客页单独写 `maxHeight`（那正是 PR #9 之前的分叉方式）。
+
+---
+
+## 4. 必须守住的不变量
+
+| # | 不变量 | 落点 |
+|---|---|---|
+| I1 | 两页视觉规格一律走 `ChengboSkinTheme.anchorMaxSide` / `anchorRadius` / `nowPlayingBackdrop()`，**不再各写一套** | `app_skin.dart:304–328`；`podcast_now_playing.dart:150–155`；`radio_now_playing.dart:166–172` |
+| I2 | 刻意保留的两页差异**不要顺手统一**：中部（电台音量滑条 vs 播客进度条+时间）、控制行（电台切台 vs 播客跳秒）、锚点内容（生成式台名卡 vs 真封面）、Hero（播客有、电台无）| — |
+| I3 | `紧凑列表`（`listDensityCompactProvider`）继续对单集行生效 | `podcast_screen.dart:859–861` |
+| I4 | 不碰：Windows 端任何代码、`_IcyStatusLine`、`_MiniProgressBar`、`widget_resume` 触控尺寸、widget 圆角、widget 与 App「外观」开关联动 | — |
+| I5 | ROADMAP ban 清单不做：复古刻度 UI / 均衡器频谱 / 歌词 / 逐字稿 | — |
+| I6 | `ensureCanDownload` 是**唯一**下载前置校验入口，全部调用点（详情页 4 处 + 播放器 1 处）都必须保留 | `podcast_screen.dart:54` |
+
+---
+
+## 5. 语义边界自查表（提交前逐条勾）
+
+| # | 场景 | 期望 |
+|---|---|---|
+| 1 | 「全部下载」打开 + `仅WiFi` 开 + 蜂窝网 | 弹既有 `wifiOnlyBlocked` SnackBar，开关**不**打开 |
+| 2 | 「最近几集」下载，同上 | 同上（前置校验不丢）|
+| 3 | 设置里改「仅WiFi下载」| 详情页 / 播放器的下载行为立即跟随（同一 provider）|
+| 4 | 播放器下载图标（蜂窝网 + wifiOnly 开）| 同样被拦，SnackBar 文案不变 |
+| 5 | 面板在 640dp 矮屏 / 大字号下打开 | 4 条**全部可见或可滚到**，无静默裁尾 |
+| 6 | 面板 4 条的状态 | 与详情页入口行摘要、与开关实际值**三者一致** |
+| 7 | 设置过跳过片头 0:30 → 打开面板 | 副文显示 `片头 0:30`；改完返回后**立即刷新** |
+| 8 | 已设跳过片头/尾的老用户升级后 | 值仍在，自动跳过行为不变（存储 key 未动）|
+| 9 | 每个图标 | `tooltip` 存在；`Semantics` 可读；`已下载` 不被读成按钮 |
+| 10 | 书签数为 0 / >0 | 图标行不换行、不错位 |
+| 11 | 无简介（`hasNotes == false`）| 不渲染「简介」图标，行内其余图标仍居中 |
+| 12 | 播放器去掉「停止」后 | 关闭播放器页 → 迷你条 ✕ 仍在、tooltip 为 `停止`、点击行为不变 |
+| 13 | 长按单集 → 菜单 | 第 1 行是**完整标题**；`选择多项` 项仍在且可进入选择态 |
+| 14 | 顶栏（非选择态）| 只剩「更多」菜单；选择态仍是 `全选 + 下载所选` |
+| 15 | 单集标题 3 行长度 | 渲染 2 行 + 省略号，**无溢出异常**；`紧凑列表` 开 / 关都不溢出 |
+| 16 | 详情页在 `_selecting` 态 | 「下载设置」行不渲染（沿用 `showDownloadBar`）|
+| 17 | 下载中（进度 tick）| 详情页列表**不**因每块进度重排（仍只 `select(records)`）|
+| 18 | 面板打开时点「跳过片头/尾」 | 嵌套 sheet 正常打开；关闭后回到面板（面板未被一起 pop）|
+
+---
+
+## 6. 验证清单
+
+### 6.1 自动化（必过）
+
+```powershell
+flutter analyze   # 改到的文件 0 issue；全仓 ≤ 23 info
+flutter test      # 基线 143/143；本工单新增后总数 = 143 + 新增
+```
+
+### 6.2 新增守卫测试
+
+**`test/layer_test.dart`（纯逻辑，追加）** —— `PodcastDownloadLogic.downloadSettingsSummary` 取值矩阵：
+
+| 输入 | 期望 |
+|---|---|
+| 全默认（无下载、两开关关、无跳过）| `按需下载` |
+| `allEnabled: true` | `全部下载 开` |
+| `latestEnabled: true` | `自动下载最新 开` |
+| `ready: 3, total: 12` | `已下载 3/12 集` |
+| `downloading: 2, ready: 1, total: 12` | `正在下载 3/12` |
+| `skipIntroSeconds: 30, skipOutroSeconds: 45` | `跳过片头 0:30 · 跳过片尾 0:45` |
+| 组合（下载中 + 两开关开 + 跳过片头）| 四段以 ` · ` 连接，顺序固定 |
+
+（同时覆盖新增的 `PodcastPlaybackLogic.skipDurationLabel`：`0 / 30 / 90 / 120`）
+
+**`test/podcast_density_test.dart`（新增，widget 层）** —— 复用 `key_screens_test.dart:88–109` 的骨架（`SharedPreferences.setMockInitialValues({})` + `appStorageProvider` / `networkMonitorProvider` / `isOfflineProvider` / `podcastDownloadStoreProvider` override + `_app()`），并 override `podcastDetailProvider(feed)` 返回固定 `PodcastDetail`：
+
+1. 详情页：存在「下载设置」行；点击后面板出现，含 `全部下载` / `自动下载最新一集` / `最近几集` / `跳过片头/尾` 四项，且 `tester.takeException()` 为 null
+2. 详情页：**面板不裁尾** —— 断言最后一条「跳过片头/尾」的 `dy` 小于屏高（守卫 9/16 静默裁切回归）
+3. 详情页：长标题（>2 行）单集渲染无异常；`tester.widget<Text>(标题).maxLines == 2`
+4. 详情页：非选择态 `find.byTooltip('选择多项')` 为 `findsNothing`；长按单集后菜单里 `find.text('选择多项')` 为 `findsOneWidget`
+5. 播放器：辅助行无 `ActionChip` 文本（`睡眠定时` / `书签` / `停止` / `跳过片头/尾` 均 `findsNothing`）；`find.byTooltip('睡眠定时')` / `find.byTooltip('书签')` 各 `findsOneWidget`
+6. 迷你条：`find.byTooltip('停止')` 仍在（守卫「停止仍有入口」）
+
+> 播放器 widget 测试需要真实 `RadioAudioHandler` 实例；若成本过高，把 5 / 6 降级为「对 `podcast_now_playing.dart` 的静态断言」（`ActionChip` 不出现 + 每个 `IconButton` 都有 `tooltip`），并在 commit message 里注明降级原因。
+
+### 6.3 「测试有牙」验证（**必做，不许跳过**）
+
+按既有约定：**把实现改坏 → 重跑 → 确认以「预期理由」失败**；并**逐条检查仍通过的用例**，判断它是「真守卫」还是「参数化维度选漏」（漏掉的维度往往正是现场默认路径）。
+
+| 故意改坏 | 期望失败 |
+|---|---|
+| 面板去掉 `isScrollControlled` + 滚动容器 | 测试 2（尾部条目跑出屏外）|
+| 摘要 `parts.join(' · ')` 改成 `join(' ')` | layer_test 组合用例 |
+| 标题去掉 `maxLines: 2` | 测试 3 |
+| 某个图标去掉 `tooltip` | 测试 5 |
+
+### 6.4 真机 / 模拟器手动（交用户；本机 `mobile_list_available_devices` 返回空）
+
+1. 详情页首屏：订阅一个多单集播客 → 首屏能看到 4–5 条单集；头部只剩 简介 + 筛选行 + 下载设置
+2. 点「下载设置」→ 4 条齐全；**小屏 / 大字号**下最后一条都能看到
+3. 面板里开「全部下载」→ 关面板 → 入口行摘要变 `全部下载 开`
+4. 设置 → 播放与收听 → 「仅WiFi下载」在；蜂窝网下开「全部下载」被拦（SnackBar）
+5. 设置里设 跳过片头 0:30 → 回详情页 → 下载设置 → 副文显示 `片头 0:30`
+6. 长按一条长标题单集 → 菜单第 1 行是完整标题；`选择多项` 可进入选择态；批量下载可用
+7. 播放器页：辅助行是**一行图标**（无文字 chip）；每个图标长按 / 悬停有 tooltip
+8. 播放器页**没有**「停止」与「跳过片头/尾」；关闭播放器页 → 迷你条 ✕ 能停止
+9. 开 `设置 → 外观 → 紧凑列表` → 单集行仍变密（不回归）
+10. 深色模式 / 换氛围包 → 封面圆角与背景渐变与电台页仍**同规格**
+11. Windows 端：右击单集 → 菜单可达；批量下载可达
+
+### 6.5 回归红线
+
+- `git diff --stat` 中 **`windows/`、`android/` 为空**
+- `radio_now_playing.dart`、`app_skin.dart`、`mini_player.dart`、`_IcyStatusLine`、`_MiniProgressBar` **未被本工单改动**
+
+---
+
+## 7. 已知坑（本仓库已踩过，别再踩）
+
+1. **Flutter 底部 sheet 两个反向高度坑**
+   - ① `Column(mainAxisSize: min)` 含 `Expanded` / `Flexible` → 撑满全屏
+   - ② 不设 `isScrollControlled` 时高度上限是屏高 **9/16**，内容又不带滚动 → 尾部条目**静默裁掉**（不报错；release 下就是「那一条不见了」）
+   - 改 sheet 前自查三问：**有 flex 子项吗？条目数会随数据变多吗？内容有自己的滚动容器吗？**
+2. **Dart test 抓不住 Kotlin 编译错**：`flutter test` 只跑 Dart。本工单不动 Kotlin，但若顺手改了 Android 侧，类型 / import 错必须 `flutter build apk` 才暴露
+3. **版本号 bump 要同步多处**（本工单**不做**，v2.2.0 收尾时用）：`pubspec.yaml` / `lib/core/brand.dart`（有 `test/layer_test.dart` 版本守卫 → **bump 后必须跑完整 `flutter test`**）/ `scripts/chengbo-windows.iss`（写死 `AppVersion` + `OutputBaseFilename`）/ README + PRODUCT + PRIVACY 的版本与 User-Agent 引用
+
+---
+
+## 8. 提交策略
+
+分支 `feat/podcast-density`（已从 `dd8990c` 开）。**小颗粒独立 commit，不 amend、不 squash**。
+
+| # | commit | 内容 | 可独立编译 |
+|---|---|---|---|
+| C0 | `docs: add the v2.2 podcast density work order` | 本工单 + tracker 补 v2.2 段（PR #9 / #10 + 本工单）| ✅ |
+| C1 | `refactor(podcast): collapse the three download switches into a settings row` | D1 + 面板 + `downloadSettingsSummary` + `skipDurationLabel` + layer_test 用例 | ✅ |
+| C2 | `feat(podcast): move wifi-only download into playback settings` | D3（详情页删开关 + 设置页新增）| ✅ |
+| C3 | `feat(podcast): move skip intro/outro into the download settings sheet` | P2（播放器删 chip + 面板加条目）| ✅ |
+| C4 | `refactor(player): shrink the podcast episode chips into one icon row` | P1 + P3（chips → 图标行，去停止）| ✅ |
+| C5 | `fix(podcast): cap the episode title at two lines` | D2 | ✅ |
+| C6 | `refactor(podcast): drop the duplicate multi-select icon from the detail app bar` | D4 | ✅ |
+| C7 | `test(podcast): guard the density changes` | `podcast_density_test.dart` + 有牙验证记录 | ✅ |
+
+> C4 把 P1 + P3 合成一个 commit（同一段代码、同一视觉目标；拆开会留下「两行图标 + 还有停止」的无意义中间态）。若要更细可拆 C4a / C4b。
+
+---
+
+## 9. 与已有代码的冲突面
+
+| 文件 | 冲突面 | 处置 |
+|---|---|---|
+| `podcast_screen.dart` | `_DownloadAllTile` → `_DownloadSettingsTile` | 私有类，全仓无第二处引用 |
+| `podcast_screen.dart` | `leadingCount` / `showDownloadBar` | **不改**（仍是 1 个 item）|
+| `podcast_now_playing.dart` | 删 `podcast_skip_sheet.dart` import | 否则 analyze 报 unused_import |
+| `podcast_providers.dart` | 无改动 | `downloadWifiOnlyProvider` 定义不动 |
+| `playback_screen.dart` | 「播客」section 插入 1 条 | 已有 `podcast_providers.dart` import（:16）|
+| `podcast_download.dart` / `podcast_playback.dart` | 各新增 1 个 static 纯函数 | 纯新增，无调用点破坏 |
+| `podcast_skip_sheet.dart` | **不改** | 它自带 4 条 `unnecessary_brace_in_string_interps` info —— **不动就不用管**；若确实要动，顺手清掉（总数 23→19）并在 commit 里说明 |
+| `now_playing_queue_sheet.dart` | 无改动 | — |
+
+---
+
+## 10. 待拍板的 6 件事
+
+| # | 问题 | 我的默认 | 备选 / 反方 |
+|---|---|---|---|
+| 1 | `仅WiFi下载` 落点 | **播放与收听 → 播客**（该 section 已有「自动清理下载 / 清理天数」，同为下载策略）| 数据管理 → 存储（与「播客下载」相邻，但那是空间管理，语义偏）|
+| 2 | 面板里 跳过片头/尾 的形态 | **一条 `ListTile` → 嵌套打开现有 `showPodcastSkipSheet`**（复用、面板不膨胀）| 两组 `ChoiceChip` 直接嵌进面板（少一次点击，但面板变高、需滚动兜，且与独立 sheet 形成两套 UI）|
+| 3 | 入口行摘要文案 | **`按需下载` / `全部下载 开` / `已下载 3/12 集 · 全部下载 开`，并追加 `跳过片头 0:30`**（只显示非默认态，保证单行）| 效果图写的 `全部下载 · 关`（始终显示开关态，但 360dp 窄屏 + 中文下易挤成省略号）|
+| 4 | P4 封面是否再收一档 | **不改**（`anchorMaxSide = 300` 已随高度收缩；38% ≈ 290px 只多省 ~10px）| 改成 38%：**只改 `anchorMaxSide` 一处、两页同生效**；矮屏收益更大，但封面视觉权重下降 |
+| 5 | 效果图里出现、但**不在 8 条内**的一项：简介收起（`展开`）| **本次不做**（不在已批准的 8 条里）| 做：详情页头部再省 ~2 行（约 48px），代价是多一个展开态与状态保持 |
+| 6 | 可选：单集行尾 `≡ 查看备注`（:924–935）与长按菜单「查看简介」重复，每行吃掉 ~40px | **本次不做** | 做：行内更宽（标题可读性↑），代价是「查看备注」少一个直达入口 |
+
+> 1 / 3 无偏好时我按「我的默认」执行；2 / 4 / 5 / 6 我按默认**不做**处理，点头后再动。
+
+---
+
+## 11. 变更记录
+
+| 日期 | 版本 | 变更 |
+|---|---|---|
+| 2026-09-23 | 1.0 | 初稿。基于效果图 `dist/podcast-density-design.html` 的 8 条已批准改动落成可施工工单。起点 main = `dd8990c`；基线 `flutter test` 143/143、`flutter analyze` 23 info（均已本机核实）|

@@ -91,10 +91,41 @@
 
 ---
 
-## 7. 变更记录
+## 7. v2.2 范围与状态（进行中）
+
+> v2.1 已发布完毕（含 v2.1.1 补丁）。此后仓库进入 **v2.2** 周期，本节起承接状态；v2.2 决定**不单独发 v2.1.1**，补丁与 v2.2 改动合并为 **v2.2.0** 出货。
+
+### 7.1 已合入 main
+
+| 编号 | 名称 | PR | 状态 |
+|---|---|---|---|
+| R1 | 电台页三处改动（生成式台名卡 + 睡眠定时图标开关 + 播放列表半屏 sheet）| #9 `feat/radio-page` | ✅ 已合 main（`dd8990c`）|
+| R2 | **两页共享播放器视觉规格**（`ChengboSkinTheme.anchorMaxSide` / `anchorRadius` / `nowPlayingBackdrop()`）| #9（同上）| ✅ 已合 —— 消除了此前「电台 300 / 播客 360」的分叉 |
+| F1 | 单集长按菜单尾部被裁（8–9 条 + 标题两行 > 屏高 9/16 上限）| #10 `fix/podcast-episode-menu` | ✅ 已合 main |
+
+### 7.2 进行中
+
+| 编号 | 名称 | 工单 | 代码状态 |
+|---|---|---|---|
+| P1 | 播客详情页 + 播客播放器页瘦身（8 条）| [`mobile-v2-2-density-work-order.md`](./mobile-v2-2-density-work-order.md) | 🟡 工单已就绪，代码待实施 |
+| R3 | v2.2.0 收尾（版本 bump / CHANGELOG / ROADMAP / tag / `gh release` / `pack.ps1` 产物）| 待出 | ⏸ 最后一步，动前问用户 |
+
+### 7.3 基线（P1 起点）
+
+| 项 | 值 |
+|---|---|
+| main | `dd8990c` |
+| 分支 | `feat/podcast-density` |
+| `flutter test` | 143/143 |
+| `flutter analyze` | 23 info（既有基线，非修复目标）|
+
+---
+
+## 8. 变更记录
 
 | 日期 | 版本 | 变更 |
 |---|---|---|
+| 2026-09-23 | 1.3 | 补 **§7 v2.2 段**：记录已合 main 的 PR #9（电台页三处 + 两页共享播放器规格）与 PR #10（单集菜单尾部裁切），并登记进行中的 P1（播客两页瘦身，工单 `mobile-v2-2-density-work-order.md`）与 R3（v2.2.0 收尾）。此前 tracker 停留在 v2.1.1，未记录 v2.2 的两条 PR |
 | 2026-09-23 | 1.2 | **v2.1.1 补丁**（分支 `fix/v2-1-1-radio-mini-bar`）。两处修复：① `lib/core/brand.dart` 版本常量停在 `2.0.2`（v2.1.0 release prep 漏 bump，`layer_test` 版本守卫一直红；影响关于页 / 隐私说明 / 备份 JSON / 全部网络 UA）② 移除电台迷你条底部 3px 主色条（无信息量 + 圆角裁切后像残留色带）。版本 bump 到 `2.1.1+40`，含 pubspec + brand.dart + .iss |
 | 2026-09-23 | 1.1 | v2.1 完成：P0-A + B1 + B2 全部合 main；Step 5 release prep（CHANGELOG + pubspec bump + ROADMAP + tracker + plan）执行中；feature branch 已清理；tag v2.1.0 已发布 |
 | 2026-09-22 | 1.0 | 初稿。P0-A 已合 main；P0-B1+B2 工单已入仓（feat/v2-1-widget-b1）；B1+B2 代码待实施；release prep 待 v1.4 plan bump 后启动 |
