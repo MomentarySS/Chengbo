@@ -1,7 +1,7 @@
 # v2.2 实施工单 — 播客详情页 + 播客播放器页瘦身（8 条）
 
 > 范围：播客**详情页**与播客**播放器页**的高度瘦身，共 8 条（用户已逐条批准）。
-> 上游效果图：[`../../dist/podcast-density-design.html`](../../dist/podcast-density-design.html)（before/after + 逐条取舍，浏览器打开）
+> 上游效果图：[`podcast-density-design.html`](./podcast-density-design.html)（before/after + 逐条取舍，浏览器打开）
 > 关联设计：[`mobile-v2-1-plan.md`](./mobile-v2-1-plan.md) §9「不做」清单
 > 状态总览：[`v2-1-release-tracker.md`](./v2-1-release-tracker.md)
 > 前置：PR #9（`feat/radio-page`：两页共享规格 + 电台页三处）、PR #10（`fix/podcast-episode-menu`）**均已合 main**，main = `dd8990c`
@@ -419,4 +419,4 @@ flutter test      # 基线 143/143；本工单新增后总数 = 143 + 新增
 
 | 日期 | 版本 | 变更 |
 |---|---|---|
-| 2026-09-23 | 1.0 | 初稿。基于效果图 `dist/podcast-density-design.html` 的 8 条已批准改动落成可施工工单。起点 main = `dd8990c`；基线 `flutter test` 143/143、`flutter analyze` 23 info（均已本机核实）|
+| 2026-09-23 | 1.0 | 初稿。基于效果图 `docs/design/podcast-density-design.html` 的 8 条已批准改动落成可施工工单。起点 main = `dd8990c`；基线 `flutter test` 143/143、`flutter analyze` 23 info（均已本机核实）|
