@@ -1533,6 +1533,61 @@ void main() {
     );
   });
 
+  test('PodcastDownloadLogic.downloadSettingsSummary only lists non-default state', () {
+    String summary({
+      int total = 12,
+      int ready = 0,
+      int downloading = 0,
+      bool allEnabled = false,
+      bool latestEnabled = false,
+      int skipIntroSeconds = 0,
+      int skipOutroSeconds = 0,
+    }) {
+      return PodcastDownloadLogic.downloadSettingsSummary(
+        total: total,
+        ready: ready,
+        downloading: downloading,
+        allEnabled: allEnabled,
+        latestEnabled: latestEnabled,
+        skipIntroSeconds: skipIntroSeconds,
+        skipOutroSeconds: skipOutroSeconds,
+      );
+    }
+
+    // 默认态：没有下载、两个开关都关、没设跳过片头尾 → 一句「按需下载」。
+    expect(summary(), '按需下载');
+
+    // 单个开关打开。
+    expect(summary(allEnabled: true), '全部下载 开');
+    expect(summary(latestEnabled: true), '自动下载最新 开');
+
+    // 已下载 / 下载中优先于开关状态，且「下载中」把在下的一起算进分子。
+    expect(summary(ready: 3), '已下载 3/12 集');
+    expect(summary(ready: 1, downloading: 2), '正在下载 3/12');
+
+    // 跳过片头尾只在设过时出现，秒数按 0:30 / 1:30 展示。
+    expect(summary(skipIntroSeconds: 30), '跳过片头 0:30');
+    expect(summary(skipOutroSeconds: 90), '跳过片尾 1:30');
+    expect(summary(skipIntroSeconds: 30, skipOutroSeconds: 45), '跳过片头 0:30 · 跳过片尾 0:45');
+
+    // 组合：顺序固定，分隔符固定。
+    expect(
+      summary(ready: 1, downloading: 2, allEnabled: true, latestEnabled: true, skipIntroSeconds: 120),
+      '正在下载 3/12 · 全部下载 开 · 自动下载最新 开 · 跳过片头 2:00',
+    );
+  });
+
+  test('PodcastPlaybackLogic.skipDurationLabel formats mm:ss', () {
+    expect(PodcastPlaybackLogic.skipDurationLabel(0), '0:00');
+    expect(PodcastPlaybackLogic.skipDurationLabel(5), '0:05');
+    expect(PodcastPlaybackLogic.skipDurationLabel(30), '0:30');
+    expect(PodcastPlaybackLogic.skipDurationLabel(60), '1:00');
+    expect(PodcastPlaybackLogic.skipDurationLabel(90), '1:30');
+    expect(PodcastPlaybackLogic.skipDurationLabel(120), '2:00');
+    // 负数按 0 处理，不产出 '-1:-30' 这类文案。
+    expect(PodcastPlaybackLogic.skipDurationLabel(-5), '0:00');
+  });
+
   test('AppStorage persists podcast sort and download-all feeds', () async {
     SharedPreferences.setMockInitialValues({});
     final storage = await AppStorage.create();

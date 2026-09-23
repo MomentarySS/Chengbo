@@ -447,6 +447,20 @@ class DownloadWifiOnlyNotifier extends StateNotifier<AsyncValue<bool>> {
   }
 }
 
+/// 某个节目的「跳过片头/尾」持久值（秒）。
+///
+/// `AppStorage` 是可变对象：`setPodcastSkipIntro/Outro` 不会让 Riverpod 收到
+/// 通知，所以写入方（下载设置面板）在编辑 sheet 关闭后要 `invalidate` 一次，
+/// 否则详情页入口行的摘要不会刷新。
+final podcastSkipSettingsProvider =
+    FutureProvider.family<({int intro, int outro}), String>((ref, feedId) async {
+  final storage = await ref.watch(appStorageProvider.future);
+  return (
+    intro: storage.getPodcastSkipIntro(feedId),
+    outro: storage.getPodcastSkipOutro(feedId),
+  );
+});
+
 class PodcastDownloadsNotifier extends StateNotifier<PodcastDownloadState> {
   PodcastDownloadsNotifier(this._ref) : super(const PodcastDownloadState()) {
     _load();
