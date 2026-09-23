@@ -450,12 +450,39 @@ flutter test      # 基线 143/143；本工单新增后总数 = 143 + 新增
 - **同一类坑的复用**：值没加载完时显示 `…` 而不是「关」—— 就是 §11.3 那个 `AsyncLoading` 误判的同一形状。
 - **副作用与补偿**：这一行 `watch` 了 `downloadWifiOnlyProvider`，等于把它预热了 → 原来那条「竞态」widget 测试（靠「此前没人 watch 过它」制造 AsyncLoading）**失去牙齿**。补偿：新增直接测 `resolveDownloadWifiOnly(AsyncLoading, …)` 的单元测试（改坏实现 → 以「AsyncLoading 被当成『没开』了」失败），widget 测试降级为端到端行为守卫并在注释里写明分工。
 
+### 11.5 订阅拦截收窄：只留 RSSHub（commit `74f3349`）
+
+**真机反馈**：「有些订阅现在不能听了，以前都能听」—— 用户给的截图是打开「肥话连篇」整页报「RSS 解析失败 / 无法在澄波订阅。这是版权点播库或转接源，请用作者公开的 RSS」。
+
+**根因**：`PodcastFeedLogic.isDeniedCatalogFeed` 拒 `rsshub.app` / `*.lizhi.fm` / `ximalaya.com` 含 `/album`，而且 `resolveUrl()` **每次拉取都过** → 用户**已订阅**的 3 个喜马拉雅 + 1 个荔枝节目打开即整页报错，缓存里的单集也够不着。
+
+**实测（四家平台的真实地址）**：
+
+| 平台 | 地址形态 | 返回 | 旧规则 |
+|---|---|---|---|
+| 喜马拉雅 | `www.ximalaya.com/album/<id>.xml` | 200 · `application/xml` · `<rss version="2.0">` | ❌ 拦 |
+| 荔枝 | `rss.lizhi.fm/rss/<id>.xml` | 200 · `text/xml` · `<rss>` | ❌ 拦 |
+| 蜻蜓 | `c.qingting.fm/podcast/v1/vchannels/<id>` | 200 · `application/xml` · `<rss version="2.0">` | ✅ 放行 |
+| 小宇宙 | `feed.xyzfm.space/<token>` | 200 · `application/xml` · `<rss>` | ✅ 放行 |
+
+四家**都是平台自己提供的标准 RSS 2.0**，没有一家是第三方转接。旧规则只匹配 `host` + `path.contains('/album')`、**从不看返回内容** —— 于是「最像 feed 的荔枝（`rss.*.xml`）被拦、最不像 feed 的蜻蜓（看着像后端 API）反而放行」。
+
+**改法**：
+1. 拦截名单**只留 `rsshub.app`**（唯一真正的第三方转接源）。
+2. **拦截不再作用于读取路径**：`resolveUrl(raw, {enforceCatalogPolicy})`，只有**新增订阅**的调用点传 true（`PodcastService.fetchFeed(feed, {forNewSubscription})`）。读取路径（详情刷新、后台查新、播放下一集）一律不拦 —— 否则已订阅的节目会变成死链。
+3. 喜马拉雅**裸专辑页自动补 `.xml`**（`rewrite()`），避免放开后粘网页地址变成「解析失败」。
+4. 文案：`catalogDeniedMessage` 与发现页标签改成「第三方转接源」，不再说「版权点播库或转接源」（对平台自建 feed 不准确）。
+5. `ROADMAP.md` 边界同步：「版权点播（喜马拉雅/蜻蜓）」→「第三方转接源（RSSHub）」。
+
+**守卫**（`layer_test` + `key_screens_test`）：喜马/荔枝/蜻蜓/小宇宙 均 `isDeniedCatalogFeed == false`；rsshub 为 true；`resolveUrl(rsshub, enforceCatalogPolicy: true)` 抛 `catalogDeniedMessage` 且 `saveAddress == false`，而**不带 flag 时不抛**；喜马裸页 → `.xml`；发现页只把转接源标成无法订阅（喜马那条可订阅）。有牙验证：把 `resolveUrl` 改回「总是拦」→ 读取路径那条断言以 `无法在澄波订阅。RSSHub 是第三方转接源…` 失败。
+
 ---
 
 ## 12. 变更记录
 
 | 日期 | 版本 | 变更 |
 |---|---|---|
+| 2026-09-23 | 1.7 | **§11.5 订阅拦截收窄到只剩 RSSHub**（commit `74f3349`）：实测喜马拉雅 / 荔枝 / 蜻蜓 / 小宇宙四家返回的**都是平台自己的标准 RSS 2.0**，旧规则只看 host+path 从不看内容，导致已订阅的 3 个喜马拉雅 + 1 个荔枝节目打开即整页报错。改法：名单只留 `rsshub.app`；拦截**不再作用于读取路径**（`resolveUrl` 只在新增订阅时施加）；喜马裸专辑页自动补 `.xml`；文案与发现页标签改成「第三方转接源」；`ROADMAP.md` 边界同步。`flutter test` **157/157**、`flutter analyze` **16 info**（比基线低 7）。有牙验证：把 `resolveUrl` 改回「总是拦」→ 读取路径断言失败 |
 | 2026-09-23 | 1.6 | **§11.4 仅WiFi下载只读状态行**（commit `732131f`）：在「节目设置」面板的「下载」分组末尾加一行不可点的 `仅WiFi下载 · 开/关`，副文指向设置页 —— 开关本身仍在 `设置 → 播放与收听`（全局开关不复制进按节目面板），但下载路径上终于看得见它的状态。值未加载完显示 `…`（不显示「关」）。副作用：该行 `watch` 了 provider → 原竞态 widget 测试失去牙齿，改用 `resolveDownloadWifiOnly(AsyncLoading, …)` 单元测试顶上（已做有牙验证）。`flutter test` **157/157**、`flutter analyze` **17 info** |
 | 2026-09-23 | 1.5 | **真机第二轮反馈的两处改动**：`0350a72` 取消封面光圈（连带 `startedAt`/`total`/`ringFraction` 一并删掉，不留死代码；倒计时保留在封面之上）；`b1e2390` 修跳过片头/尾面板的**静默裁切**（缺 `isScrollControlled` + 无滚动容器，「保存」被裁且滚不到）与**首帧 `LateInitializationError`**（`late int` 由异步 `_load()` 赋值）。`flutter test` **156/156**、`flutter analyze` **17 info**（比基线低 6：本次改到的 `podcast_skip_sheet.dart` 的 4 条 + 之前两个文件各 1 条 + 光圈代码移除）。两处新守卫都做过有牙验证。另新增 `scripts/git-proxy.ps1`（探测本地代理端口再执行 git/gh）|
 | 2026-09-23 | 1.4 | **追加两条真机评审后的改动**（§11）：`653922d`… 之后的 `ee20dbd`（「下载设置」→「节目设置」+ 下载/播放分组，文件与函数同步改名）与 `379fde5`（倒计时移到封面之上 + 封面外沿随时间消失的 `SleepTimerRing`，`SleepTimerState` 加 `startedAt`/`total` + 纯函数 `ringFraction`）。`flutter test` **157/157**、`flutter analyze` **21 info**（比基线**低 2**：顺手清掉了 `app_providers.dart` 与 `sleep_timer_sheet.dart` 里既有的 `prefer_const_constructors`，因为本次改到了这两个文件）。三条新守卫都做过有牙验证：`ringFraction` 无时钟返回 `1.0` → layer_test 失败；底部倒计时加回来 → 「只有一处」失败；封面去掉光圈 → 光圈守卫失败 |
