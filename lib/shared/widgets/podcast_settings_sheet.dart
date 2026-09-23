@@ -48,6 +48,7 @@ Future<void> showPodcastSettingsSheet(
             _DownloadAllSwitch(feed: feed, episodes: episodes),
             _DownloadLatestSwitch(feed: feed, episodes: episodes),
             _DownloadRecentTile(feed: feed, episodes: episodes),
+            const _WifiOnlyStatusTile(),
             _sectionLabel(sheetContext, '播放'),
             _SkipIntroOutroTile(feed: feed),
           ],
@@ -203,6 +204,37 @@ class _DownloadRecentTile extends ConsumerWidget {
           );
           unawaited(ref.read(podcastDownloadsProvider.notifier).downloadEpisodes(feed, pending));
         },
+      ),
+    );
+  }
+}
+
+/// 仅WiFi下载的**只读**状态行。
+///
+/// 它是全局开关（管所有节目 + 自动下载 + 后台下载），所以改它的地方在
+/// `设置 → 播放与收听`，不在这个按节目的面板里。但状态必须在这儿**看得见** ——
+/// 否则用户在下载路径上完全意识不到它开着，只会被拦一下、事先没有任何提示。
+///
+/// 故意不可点：不做「全局开关复制进节目面板」这种事。
+class _WifiOnlyStatusTile extends ConsumerWidget {
+  const _WifiOnlyStatusTile();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final wifiOnly = ref.watch(downloadWifiOnlyProvider);
+    final colorScheme = Theme.of(context).colorScheme;
+    final on = wifiOnly.value == true;
+    return ListTile(
+      leading: const Icon(Icons.wifi_outlined),
+      title: const Text('仅WiFi下载'),
+      subtitle: const Text('在 设置 → 播放与收听 里修改'),
+      trailing: Text(
+        // 没加载完时不能显示「关」—— 那正是之前把 AsyncLoading 误判成
+        // 「没开」的同一个坑。
+        wifiOnly.hasValue ? (on ? '开' : '关') : '…',
+        style: Theme.of(context).textTheme.titleMedium?.copyWith(
+              color: on ? colorScheme.primary : colorScheme.onSurfaceVariant,
+            ),
       ),
     );
   }

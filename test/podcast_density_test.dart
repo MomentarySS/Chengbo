@@ -122,6 +122,9 @@ void main() {
       // 分组标题：跳过片头/尾 属于「播放」，不是下载 —— 面板名与分组要能自洽。
       expect(find.text('下载'), findsOneWidget);
       expect(find.text('播放'), findsOneWidget);
+      // 仅WiFi下载只在这里露状态（只读），改它的地方在设置里。
+      expect(find.text('仅WiFi下载'), findsOneWidget);
+      expect(find.text('在 设置 → 播放与收听 里修改'), findsOneWidget);
       expect(tester.takeException(), isNull);
     });
 
@@ -222,9 +225,9 @@ void main() {
     });
 
     testWidgets('仅WiFi下载开着时，移动网络下「全部下载」被拦住', (tester) async {
-      // 关键：`downloadWifiOnlyProvider` 在这次点击之前**从未被 watch 过**
-      // （详情页那个常驻开关搬走之后就没人预热它了）。修复前 `ref.read` 会拿到
-      // `AsyncLoading`、`.value == null` → 当成「没开」→ 在移动网络下照下不误。
+      // 说明：面板里那行只读状态会 watch `downloadWifiOnlyProvider`，等于把它
+      // 预热了，所以这条 widget 测试**不再覆盖竞态**（旧代码在这条路径上也会
+      // 拦住）。竞态本身由下面那条 resolveDownloadWifiOnly 的单元测试守着。
       SharedPreferences.setMockInitialValues({'download_wifi_only': true});
       await tester.pumpWidget(
         _app(extra: [networkMonitorProvider.overrideWith((ref) => _CellularMonitor())]),
@@ -245,10 +248,33 @@ void main() {
       );
       expect(tester.widget<SwitchListTile>(downloadAll).value, isFalse);
     });
+
+    test('resolveDownloadWifiOnly：provider 没加载完时问存储，不把 null 当成「没开」', () async {
+      // 这条守着 D3 引入的竞态本身：`downloadWifiOnlyProvider` 是懒创建的
+      // AsyncValue，第一次读它时还是 AsyncLoading、`.value == null`。
+      // 详情页那个常驻开关搬走后就没人预热它了，而自动下载 / 滑动下载 /
+      // 播放器下载图标这些路径都不会先 watch 它。
+      SharedPreferences.setMockInitialValues({'download_wifi_only': true});
+      final storage = await AppStorage.create();
+
+      expect(
+        await resolveDownloadWifiOnly(const AsyncLoading(), storage: Future.value(storage)),
+        isTrue,
+        reason: 'AsyncLoading 被当成「没开」了 —— 移动网络下会放行下载',
+      );
+      expect(
+        await resolveDownloadWifiOnly(const AsyncData(false), storage: Future.value(storage)),
+        isFalse,
+        reason: '已加载的「关」要覆盖存储值',
+      );
+      expect(
+        await resolveDownloadWifiOnly(const AsyncData(true), storage: Future.value(storage)),
+        isTrue,
+      );
+    });
   });
 
-  group('播放器与迷你条（源码结构断言）', () {
-    late String nowPlaying;
+  group('播放器与迷你条（源码结构断言）', () {    late String nowPlaying;
     late String miniPlayer;
 
     setUp(() {
