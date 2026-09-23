@@ -267,7 +267,14 @@ class _EpisodeHeader extends ConsumerWidget {
   }
 }
 
-/// 辅助功能小行：简介、已下载、睡眠定时、停止。
+/// 辅助动作行：简介、下载（或已下载）、睡眠定时、书签。
+///
+/// 原来是一行 `ActionChip`（带文字标签，两行 ~120px）。收成**一行纯图标**后
+/// 与电台播放器一致 —— 那边本来就没有 chip，次要动作直接是图标。可发现性靠
+/// `tooltip` 与 `Semantics` 兜。
+///
+/// 「停止」不在这里：迷你条的 ✕ 就是同一个 `stop()`，电台播放器的控制行也
+/// 没有停止键。
 class _EpisodeChips extends ConsumerWidget {
   const _EpisodeChips({required this.current});
 
@@ -315,19 +322,13 @@ class _EpisodeChips extends ConsumerWidget {
       unawaited(ref.read(podcastDownloadsProvider.notifier).download(feed, episode));
     }
 
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      // 「已下载」是唯一用 Chip + VisualDensity.compact 的（布局盒 40，兄弟都是
-      // ActionChip 的 48）。Wrap 默认 WrapCrossAlignment.start 按顶对齐，会把它
-      // 的标签中心顶高 4 逻辑 px，看起来「被抬起来」。居中后既保留它略小的状态
-      // 样式，又与兄弟标签中心对齐。改这里前先确认 已下载 chip 仍然对齐。
-      crossAxisAlignment: WrapCrossAlignment.center,
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
         if (hasNotes)
-          ActionChip(
-            avatar: const Icon(Icons.notes_outlined, size: 18),
-            label: const Text('简介'),
+          IconButton(
+            tooltip: '简介',
+            icon: const Icon(Icons.notes_outlined),
             onPressed: () => showPlaybackNotesSheet(
               context: context,
               title: current.title,
@@ -337,32 +338,37 @@ class _EpisodeChips extends ConsumerWidget {
             ),
           ),
         if (downloadStatus == EpisodeDownloadStatus.ready)
-          const Chip(
-            avatar: Icon(Icons.download_done, size: 18),
-            label: Text('已下载'),
-            visualDensity: VisualDensity.compact,
-          )
+          const _StaticActionIcon(icon: Icons.download_done, label: '已下载')
         else if (canDownload && downloadStatus == EpisodeDownloadStatus.downloading)
-          ActionChip(
-            avatar: const Icon(Icons.cancel_outlined, size: 18),
-            label: Text(downloadLabel ?? '取消下载'),
+          IconButton(
+            // 进度留在 tooltip 里：图标行不再有 chip 标签，但「下载 45%」这类
+            // 信息不该消失。
+            tooltip: downloadLabel ?? '取消下载',
+            icon: const Icon(Icons.cancel_outlined),
             onPressed: () => unawaited(ref.read(podcastDownloadsProvider.notifier).cancel(guid)),
           )
         else if (canDownload)
-          ActionChip(
-            avatar: const Icon(Icons.download_outlined, size: 18),
-            label: Text(downloadStatus == EpisodeDownloadStatus.failed ? '重新下载' : '下载'),
+          IconButton(
+            tooltip: downloadStatus == EpisodeDownloadStatus.failed ? '重新下载' : '下载',
+            icon: const Icon(Icons.download_outlined),
             onPressed: startDownload,
           ),
-        ActionChip(
-          avatar: Icon(Icons.bedtime_outlined, size: 18, color: sleepActive ? colorScheme.primary : null),
-          label: const Text('睡眠定时'),
-          side: sleepActive ? BorderSide(color: colorScheme.primary) : null,
+        IconButton(
+          tooltip: sleepActive ? '关闭睡眠定时' : '睡眠定时',
+          icon: Icon(
+            sleepActive ? Icons.bedtime : Icons.bedtime_outlined,
+            color: sleepActive ? colorScheme.primary : null,
+          ),
           onPressed: () => showSleepTimerSheet(context),
         ),
-        ActionChip(
-          avatar: const Icon(Icons.bookmark_outline, size: 18),
-          label: Text(bookmarkCount > 0 ? '书签 · $bookmarkCount' : '书签'),
+        IconButton(
+          tooltip: bookmarkCount > 0 ? '书签 · $bookmarkCount' : '书签',
+          icon: bookmarkCount > 0
+              ? Badge(
+                  label: Text('$bookmarkCount'),
+                  child: const Icon(Icons.bookmark_outline),
+                )
+              : const Icon(Icons.bookmark_outline),
           onPressed: guid == null
               ? null
               : () => showEpisodeBookmarkSheet(
@@ -377,13 +383,33 @@ class _EpisodeChips extends ConsumerWidget {
                         ref.read(audioHandlerProvider).value?.player.position,
                   ),
         ),
-        ActionChip(
-          avatar: const Icon(Icons.stop_outlined, size: 18),
-          label: const Text('停止'),
-          // 页面关闭交给 NowPlayingSheet 的自动关闭监听，避免双重 pop。
-          onPressed: () => ref.read(playerControllerProvider).stop(),
-        ),
       ],
+    );
+  }
+}
+
+/// 纯状态图标：与兄弟 `IconButton` 同尺寸（48），但**不可点**。
+///
+/// 「已下载」是状态而不是动作，所以不冒充按钮 —— 无障碍读作「已下载」，
+/// 而不是「已下载，按钮」。
+class _StaticActionIcon extends StatelessWidget {
+  const _StaticActionIcon({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      label: label,
+      child: Tooltip(
+        message: label,
+        child: SizedBox(
+          width: 48,
+          height: 48,
+          child: Icon(icon, color: Theme.of(context).colorScheme.onSurfaceVariant),
+        ),
+      ),
     );
   }
 }
