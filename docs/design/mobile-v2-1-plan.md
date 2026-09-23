@@ -96,7 +96,7 @@
 13. `ChengboWidgetProvider.kt`：按 flag + `SDK_INT >= 31` 分支着色；换图标资源
 14. 提交
 
-> 🟡 **施工单就绪**：[`mobile-v2-1-step-3-work-order.md`](./mobile-v2-1-step-3-work-order.md)（commit `4919bae` on `feat/v2-1-widget-b1`）。**代码待实施**：4 个 commit（C1 Dart 契约 / C2 Dart 同步 / C3 Kotlin+资源 / C4 图标切换）。⚠️ 施工单 §3.1 (b) `DeskWidgetSnapshot` 字段误写为 `empty`，现场实际为 `hasItem`，动手 C1 时以现场为准。
+> ✅ **已实施**：[`mobile-v2-1-step-3-work-order.md`](./mobile-v2-1-step-3-work-order.md)。4 个 commit（C1 Dart 契约 / C2 Dart 同步 / C3 Kotlin+资源 / C4 图标切换）已在 `feat/v2-1-widget-b1-impl`，PR #6 合 main（`3e3b2ae` / `9e46161` 等）。⚠️ 施工单 §3.1 (b) `DeskWidgetSnapshot` 字段误写为 `empty`，现场实际为 `hasItem`，C1 已按现场实现。
 
 ### 第 4 步：widget「Latest Episodes」（P0-B2）
 
@@ -113,7 +113,7 @@
 23. **测试**：`test/desk_widget_episodes_test.dart`（payload 序列化 + 空数据 + `play` URI 解析，§6.6）
 24. 提交
 
-> 🟡 **施工单就绪**：[`mobile-v2-1-step-4-work-order.md`](./mobile-v2-1-step-4-work-order.md)（commit `1fe68e7` on `feat/v2-1-widget-b1`）。**代码待实施**：4 个 commit（D1 Dart 契约 / D2 Dart 同步 / D3 Kotlin+资源 / D4 测试）。
+> ✅ **已实施**：[`mobile-v2-1-step-4-work-order.md`](./mobile-v2-1-step-4-work-order.md)。4 个 commit（D1 Dart 契约 / D2 Dart 同步 / D3 Kotlin+资源 / D4 测试）已在 `feat/v2-1-widget-b2`，PR #7 合 main（`ca4436f` / `b569cc6` 等）。
 
 ### 第 5 步：全量验证
 
@@ -123,7 +123,7 @@
 28. 更新本文件 §7
 29. 提交
 
-> 🟡 **施工单就绪**：[`mobile-v2-1-step-5-work-order.md`](./mobile-v2-1-step-5-work-order.md)（commit `99a6ff5` on `feat/v2-1-widget-b1`）。**触发条件**：第 3 + 4 步实施 PR 都合 main 之后执行。
+> ✅ **已执行**：[`mobile-v2-1-step-5-work-order.md`](./mobile-v2-1-step-5-work-order.md)。第 3 + 4 步合 main 后跑过合并验证（142/142）+ release prep；tag `v2.1.0` 已发布。
 
 **每步验收标准**：编译通过 + 该步新增测试通过 + 前序步骤验证点不回归。
 
@@ -164,10 +164,10 @@
 | mini player 副文     | `_IcyStatusLine`：ICY 曲名（电台）/ 节目名（播客）/ 状态（缓冲、错误）            | 不变                                                                                                                 |
 | mini player 剩余时间 | 无                                                                                | 播客在标题行右侧显示 `剩余 mm:ss`（**P0-A 已实现**：PR #3 / `5e86f65` + `85c27f5` + `c0f9cae`）                      |
 | 剩余时间数据源       | `_MiniProgressBar` 已用 `current.duration ?? handler.player.duration`             | 复用同一套                                                                                                           |
-| widget 配色          | 硬编码 `@color/widget_background` = `#0D4F8C`（深澄蓝），**无深色变体、无动态色** | 跟随 App 的壁纸配色开关；深色模式有变体（**B1 实施就绪**：施工单 `mobile-v2-1-step-3-work-order.md`，代码待实施）    |
+| widget 配色          | 硬编码 `@color/widget_background` = `#0D4F8C`（深澄蓝），**无深色变体、无动态色** | 跟随 App 的壁纸配色开关；深色模式有变体（**B1 已实施**：`3e3b2ae` / `9e46161`，PR #6 已合）    |
 | widget 图标          | `android.R.drawable.ic_media_play` / `pause` / `next`（系统默认）                 | 自绘 M3 vector drawable（**B1 同上**）                                                                               |
 | widget 数据契约      | Dart `DeskWidgetLogic` 常量 ↔ Kotlin 字符串字面量**重复定义**                     | 新增 2 个 key（`widget_use_dynamic_color` / `widget_episodes`）；契约在 §5 第 8 条记录                               |
-| widget 布局          | `LinearLayout` 单行：标题/副文 + 续 + 播停 + 下一台（4×1）                        | 现有不动；**新增第二个 4×2「待听」widget**（**B2 实施就绪**：施工单 `mobile-v2-1-step-4-work-order.md`，代码待实施） |
+| widget 布局          | `LinearLayout` 单行：标题/副文 + 续 + 播停 + 下一台（4×1）                        | 现有不动；**新增第二个 4×2「待听」widget**（**B2 已实施**：`ca4436f` / `b569cc6`，PR #7 已合） |
 | widget 元数据        | minWidth 250dp / minHeight 40dp / 4×1 cell                                        | 现有不动；新增 4×2 / minHeight 110dp                                                                                 |
 | widget 动作          | open / toggle / next / resume                                                     | 新增 `play?guid=`（仅新 widget 使用）                                                                                |
 
@@ -727,8 +727,8 @@ ref.listen<List<InboxItem>>(inboxProvider, (_, next) => publishEpisodes(next));
 - [ ] 剩余时间字号 / 颜色与副文层级协调（`labelSmall` + `onSurfaceVariant`）
 - [ ] 剩余时间用等宽数字，数字变化时不抖动
 - [ ] 360dp 窄屏下标题 + 时间不溢出
-- [ ] 三个致敬氛围包（废土终端 / 第三新东京 / 夜之城）下 mini player 正常
-- [ ] widget 在浅色 / 深色系统下都可读（对比度足够）
+- [x] 三个致敬氛围包（废土终端 / 第三新东京 / 夜之城）下 mini player 正常
+- [x] widget 在浅色 / 深色系统下都可读（对比度足够）
 - [ ] **（B2）** 「待听」widget 的 4 行在 4×2 cell 内不溢出、不裁切
 - [ ] **（B2）** 单集标题超长 → 1 行 ellipsis；节目名超长 → 1 行 ellipsis
 - [ ] **（B2）** 「待听」widget 配色与 4×1 widget 一致（同一套 `widget_background` / `widget_on_background`）
@@ -808,6 +808,7 @@ ref.listen<List<InboxItem>>(inboxProvider, (_, next) => publishEpisodes(next));
 
 | 日期       | 版本    | 变更                                                                                                                                                                                                                                                                                                                                                                                                                                        |
 | ---------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-09-23 | **1.6** | **v2.1.1 补丁**（分支 `fix/v2-1-1-radio-mini-bar`，PR #8）。三处修复：① `lib/core/brand.dart` 版本常量停在 `2.0.2`（v2.1.0 release prep 漏 bump；影响关于页 / 隐私说明 / 备份 JSON / 全部网络 UA）② 移除电台迷你条底部 3px 主色条（无信息量 + 圆角裁切后像残留色带）③ 播客 Now Playing「已下载」chip 被抬高 4px（它是唯一的 `VisualDensity.compact`，`Wrap` 默认顶对齐）→ 改 `WrapCrossAlignment.center`。版本 bump 到 `2.1.1+40`。同时把 §0.2 / §2 的「代码待实施」过期标记改为已实施 |
 | 2026-09-23 | **1.5** | **v2.1 完成**。第 3 步（P0-B1 widget Material You + 深色 + M3 图标；PR #6 合）+ 第 4 步（P0-B2 widget Latest Episodes；PR #7 合）+ 第 5 步（release prep；main + tag v2.1.0）。§0.2 全部加 ✅ 标记；§2 状态总览「widget 数据契约」「widget 布局」更新；§9 不做清单保持。                                                                                                                                                                     |
 | 2026-09-22 | 1.0     | 初稿。勘察发现 P0-1 已实现（范围从 3 项收窄为 2 项）；建议拆分 P0-B1 / P0-B2；含 §0.2 实施顺序与全部语义边界                                                                                                                                                                                                                                                                                                                                |
 | 2026-09-22 | 1.1     | §8 八项待核验全部完成（§8.1）；额外发现 `inboxProvider` 已存在，B2 规模由「大」下调为「中」（§8.2）；§3.3 / §6.2 相应更正                                                                                                                                                                                                                                                                                                                   |
