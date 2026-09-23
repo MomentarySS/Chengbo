@@ -175,6 +175,33 @@ void main() {
       expect(find.text('选择多项'), findsOneWidget);
     });
 
+    testWidgets('跳过片头/尾 面板在矮屏上不裁掉「保存」，首帧也不崩', (tester) async {
+      // 逻辑尺寸 360×800（接近真机）→ 不设 isScrollControlled 时上限只有
+      // 450px，而两组各 10 个 chip 的内容约 600px：「保存」会被静默裁掉。
+      tester.view.physicalSize = const Size(1080, 2400);
+      tester.view.devicePixelRatio = 3;
+      addTearDown(tester.view.reset);
+
+      await tester.pumpWidget(_app());
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('节目设置'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('跳过片头/尾'));
+      await tester.pumpAndSettle();
+
+      final save = find.widgetWithText(FilledButton, '保存');
+      expect(save, findsOneWidget);
+      final screenHeight = tester.view.physicalSize.height / tester.view.devicePixelRatio;
+      expect(
+        tester.getBottomLeft(save).dy,
+        lessThanOrEqualTo(screenHeight),
+        reason: '「保存」跑到屏幕外了（9/16 高度上限 + 内容无滚动）',
+      );
+      // 首帧不能读未初始化的值：原来 `late int _introSeconds` + 异步 `_load()`
+      // 会在这里抛 LateInitializationError。
+      expect(tester.takeException(), isNull);
+    });
+
     testWidgets('仅WiFi下载 从详情页消失，改挂到播放与收听', (tester) async {
       await tester.pumpWidget(_app());
       await tester.pumpAndSettle();
