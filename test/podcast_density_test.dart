@@ -280,17 +280,6 @@ void main() {
         reason: '倒计时不在封面之前 —— 又跑回底部了',
       );
     });
-
-    test('封面外沿套了随时间消失的光圈', () {
-      expect(nowPlaying.contains('SleepTimerRing('), isTrue, reason: '封面没套光圈');
-      // 光圈必须复用封面的圆角，否则描边与内容不贴合。
-      expect(nowPlaying.contains('SleepTimerRing(\n                radius: radius,'), isTrue);
-      expect(
-        nowPlaying.contains('SleepTimerLogic.ringFraction'),
-        isFalse,
-        reason: '比例应该由 SleepTimerRing 内部算，播放器不该自己算',
-      );
-    });
   });
 }
 

@@ -32,22 +32,6 @@ abstract final class SleepTimerLogic {
     return left.isNegative ? Duration.zero : left;
   }
 
-  /// 进度环的剩余比例：`1.0` = 刚开，`0.0` = 到点。
-  ///
-  /// 没有连续时钟（「本集结束」/「再听 N 集」）或字段缺失时返回 `null` ——
-  /// 调用方据此画静态环，而不是假装有进度。
-  static double? ringFraction(SleepTimerState state, {required DateTime now}) {
-    final endsAt = state.endsAt;
-    final startedAt = state.startedAt;
-    final total = state.total;
-    if (endsAt == null || startedAt == null || total == null) return null;
-    final totalMs = total.inMilliseconds;
-    if (totalMs <= 0) return null;
-    final remainingMs =
-        remainingAt(endsAt: endsAt, now: now).inMilliseconds;
-    return (remainingMs / totalMs).clamp(0.0, 1.0);
-  }
-
   static String formatRemaining(Duration duration) {
     final safe = duration.isNegative ? Duration.zero : duration;
     final hours = safe.inHours;
@@ -169,8 +153,6 @@ enum SleepLastKind { minutes, untilEnd, episodes }
 class SleepTimerState {
   const SleepTimerState({
     this.endsAt,
-    this.startedAt,
-    this.total,
     this.untilEpisodeEnd = false,
     this.remainingEpisodes,
     this.stoppedByTimer = false,
@@ -178,14 +160,6 @@ class SleepTimerState {
   });
 
   final DateTime? endsAt;
-
-  /// 本次定时的起点与总时长。进度环要用它们算「还剩百分之多少」。
-  ///
-  /// 「本集结束」「再听 N 集」没有连续时钟，这两个字段为空 —— 环就画成静态的，
-  /// 不假装有进度。
-  final DateTime? startedAt;
-  final Duration? total;
-
   final bool untilEpisodeEnd;
   final int? remainingEpisodes;
   final bool stoppedByTimer;

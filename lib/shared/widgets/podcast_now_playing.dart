@@ -161,26 +161,22 @@ class _Cover extends StatelessWidget {
             tag: NowPlayingHero.tagFor(current.id),
             child: Material(
               color: Colors.transparent,
-              // 定时开着时，封面外沿多一圈随时间消失的光圈（不占布局）。
-              child: SleepTimerRing(
-                radius: radius,
-                child: Container(
-                  width: side,
-                  height: side,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(radius),
-                    boxShadow: [
-                      BoxShadow(
-                        color: accent.withValues(alpha: 0.28),
-                        blurRadius: 28,
-                        offset: const Offset(0, 12),
-                      ),
-                    ],
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(radius),
-                    child: _artwork(context, colorScheme, side, radius),
-                  ),
+              child: Container(
+                width: side,
+                height: side,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(radius),
+                  boxShadow: [
+                    BoxShadow(
+                      color: accent.withValues(alpha: 0.28),
+                      blurRadius: 28,
+                      offset: const Offset(0, 12),
+                    ),
+                  ],
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(radius),
+                  child: _artwork(context, colorScheme, side, radius),
                 ),
               ),
             ),
