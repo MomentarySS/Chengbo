@@ -301,6 +301,25 @@ class ChengboSkinTheme extends ThemeExtension<ChengboSkinTheme> {
   SkinOverlayKind get overlay => pack.overlay;
   bool get usesMonoCountdown => !pack.isDefault;
 
+  /// 播放器「视觉锚点」（电台台名卡 / 播客封面）的统一规格：最大边长。
+  ///
+  /// 两页必须共用这里，否则会各自漂移 —— 之前电台 300 / 播客 360 就是这么分叉的。
+  static const anchorMaxSide = 300.0;
+
+  /// 视觉锚点圆角：跟随当前氛围包的 `playerRadius`，避免与致敬包的小圆角语言冲突。
+  double get anchorRadius => playerRadius + 8;
+
+  /// 播放器页背景渐变（电台 / 播客共用同一个函数，避免 stops 各自漂移）。
+  LinearGradient nowPlayingBackdrop({required Color surface, required Color wash}) {
+    return LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [wash, wash, surface],
+      // wash 只铺到 45% 会让浅色模式下下半屏直接掉到近纯白（整页读作「白」）。
+      stops: const [0, 0.62, 1],
+    );
+  }
+
   Color nowPlayingWash({required Color surface, required Color coverAccent}) {
     if (isDefault) {
       return Color.alphaBlend(coverAccent.withValues(alpha: 0.36), surface);

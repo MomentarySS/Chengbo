@@ -62,17 +62,9 @@ class RadioNowPlayingSheet extends ConsumerWidget {
         width: double.infinity,
         height: double.infinity,
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              wash,
-              wash,
-              colorScheme.surface,
-            ],
-            // wash 只铺到 45% 会让浅色模式下下半屏直接掉到近纯白（整页读作「白」）；
-            // 延到 62% 保住上半屏色调。
-            stops: const [0, 0.62, 1],
+          gradient: context.chengboSkin.nowPlayingBackdrop(
+            surface: colorScheme.surface,
+            wash: wash,
           ),
         ),
         child: SafeArea(
@@ -171,13 +163,13 @@ class _StationCard extends StatelessWidget {
     final colors = StationArtwork.gradientColors(name: current.title, tags: tags);
     final label = StationArtwork.monogram(name: current.title);
     final glyph = StationArtwork.categoryIcon(tags: tags);
-    final radius = context.chengboSkin.playerRadius + 8;
+    final radius = context.chengboSkin.anchorRadius;
 
     return LayoutBuilder(
       builder: (context, constraints) {
         final side = math.min(
           math.min(constraints.maxWidth, constraints.maxHeight),
-          300.0,
+          ChengboSkinTheme.anchorMaxSide,
         );
         if (side < 96) return const SizedBox.shrink();
         return Center(
