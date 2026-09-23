@@ -2065,7 +2065,10 @@ void main() {
   });
 
   test('DeskWidgetLogic snapshot and toggle URI', () {
-    expect(DeskWidgetLogic.snapshot(item: null, playing: false), DeskWidgetSnapshot.empty);
+    expect(
+      DeskWidgetLogic.snapshot(item: null, playing: false, useDynamicColor: false),
+      DeskWidgetSnapshot.empty,
+    );
     const item = PlaybackItem(
       id: 's1',
       title: '中国之声',
@@ -2073,10 +2076,12 @@ void main() {
       kind: PlaybackKind.radio,
       subtitle: '新闻',
     );
-    final snap = DeskWidgetLogic.snapshot(item: item, playing: true);
+    final snap = DeskWidgetLogic.snapshot(item: item, playing: true, useDynamicColor: false);
     expect(snap.title, '中国之声');
     expect(snap.subtitle, '新闻');
     expect(snap.playing, isTrue);
+    expect(snap.hasItem, isTrue);
+    expect(snap.useDynamicColor, isFalse);
     expect(DeskWidgetLogic.isToggleUri(Uri.parse('chengbo://toggle')), isTrue);
     expect(DeskWidgetLogic.isToggleUri(Uri.parse('chengbo://open')), isFalse);
     expect(DeskWidgetLogic.actionForUri(Uri.parse('chengbo://next')), DeskWidgetAction.next);

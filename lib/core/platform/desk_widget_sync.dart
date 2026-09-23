@@ -25,9 +25,11 @@ final deskWidgetSyncProvider = Provider<void>((ref) {
 
   Future<void> publish() async {
     final handler = ref.read(audioHandlerProvider).value;
+    final useDynamicColor = ref.read(dynamicColorProvider).value ?? true;
     final snapshot = DeskWidgetLogic.snapshot(
       item: ref.read(currentPlaybackProvider),
       playing: handler?.playbackState.value.playing ?? false,
+      useDynamicColor: useDynamicColor,
     );
     try {
       await HomeWidget.saveWidgetData<String>(DeskWidgetLogic.titleKey, snapshot.title);

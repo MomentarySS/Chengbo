@@ -7,18 +7,21 @@ class DeskWidgetSnapshot {
     required this.subtitle,
     required this.playing,
     required this.hasItem,
+    required this.useDynamicColor,
   });
 
   final String title;
   final String subtitle;
   final bool playing;
   final bool hasItem;
+  final bool useDynamicColor;
 
   static const empty = DeskWidgetSnapshot(
     title: '澄波',
     subtitle: '点此打开',
     playing: false,
     hasItem: false,
+    useDynamicColor: false,
   );
 }
 
@@ -37,16 +40,33 @@ abstract final class DeskWidgetLogic {
   static const nextHost = 'next';
   static const resumeHost = 'resume';
 
+  /// B1 动态色开关的数据键。改这里必须同步 `ChengboWidgetProvider.kt`
+  /// 第 N 行的字符串字面量（计划 §5 第 8 条）。
+  static const useDynamicColorKey = 'widget_use_dynamic_color';
+
   static DeskWidgetSnapshot snapshot({
     required PlaybackItem? item,
     required bool playing,
+    required bool useDynamicColor,
   }) {
-    if (item == null) return DeskWidgetSnapshot.empty;
+    // 无 item 时：useDynamicColor=false 走 empty 常量（保留 identity 语义，测试断言仍可用）；
+    // useDynamicColor=true 构造新实例，背景仍跟随系统配色，但内容为「点此打开」空态。
+    if (item == null) {
+      if (!useDynamicColor) return DeskWidgetSnapshot.empty;
+      return DeskWidgetSnapshot(
+        title: DeskWidgetSnapshot.empty.title,
+        subtitle: DeskWidgetSnapshot.empty.subtitle,
+        playing: DeskWidgetSnapshot.empty.playing,
+        hasItem: DeskWidgetSnapshot.empty.hasItem,
+        useDynamicColor: useDynamicColor,
+      );
+    }
     return DeskWidgetSnapshot(
       title: item.title,
       subtitle: item.subtitle,
       playing: playing,
       hasItem: true,
+      useDynamicColor: useDynamicColor,
     );
   }
 
