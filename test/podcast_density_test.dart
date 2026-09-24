@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import 'package:chengbo/core/audio/sleep_timer.dart';
 import 'package:chengbo/core/models/podcast.dart';
+import 'package:chengbo/core/network/itunes_podcast_client.dart';
 import 'package:chengbo/core/network/network_status.dart';
 import 'package:chengbo/core/network/podcast_feed_logic.dart';
 import 'package:chengbo/core/network/podcast_service.dart';
@@ -61,6 +63,33 @@ class _OnlineMonitor extends NetworkMonitor {
 
   @override
   Stream<bool> changes() => Stream<bool>.value(false);
+}
+
+/// 返回「非 JSON 正文」的 Dio adapter：复现裸连（不开代理）时请求被网络拦下、
+/// 拿到 HTML 而不是 JSON 的情况。
+class _PlainBodyAdapter implements HttpClientAdapter {
+  _PlainBodyAdapter(this.body, this.contentType);
+
+  final String body;
+  final String contentType;
+
+  @override
+  Future<ResponseBody> fetch(
+    RequestOptions options,
+    Stream<Uint8List>? requestStream,
+    Future<void>? cancelFuture,
+  ) async {
+    return ResponseBody.fromString(
+      body,
+      200,
+      headers: {
+        Headers.contentTypeHeader: [contentType],
+      },
+    );
+  }
+
+  @override
+  void close({bool force = false}) {}
 }
 
 /// 拉取必定失败的源：用来验证「回落到本机缓存」。
@@ -124,8 +153,36 @@ void main() {
     SharedPreferences.setMockInitialValues({});
   });
 
-  group('播放器顶部状态位', () {
-    /// 窄带高度必须**恒定**：一旦跟着定时状态变，下面的封面就会被重新分配空间、
+  test('iTunes 拿到非 JSON 正文时给出能照做的错，而不是类型错误', () async {
+    // 裸连（不开代理）实测就是这个形态：请求被网络拦下，返回 HTML/空内容。
+    // 旧代码会抛 `type 'String' is not a subtype of type 'Map<String, dynamic>?'`。
+    final dio = Dio()
+      ..httpClientAdapter = _PlainBodyAdapter('<html>blocked</html>', 'text/html');
+    final client = ItunesPodcastClient(dio: dio);
+    await expectLater(
+      client.search(query: '新闻', hideExplicit: true),
+      throwsA(
+        isA<ItunesPodcastException>().having(
+          (error) => error.message,
+          'message',
+          allOf(contains('不是 JSON'), contains('开代理')),
+        ),
+      ),
+    );
+  });
+
+  test('iTunes 拿到 JSON 正文时正常解析', () async {
+    final dio = Dio()
+      ..httpClientAdapter = _PlainBodyAdapter(
+        '{"results":[{"collectionName":"故事FM","feedUrl":"https://example.com/f.xml"}]}',
+        'application/json',
+      );
+    final client = ItunesPodcastClient(dio: dio);
+    final hits = await client.search(query: '故事', hideExplicit: true);
+    expect(hits.map((hit) => hit.title), ['故事FM']);
+  });
+
+  group('播放器顶部状态位', () {    /// 窄带高度必须**恒定**：一旦跟着定时状态变，下面的封面就会被重新分配空间、
     /// 视觉上跳一下（用户报过「播客那边会封面缩小」）。所以开/关两态各断言一次。
     const bandHeight = 24.0;
 

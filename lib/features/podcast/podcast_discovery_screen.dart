@@ -141,13 +141,19 @@ class _PodcastDiscoveryScreenState extends ConsumerState<PodcastDiscoveryScreen>
     if (!mounted) return;
     // 走到这里说明 iTunes 一定抛过（只有 catch 会给它赋值）。
     final reason = NetworkStatusLogic.humanize(itunesError);
+    final hasKeys = settings != null && settings.hasCredentials;
     setState(() {
       _searching = false;
       _searchHits = const [];
-      _searchError = settings != null && settings.hasCredentials
-          ? 'iTunes（$reason）与 Podcast Index 都没搜到，本机目录里也没有匹配的节目'
-          : 'iTunes 在境内常连不上（$reason），本机目录里也没有匹配的节目。'
-              '可在下方「高级：Podcast Index」填免费密钥后重试';
+      _searchError = [
+        reason,
+        if (hasKeys) 'Podcast Index 也没有结果' else 'Podcast Index 未填密钥',
+        if (catalog.isEmpty)
+          '本机目录也没拉到（网络受限）'
+        else
+          '本机目录里没有匹配的节目（只收录两百多个中文节目）',
+        if (!hasKeys) '可在下方「高级：Podcast Index」填免费密钥',
+      ].join('；');
     });
   }
 
