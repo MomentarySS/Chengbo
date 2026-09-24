@@ -87,12 +87,18 @@ abstract final class PodcastFeedLogic {
     return url;
   }
 
-  /// 第三方转接源拦截：**只有 RSSHub**。
+  /// 第三方转接源拦截：**只有 RSSHub 的公开实例域名 `rsshub.app`**。
   ///
-  /// 喜马拉雅 `album`、荔枝 `rss.lizhi.fm`、蜻蜓 `c.qingting.fm` 都**不在**名单里 ——
-  /// 实测它们返回的都是平台自己提供的标准 RSS 2.0（`<rss version="2.0">`），
-  /// 性质与「第三方转接」不同。v2.2 起放开（同时更新了 `ROADMAP.md` 的边界）。
-  static const catalogDeniedMessage = '无法在澄波订阅。RSSHub 是第三方转接源，请用作者公开的 RSS';
+  /// - 喜马拉雅 `album`、荔枝 `rss.lizhi.fm`、蜻蜓 `c.qingting.fm` 都**不在**名单里 ——
+  ///   实测它们返回的都是平台自己提供的标准 RSS 2.0（`<rss version="2.0">`），
+  ///   性质与「第三方转接」不同。v2.2 起放开（同时更新了 `ROADMAP.md` 的边界）。
+  /// - 这条拦的是**域名**，所以自建 / 镜像实例（`rsshub.example.com`、Vercel 或
+  ///   Workers 部署）不受影响。它实际起的作用是给随手粘贴 `rsshub.app` 的用户
+  ///   一条**说得清原因的提示**，而不是准入闸门。
+  /// - 文案按现状写：2026-09 实测该域名已自行对阅读器返回 403
+  ///   （「will gradually restrict access to rsshub.app for some feed readers」）。
+  static const catalogDeniedMessage =
+      '无法在澄波订阅。rsshub.app 已限制第三方阅读器访问，请用作者公开的 RSS';
 
   static bool isDeniedCatalogFeed(String url) {
     final uri = Uri.tryParse(url.trim());
