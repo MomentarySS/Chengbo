@@ -304,6 +304,25 @@ Future<List<PodcastCatalogEntry>> _safeCatalog(
   }
 }
 
+/// 启动时**后台预热**本机目录，让「发现播客 → 搜索」走到第 3 级时不必等抓取。
+///
+/// 判断依据是**本机存过目录数据**（哪怕格式过期 —— 那正是该刷新的情况），
+/// 而不是「缓存当前可用」：用过搜索的人值得让它保持新鲜；从没搜过的人不该为它
+/// 白拉约 1MB。缓存新鲜时这一步只命中本机，不产生网络请求。
+final podcastCatalogPrewarmProvider = Provider<void>((ref) {
+  Future<void> run() async {
+    try {
+      final storage = await ref.read(appStorageProvider.future);
+      if (storage.getPodcastCatalogRaw() == null) return;
+      await ref.read(podcastCatalogProvider.future);
+    } catch (_) {
+      // 预热失败无所谓：搜索那一级自己会处理（用旧缓存或提示网络受限）。
+    }
+  }
+
+  unawaited(run());
+});
+
 final xyzrankCatalogClientProvider =
     Provider<XyzrankCatalogClient>((ref) => XyzrankCatalogClient());
 

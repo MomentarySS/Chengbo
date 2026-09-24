@@ -11,6 +11,8 @@ import 'package:chengbo/core/audio/sleep_timer.dart';
 import 'package:chengbo/core/models/podcast.dart';
 import 'package:chengbo/core/network/itunes_podcast_client.dart';
 import 'package:chengbo/core/network/network_status.dart';
+import 'package:chengbo/core/network/podcast_catalog.dart';
+import 'package:chengbo/core/network/podcast_catalog_client.dart';
 import 'package:chengbo/core/network/podcast_feed_logic.dart';
 import 'package:chengbo/core/network/podcast_service.dart';
 import 'package:chengbo/core/podcast/feed_cache.dart';
@@ -90,6 +92,22 @@ class _PlainBodyAdapter implements HttpClientAdapter {
 
   @override
   void close({bool force = false}) {}
+}
+
+/// 记录调用次数的目录客户端：用来验证「启动预热只在已有缓存时才拉」。
+class _CountingCatalogClient extends PodcastCatalogClient {
+  _CountingCatalogClient() : super(dio: Dio());
+
+  int xyzrankCalls = 0;
+
+  @override
+  Future<List<PodcastCatalogEntry>> fetch() async => const [];
+
+  @override
+  Future<List<PodcastCatalogEntry>> fetchXyzrankCatalog({int pages = 10}) async {
+    xyzrankCalls++;
+    return const [];
+  }
 }
 
 /// 拉取必定失败的源：用来验证「回落到本机缓存」。
@@ -180,6 +198,50 @@ void main() {
     final client = ItunesPodcastClient(dio: dio);
     final hits = await client.search(query: '故事', hideExplicit: true);
     expect(hits.map((hit) => hit.title), ['故事FM']);
+  });
+
+  test('启动预热只在已有目录缓存时才去拉', () async {
+    Future<int> callsFor(Map<String, Object> prefs) async {
+      SharedPreferences.setMockInitialValues(prefs);
+      final client = _CountingCatalogClient();
+      final container = ProviderContainer(
+        overrides: [
+          appStorageProvider.overrideWith(
+            (ref) async => AppStorage(await SharedPreferences.getInstance()),
+          ),
+          podcastCatalogClientProvider.overrideWith((ref) => client),
+        ],
+      );
+      addTearDown(container.dispose);
+      container.read(podcastCatalogPrewarmProvider);
+      // 让 unawaited(run()) 跑完。
+      await Future<void>.delayed(Duration.zero);
+      await Future<void>.delayed(Duration.zero);
+      return client.xyzrankCalls;
+    }
+
+    // 从没搜过（没有目录缓存）→ 不该为它白拉。
+    expect(await callsFor(const {}), 0, reason: '没有目录缓存时也去拉了');
+
+    // 用过搜索、缓存已过期 → 后台拉一次，保持新鲜。
+    final stale = PodcastCatalogLogic.encode(
+      const [PodcastCatalogEntry(title: '岩中花述', rssUrl: 'https://a/1.xml')],
+      DateTime(2020, 1, 1),
+    );
+    expect(
+      await callsFor({PodcastCatalogLogic.storageKey: stale}),
+      1,
+      reason: '有旧缓存时没有后台预热',
+    );
+
+    // 旧格式缓存（升级场景）：也算「用过搜索」，该刷新 —— 不能因为版本不符就跳过。
+    expect(
+      await callsFor({
+        PodcastCatalogLogic.storageKey: '{"v":1,"entries":[{"title":"x","rssUrl":"y"}]}',
+      }),
+      1,
+      reason: '旧格式缓存被当成「没搜过」，升级后不会预热',
+    );
   });
 
   group('播放器顶部状态位', () {    /// 窄带高度必须**恒定**：一旦跟着定时状态变，下面的封面就会被重新分配空间、
