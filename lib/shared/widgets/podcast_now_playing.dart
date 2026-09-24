@@ -22,6 +22,7 @@ import 'chapter_list_sheet.dart';
 import 'episode_bookmark_sheet.dart';
 import 'now_playing_queue_sheet.dart';
 import 'now_playing_top_bar.dart';
+import 'playback_state_icon.dart';
 import 'podcast_speed_sheet.dart';
 import 'sleep_timer_sheet.dart';
 import 'station_artwork.dart';
@@ -594,10 +595,7 @@ class _TransportRow extends ConsumerWidget {
                 tooltip: playing ? '暂停' : '播放',
                 padding: const EdgeInsets.all(14),
                 iconSize: 54,
-                icon: Icon(
-                  playing ? Icons.pause_rounded : Icons.play_arrow_rounded,
-                  color: iconColor,
-                ),
+                icon: PlaybackStateIcon(playing: playing, color: iconColor),
                 onPressed: onToggle,
               ),
             IconButton(

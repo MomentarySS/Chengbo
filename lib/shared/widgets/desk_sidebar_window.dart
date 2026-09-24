@@ -11,6 +11,7 @@ import '../../core/platform/desk_window.dart';
 import '../../core/platform/desk_window_mode.dart';
 import '../../core/providers/app_providers.dart';
 import '../../features/radio/radio_providers.dart';
+import 'playback_state_icon.dart';
 import 'station_artwork.dart';
 
 /// Windows-only desktop playback surface with current item, queue and favorites.
@@ -132,7 +133,7 @@ class DeskSidebarWindow extends ConsumerWidget {
                                   onPressed: current == null
                                       ? null
                                       : () => ref.read(playerControllerProvider).togglePlayPause(),
-                                  icon: Icon(playing ? Icons.pause : Icons.play_arrow),
+                                  icon: PlaybackStateIcon(playing: playing),
                                 ),
                                 const SizedBox(width: 8),
                                 if (current?.kind == PlaybackKind.radio)

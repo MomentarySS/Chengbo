@@ -17,6 +17,7 @@ import '../../core/theme.dart';
 import 'empty_state.dart';
 import 'overflow_marquee.dart';
 import 'podcast_now_playing.dart';
+import 'playback_state_icon.dart';
 import 'radio_now_playing.dart';
 import 'sleep_timer_sheet.dart';
 import 'station_artwork.dart';
@@ -189,7 +190,7 @@ class MiniPlayer extends ConsumerWidget {
                                 foregroundColor: colorScheme.onPrimary,
                                 minimumSize: const Size(48, 48),
                               ),
-                              icon: Icon(playing ? Icons.pause_rounded : Icons.play_arrow_rounded),
+                              icon: PlaybackStateIcon(playing: playing),
                               onPressed: () => ref.read(playerControllerProvider).togglePlayPause(),
                             ),
                           IconButton(
