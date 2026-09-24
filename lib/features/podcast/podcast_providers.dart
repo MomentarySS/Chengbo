@@ -272,23 +272,37 @@ final itunesPodcastClientProvider = Provider<ItunesPodcastClient>((ref) => Itune
 final podcastCatalogClientProvider =
     Provider<PodcastCatalogClient>((ref) => PodcastCatalogClient());
 
-/// 本机播客目录（GetPodcast）。拉一次存本机，搜索时读本机 —— 不依赖搜索 API，
-/// 国内直连可拉。拉不动时用旧缓存（哪怕是过期的），目录只是搜索兜底，不该报错。
+/// 本机播客目录。拉一次存本机，搜索时读本机 —— 不依赖搜索 API，国内直连可拉。
+/// 拉不动时用旧缓存（哪怕是过期的），目录只是搜索兜底，不该报错。
+///
+/// 语料来自两处：GetPodcast 的两百多精选 + xyzrank 榜单前 1000（按热度）。后者是
+/// 覆盖面的主要来源；两处任一失败都不影响另一处。
 final podcastCatalogProvider = FutureProvider<List<PodcastCatalogEntry>>((ref) async {
   final storage = await ref.watch(appStorageProvider.future);
   final cached = PodcastCatalogLogic.decode(storage.getPodcastCatalogRaw());
   if (cached != null && !PodcastCatalogLogic.isStale(cached.fetchedAt, DateTime.now())) {
     return cached.entries;
   }
-  try {
-    final entries = await ref.watch(podcastCatalogClientProvider).fetch();
-    if (entries.isEmpty) return cached?.entries ?? const [];
-    await storage.setPodcastCatalogRaw(PodcastCatalogLogic.encode(entries, DateTime.now()));
-    return entries;
-  } catch (_) {
-    return cached?.entries ?? const [];
-  }
+  final client = ref.watch(podcastCatalogClientProvider);
+  final results = await Future.wait([
+    _safeCatalog(client.fetch),
+    _safeCatalog(client.fetchXyzrankCatalog),
+  ]);
+  final entries = PodcastCatalogLogic.merge(results);
+  if (entries.isEmpty) return cached?.entries ?? const [];
+  await storage.setPodcastCatalogRaw(PodcastCatalogLogic.encode(entries, DateTime.now()));
+  return entries;
 });
+
+Future<List<PodcastCatalogEntry>> _safeCatalog(
+  Future<List<PodcastCatalogEntry>> Function() load,
+) async {
+  try {
+    return await load();
+  } catch (_) {
+    return const [];
+  }
+}
 
 final xyzrankCatalogClientProvider =
     Provider<XyzrankCatalogClient>((ref) => XyzrankCatalogClient());

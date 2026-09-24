@@ -66,6 +66,10 @@ abstract final class PodcastCatalogLogic {
   static const storageKey = 'podcast_catalog_json';
   static const maxAge = Duration(days: 7);
 
+  /// 缓存格式版本。**语料来源变了就要 +1** —— 否则用户手上那份旧缓存会在 7 天
+  /// 新鲜期内继续用，看不到扩容（例如 v2 起才并入 xyzrank 榜单）。
+  static const cacheVersion = 2;
+
   /// 从页面里抠出 `window.__INITIAL_DATA__ = {...}` 的 JSON 片段（按花括号配对，
   /// 且跳过字符串里的括号与转义）。找不到返回 null。纯函数，便于测试。
   static String? extractInitialData(String html) {
@@ -108,22 +112,73 @@ abstract final class PodcastCatalogLogic {
   /// **跳过付费专辑**（`isPaid`）—— 它们的 RSS 通常只给试听片段，订了也听不全。
   static List<PodcastCatalogEntry> parseInitialData(Object? decoded) {
     if (decoded is! Map) return const [];
-    final out = <PodcastCatalogEntry>[];
-    final seen = <String>{};
+    final lists = <List<PodcastCatalogEntry>>[];
     for (final key in const ['featured', 'rightNow', 'promoted']) {
       final raw = decoded[key];
       if (raw is! List) continue;
-      for (final item in raw) {
-        if (item is! Map) continue;
-        final json = Map<String, dynamic>.from(item);
-        if (json['isPaid'] == true) continue;
-        final entry = PodcastCatalogEntry.fromJson(json);
+      lists.add([
+        for (final item in raw)
+          if (item is Map && item['isPaid'] != true)
+            PodcastCatalogEntry.fromJson(Map<String, dynamic>.from(item)),
+      ]);
+    }
+    return merge(lists);
+  }
+
+  /// xyzrank 榜单页 → 目录条目（`name` / `authorsText` / `logoURL` /
+  /// `primaryGenreName` + `links` 里的 `rss`）。这份榜单有 **8000+ 个中文播客**，
+  /// 按热度排序，比 GetPodcast 的两百多精选大得多，用来补搜索覆盖。
+  static List<PodcastCatalogEntry> parseXyzrankPage(Object? decoded) {
+    if (decoded is! Map) return const [];
+    final raw = decoded['items'];
+    if (raw is! List) return const [];
+    final out = <PodcastCatalogEntry>[];
+    for (final item in raw) {
+      if (item is! Map) continue;
+      final map = Map<String, dynamic>.from(item);
+      final rss = _rssLink(map['links']);
+      final title = (map['name'] as String?)?.trim() ?? '';
+      if (rss == null || title.isEmpty) continue;      final genre = (map['primaryGenreName'] as String?)?.trim() ?? '';
+      out.add(
+        PodcastCatalogEntry(
+          title: title,
+          rssUrl: rss,
+          author: (map['authorsText'] as String?)?.trim() ?? '',
+          cover: _cleanUrl(map['logoURL']),
+          tags: [if (genre.isNotEmpty) genre],
+        ),
+      );
+    }
+    return out;
+  }
+
+  /// 合并多个来源的目录，按 `rssUrl` 去重（先到先得 —— 调用方按优先级传参）。
+  static List<PodcastCatalogEntry> merge(Iterable<Iterable<PodcastCatalogEntry>> sources) {
+    final out = <PodcastCatalogEntry>[];
+    final seen = <String>{};
+    for (final source in sources) {
+      for (final entry in source) {
         if (!entry.isUsable) continue;
         if (!seen.add(entry.rssUrl)) continue;
         out.add(entry);
       }
     }
     return out;
+  }
+
+  static String? _rssLink(Object? raw) {
+    if (raw is! List) return null;
+    for (final item in raw) {
+      if (item is! Map) continue;
+      if ('${item['name'] ?? ''}' != 'rss') continue;
+      return _cleanUrl(item['url']);
+    }
+    return null;
+  }
+
+  static String? _cleanUrl(Object? raw) {
+    final value = raw is String ? raw.trim() : '';
+    return value.isEmpty ? null : value;
   }
 
   /// 本机搜索：标题精确 > 标题前缀 > 标题包含 > 作者 > 标签，同分保持目录顺序。
@@ -160,17 +215,19 @@ abstract final class PodcastCatalogLogic {
 
   static String encode(List<PodcastCatalogEntry> entries, DateTime fetchedAt) {
     return jsonEncode({
+      'v': cacheVersion,
       'fetchedAtMs': fetchedAt.millisecondsSinceEpoch,
       'entries': [for (final entry in entries) entry.toJson()],
     });
   }
 
-  /// 解析本机缓存；结构不对或为空都返回 null。
+  /// 解析本机缓存；结构不对、版本不符或为空都返回 null（调用方会重新拉）。
   static ({List<PodcastCatalogEntry> entries, DateTime fetchedAt})? decode(String? raw) {
     if (raw == null || raw.isEmpty) return null;
     try {
       final decoded = jsonDecode(raw);
       if (decoded is! Map) return null;
+      if (decoded['v'] != cacheVersion) return null;
       final rawEntries = decoded['entries'];
       if (rawEntries is! List) return null;
       final entries = [

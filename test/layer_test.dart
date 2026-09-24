@@ -1646,6 +1646,27 @@ void main() {
     expect(PodcastCatalogLogic.search(catalog, '老张').map((entry) => entry.title), ['新闻酸菜馆']);
     expect(PodcastCatalogLogic.search(catalog, '   '), isEmpty);
 
+    // xyzrank 榜单页 → 目录条目（取 links 里的 rss）；没有 rss 的条目要跳过。
+    final xyzrank = PodcastCatalogLogic.parseXyzrankPage(
+      jsonDecode(
+        '{"total":8097,"items":['
+        '{"name":"岩中花述","authorsText":"GIADA","logoURL":"https://x/a.jpg",'
+        '"primaryGenreName":"艺术","links":['
+        '{"name":"xyz","url":"https://www.xiaoyuzhoufm.com/podcast/1"},'
+        '{"name":"rss","url":"https://feed.xyzfm.space/aaa"}]},'
+        '{"name":"没有 rss 的","links":[]}]}',
+      ),
+    );
+    expect(xyzrank.map((entry) => entry.title), ['岩中花述']);
+    expect(xyzrank.single.rssUrl, 'https://feed.xyzfm.space/aaa');
+    expect(xyzrank.single.author, 'GIADA');
+    expect(xyzrank.single.tags, ['艺术']);
+
+    // 合并去重：先到先得，两个来源不重叠时都保留。
+    final merged = PodcastCatalogLogic.merge([entries, xyzrank, entries]);
+    expect(merged.length, entries.length + xyzrank.length);
+    expect(merged.map((entry) => entry.rssUrl).toSet().length, merged.length);
+
     // 缓存往返 + 新鲜度。
     final encoded = PodcastCatalogLogic.encode(entries, DateTime(2026, 9, 24));
     final cached = PodcastCatalogLogic.decode(encoded);
@@ -1654,6 +1675,8 @@ void main() {
     expect(PodcastCatalogLogic.isStale(cached.fetchedAt, DateTime(2026, 10, 5)), isTrue);
     expect(PodcastCatalogLogic.decode(''), isNull);
     expect(PodcastCatalogLogic.decode('{"entries":[]}'), isNull);
+    // 缓存格式版本不符（例如语料来源变了）→ 当作没有缓存，强制重拉。
+    expect(PodcastCatalogLogic.decode('{"v":1,"entries":[{"title":"x","rssUrl":"y"}]}'), isNull);
   });
 
   test('PodcastPlaybackLogic.skipDurationLabel formats mm:ss', () {

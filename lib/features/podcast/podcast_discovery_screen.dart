@@ -132,7 +132,7 @@ class _PodcastDiscoveryScreenState extends ConsumerState<PodcastDiscoveryScreen>
       setState(() {
         _searching = false;
         _searchHits = [for (final entry in catalogHits) entry.toHit()];
-        _searchSource = '本机目录（仅收录两百多个中文节目）';
+        _searchSource = '本机目录（收录 ${catalog.length} 个中文节目）';
         _searchError = null;
       });
       return;
@@ -151,7 +151,7 @@ class _PodcastDiscoveryScreenState extends ConsumerState<PodcastDiscoveryScreen>
         if (catalog.isEmpty)
           '本机目录也没拉到（网络受限）'
         else
-          '本机目录里没有匹配的节目（只收录两百多个中文节目）',
+          '本机目录的 ${catalog.length} 个中文节目里没有匹配的',
         if (!hasKeys) '可在下方「高级：Podcast Index」填免费密钥',
       ].join('；');
     });
