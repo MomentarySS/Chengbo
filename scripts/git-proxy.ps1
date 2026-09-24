@@ -11,9 +11,9 @@
 #   1. TCP ports that a proxy process is listening on (verge-mihomo / mihomo /
 #      clash / v2ray / ...)
 #   2. fallback scan of common ports: 7897 7890 7891 7900 10809 10808 1080 20171 33210
-#   3. each listening candidate is verified by actually reaching the host the
-#      chosen tool needs (github.com for git, api.github.com for gh). Listening
-#      is not the same as being a working HTTP proxy.
+#   3. each listening candidate must open a real CONNECT tunnel to the host the
+#      chosen tool needs (github.com for git, api.github.com for gh) and get an
+#      answer back through it. Listening is not the same as being a proxy.
 #
 # Failure messages separate the two cases that matter: "nothing is proxying"
 # versus "the proxy works but this host is unreachable through it" (dead node or
@@ -71,6 +71,45 @@ function Test-PortListening {
     }
 }
 
+# Opens a raw CONNECT tunnel to host:443 and reports whether the proxy answered
+# 2xx. This is the only reliable way to tell a real HTTP proxy apart from another
+# local HTTP service: Clash's external controller answers a CONNECT with 404.
+function Test-ConnectTunnel {
+    param([int]$Port, [string]$TargetHost, [int]$TargetPort = 443)
+    $client = $null
+    try {
+        $client = New-Object System.Net.Sockets.TcpClient
+        if (-not $client.ConnectAsync('127.0.0.1', $Port).Wait(1500)) { return $false }
+        $stream = $client.GetStream()
+        $stream.ReadTimeout = 5000
+        $stream.WriteTimeout = 5000
+        $head = "CONNECT ${TargetHost}:${TargetPort} HTTP/1.1`r`nHost: ${TargetHost}:${TargetPort}`r`n`r`n"
+        $bytes = [System.Text.Encoding]::ASCII.GetBytes($head)
+        $stream.Write($bytes, 0, $bytes.Length)
+        $stream.Flush()
+
+        $deadline = (Get-Date).AddMilliseconds(5000)
+        $sb = New-Object System.Text.StringBuilder
+        $buffer = [byte[]]::new(256)
+        while ((Get-Date) -lt $deadline) {
+            if ($stream.DataAvailable) {
+                $read = $stream.Read($buffer, 0, $buffer.Length)
+                if ($read -le 0) { break }
+                [void]$sb.Append([System.Text.Encoding]::ASCII.GetString($buffer, 0, $read))
+                if ($sb.ToString().Contains("`r`n")) { break }
+            } else {
+                Start-Sleep -Milliseconds 50
+            }
+        }
+        $statusLine = ($sb.ToString() -split "`r`n")[0]
+        return ($statusLine -match '^HTTP/\d(\.\d)?\s+2\d\d')
+    } catch {
+        return $false
+    } finally {
+        if ($client) { $client.Close() }
+    }
+}
+
 # Returns the HTTP status, or 0 when the request never got a response.
 function Get-StatusViaProxy {
     param([int]$Port, [string]$Url)
@@ -97,13 +136,17 @@ function Get-StatusViaProxy {
     }
 }
 
-# A working proxy answers the CONNECT with 200 and the target's own status comes
-# back. Only 2xx/3xx count: Clash's own API port answers a CONNECT with 404, and
-# treating any status as success makes that port look like a usable proxy.
+# A working proxy answers the CONNECT with 2xx and opens the tunnel. The status
+# the target returns afterwards must NOT decide this: api.github.com answers an
+# unauthenticated GET with 403, and demanding 2xx/3xx there made gh look
+# unroutable while git (github.com -> 200) kept working. The CONNECT reply is
+# what separates a real proxy from a lookalike. Once the tunnel is up a real
+# response is still required, which is what catches a dead node.
 function Test-ProxyWorks {
     param([int]$Port, [string]$Url)
-    $status = Get-StatusViaProxy -Port $Port -Url $Url
-    return ($status -ge 200 -and $status -lt 400)
+    $targetHost = ([Uri]$Url).Host
+    if (-not (Test-ConnectTunnel -Port $Port -TargetHost $targetHost)) { return $false }
+    return ((Get-StatusViaProxy -Port $Port -Url $Url) -ne 0)
 }
 
 $listening = @(Get-ProxyCandidatePorts | Where-Object { Test-PortListening -Port $_ })
@@ -123,7 +166,7 @@ foreach ($port in $listening) {
 }
 
 if (-not $proxyPort) {
-    Write-Host "Listening port(s): $($listening -join ', ') - none of them got a response from $target." -ForegroundColor Red
+    Write-Host "Listening port(s): $($listening -join ', ') - none of them could tunnel to $target." -ForegroundColor Red
     $alive = @($listening | Where-Object { Test-ProxyWorks -Port $_ -Url 'https://www.gstatic.com/generate_204' })
     if ($alive.Count -gt 0) {
         Write-Host "The proxy on port $($alive[0]) does work, so the problem is the route to $target (dead node or a routing rule)." -ForegroundColor Red
