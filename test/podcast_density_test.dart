@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'package:chengbo/core/audio/sleep_timer.dart';
 import 'package:chengbo/core/models/podcast.dart';
 import 'package:chengbo/core/network/network_status.dart';
 import 'package:chengbo/core/providers/app_providers.dart';
@@ -14,6 +15,7 @@ import 'package:chengbo/core/theme.dart';
 import 'package:chengbo/features/podcast/podcast_providers.dart';
 import 'package:chengbo/features/podcast/podcast_screen.dart';
 import 'package:chengbo/features/settings/playback_screen.dart';
+import 'package:chengbo/shared/widgets/sleep_timer_sheet.dart';
 
 /// v2.2 播客两页瘦身的守卫测试。对应工单
 /// `docs/design/mobile-v2-2-density-work-order.md` §6.2。
@@ -92,11 +94,60 @@ Widget _app({List<Override> extra = const []}) {
   );
 }
 
+/// 假睡眠定时器：`start()` 会去要 audio handler（测试里拿不到），所以直接给状态。
+class _FakeSleepTimerNotifier extends SleepTimerNotifier {
+  _FakeSleepTimerNotifier(super.ref, {required bool active}) {
+    if (active) {
+      state = SleepTimerState(endsAt: DateTime.now().add(const Duration(minutes: 5)));
+    }
+  }
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUp(() {
     SharedPreferences.setMockInitialValues({});
+  });
+
+  group('播放器顶部状态位', () {
+    /// 窄带高度必须**恒定**：一旦跟着定时状态变，下面的封面就会被重新分配空间、
+    /// 视觉上跳一下（用户报过「播客那边会封面缩小」）。所以开/关两态各断言一次。
+    const bandHeight = 24.0;
+
+    Future<void> pumpBand(WidgetTester tester, {required bool active}) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            ..._overrides(),
+            sleepTimerProvider.overrideWith((ref) => _FakeSleepTimerNotifier(ref, active: active)),
+          ],
+          child: MaterialApp(
+            theme: ChengboTheme.light(),
+            home: const Scaffold(body: Center(child: SleepTimerStatusBand())),
+          ),
+        ),
+      );
+      await tester.pump();
+    }
+
+    testWidgets('定时关着：窄带留空，高度不变', (tester) async {
+      await pumpBand(tester, active: false);
+      expect(find.byType(SleepTimerCountdown), findsNothing);
+      expect(tester.getSize(find.byType(SleepTimerStatusBand)).height, bandHeight);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('定时开着：倒计时出现在窄带里，高度仍然不变', (tester) async {
+      await pumpBand(tester, active: true);
+      expect(find.byType(SleepTimerCountdown), findsOneWidget, reason: '定时开着却没显示倒计时');
+      expect(
+        tester.getSize(find.byType(SleepTimerStatusBand)).height,
+        bandHeight,
+        reason: '窄带高度跟着定时状态变了 —— 下面的锚点会被重新分配空间、跳一下',
+      );
+      expect(tester.takeException(), isNull);
+    });
   });
 
   group('播客详情页瘦身', () {
@@ -249,8 +300,7 @@ void main() {
       expect(tester.widget<SwitchListTile>(downloadAll).value, isFalse);
     });
 
-    test('resolveDownloadWifiOnly：provider 没加载完时问存储，不把 null 当成「没开」', () async {
-      // 这条守着 D3 引入的竞态本身：`downloadWifiOnlyProvider` 是懒创建的
+    test('resolveDownloadWifiOnly：provider 没加载完时问存储，不把 null 当成「没开」', () async {      // 这条守着 D3 引入的竞态本身：`downloadWifiOnlyProvider` 是懒创建的
       // AsyncValue，第一次读它时还是 AsyncLoading、`.value == null`。
       // 详情页那个常驻开关搬走后就没人预热它了，而自动下载 / 滑动下载 /
       // 播放器下载图标这些路径都不会先 watch 它。
@@ -318,20 +368,31 @@ void main() {
       );
     });
 
-    test('睡眠倒计时只有一处，且在封面之上（不再压在控制行下面）', () {
-      final countdown = nowPlaying.indexOf('SleepTimerCountdown(');
-      final cover = nowPlaying.indexOf('_Cover(');
-      expect(countdown, greaterThan(-1), reason: '倒计时没了');
-      expect(
-        nowPlaying.indexOf('SleepTimerCountdown(', countdown + 1),
-        -1,
-        reason: '倒计时出现两次 —— 底部那份没删干净',
-      );
-      expect(
-        countdown,
-        lessThan(cover),
-        reason: '倒计时不在封面之前 —— 又跑回底部了',
-      );
+    test('两页都用同一条顶部窄带放倒计时（电台页底部那份已删）', () {
+      final radio = _readSource('lib/shared/widgets/radio_now_playing.dart');
+      for (final entry in {
+        'podcast_now_playing.dart': nowPlaying,
+        'radio_now_playing.dart': radio,
+      }.entries) {
+        final source = entry.value;
+        expect(
+          source.contains('SleepTimerStatusBand()'),
+          isTrue,
+          reason: '${entry.key} 没改用共享的顶部窄带',
+        );
+        expect(
+          source.contains('SleepTimerCountdown('),
+          isFalse,
+          reason: '${entry.key} 还直接塞着倒计时 —— 应该只由 SleepTimerStatusBand 渲染',
+        );
+        // 窄带必须排在视觉锚点之前（顶部栏与封面之间），不能跑到下面去。
+        final band = source.indexOf('SleepTimerStatusBand()');
+        final anchor = source.contains('_Cover(')
+            ? source.indexOf('_Cover(')
+            : source.indexOf('_StationCard(');
+        expect(anchor, greaterThan(-1), reason: '${entry.key} 找不到视觉锚点');
+        expect(band, lessThan(anchor), reason: '${entry.key} 的窄带不在锚点之前');
+      }
     });
   });
 }

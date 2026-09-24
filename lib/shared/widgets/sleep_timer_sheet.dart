@@ -68,6 +68,37 @@ class SleepTimerCountdown extends ConsumerWidget {
   }
 }
 
+/// 播放器顶部状态位：**高度固定**，定时开着时显示倒计时，关着时留空。
+///
+/// 位置在顶部栏与视觉锚点（封面 / 台名卡）之间 —— 两页共用同一个组件，位置和
+/// 高度完全一致，不会各自漂移。
+///
+/// 高度固定是有意的：如果让倒计时按需插入一行，开关定时会让下面的锚点重新分配
+/// 空间、**封面被挤小**，视觉上跳一下。留一条常驻的窄带就没这个问题。
+class SleepTimerStatusBand extends ConsumerWidget {
+  const SleepTimerStatusBand({super.key, this.height = 24});
+
+  final double height;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final timer = ref.watch(sleepTimerProvider);
+    return SizedBox(
+      height: height,
+      child: timer.isActive
+          ? Center(
+              child: SleepTimerCountdown(
+                style: context.chengboSkin.countdownStyle(
+                  Theme.of(context).textTheme.labelLarge,
+                  Theme.of(context).colorScheme.primary,
+                ),
+              ),
+            )
+          : null,
+    );
+  }
+}
+
 class _SleepTimerSheet extends ConsumerWidget {
   const _SleepTimerSheet();
 

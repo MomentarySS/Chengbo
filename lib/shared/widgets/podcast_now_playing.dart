@@ -48,8 +48,6 @@ class PodcastNowPlayingSheet extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
-    final textTheme = Theme.of(context).textTheme;
-    final sleepActive = ref.watch(sleepTimerProvider).isActive;
     final accent = StationArtwork.gradientColors(name: current.subtitle, tags: const []);
     final wash = context.chengboSkin.nowPlayingWash(
       surface: colorScheme.surface,
@@ -75,19 +73,9 @@ class PodcastNowPlayingSheet extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const NowPlayingTopBar(),
-                  // 倒计时放封面**之上**：原来挂在控制行下面，会多出一行压在最
-                  // 底部，既挤又难看。配合封面外圈的 SleepTimerRing 一起读。
-                  if (sleepActive)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: SleepTimerCountdown(
-                        style: context.chengboSkin.countdownStyle(
-                          textTheme.labelLarge,
-                          colorScheme.primary,
-                        ),
-                      ),
-                    ),
-                  const SizedBox(height: 8),
+                  // 倒计时占顶部这条固定高度的窄带（不占封面的空间 —— 以前插在
+                  // 封面之上会让封面被挤小）。
+                  const SleepTimerStatusBand(),
                   Expanded(
                     child: _Cover(current: current, accent: accent.first),
                   ),
