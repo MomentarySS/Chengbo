@@ -476,12 +476,29 @@ flutter test      # 基线 143/143；本工单新增后总数 = 143 + 新增
 
 **守卫**（`layer_test` + `key_screens_test`）：喜马/荔枝/蜻蜓/小宇宙 均 `isDeniedCatalogFeed == false`；rsshub 为 true；`resolveUrl(rsshub, enforceCatalogPolicy: true)` 抛 `catalogDeniedMessage` 且 `saveAddress == false`，而**不带 flag 时不抛**；喜马裸页 → `.xml`；发现页只把转接源标成无法订阅（喜马那条可订阅）。有牙验证：把 `resolveUrl` 改回「总是拦」→ 读取路径那条断言以 `无法在澄波订阅。RSSHub 是第三方转接源…` 失败。
 
+### 11.6 倒计时收进一条共享的顶部窄带（commit `1f3bd56`）
+
+**真机反馈**：电台页开了定时，倒计时出现在**控制行下面**，多出一行在最底部（不美观）；播客页则放在封面之上，**会跟封面抢空间、把封面挤小**。用户画了红框（顶部栏与封面之间的空白），要求两页都把倒计时放那儿。
+
+**做法**：新增共享组件 `SleepTimerStatusBand`（在 `sleep_timer_sheet.dart`）—— 顶部栏与视觉锚点之间的**固定 24px 窄带**，定时开着时居中显示倒计时，关着时留空。
+
+- **高度固定是有意的**：如果窄带只在定时开着时才变高，下面的锚点会被重新分配空间 → **封面跳一下**（这正是用户看到的问题）。
+- **两页共用同一个组件** → 位置与高度完全一致，不会再各自漂移。
+- 电台页底部那份倒计时删除；两页都不再直接构造 `SleepTimerCountdown`。
+
+**守卫**：
+- widget 测试（用假 `SleepTimerNotifier` 覆盖 —— 真 `start()` 会去要 audio handler，测试里拿不到）：开/关两态各断言窄带高度 = 24、且倒计时只在开着时出现。
+- 源码结构断言：两页都出现 `SleepTimerStatusBand()`、都不再出现 `SleepTimerCountdown(`、且窄带排在视觉锚点之前。
+
+有牙验证：把窄带改成 `timer.isActive ? height + 20 : height` → 「窄带高度跟着定时状态变了」失败；把电台页换回 `SizedBox(height: 8)` → 「radio_now_playing.dart 没改用共享的顶部窄带」失败。
+
 ---
 
 ## 12. 变更记录
 
 | 日期 | 版本 | 变更 |
 |---|---|---|
+| 2026-09-24 | 1.8 | **§11.6 倒计时收进共享顶部窄带**（commit `1f3bd56`）：`SleepTimerStatusBand` —— 顶部栏与视觉锚点之间的固定 24px 窄带，两页共用；电台页底部那份删除，两页都不再直接构造倒计时。高度固定是为了避免「开定时 → 锚点重新分配空间 → 封面跳一下」。`flutter test` **159/159**、`flutter analyze` **16 info**。两条新守卫（窄带高度恒定 / 两页一致）都做过有牙验证 |
 | 2026-09-23 | 1.7 | **§11.5 订阅拦截收窄到只剩 RSSHub**（commit `74f3349`）：实测喜马拉雅 / 荔枝 / 蜻蜓 / 小宇宙四家返回的**都是平台自己的标准 RSS 2.0**，旧规则只看 host+path 从不看内容，导致已订阅的 3 个喜马拉雅 + 1 个荔枝节目打开即整页报错。改法：名单只留 `rsshub.app`；拦截**不再作用于读取路径**（`resolveUrl` 只在新增订阅时施加）；喜马裸专辑页自动补 `.xml`；文案与发现页标签改成「第三方转接源」；`ROADMAP.md` 边界同步。`flutter test` **157/157**、`flutter analyze` **16 info**（比基线低 7）。有牙验证：把 `resolveUrl` 改回「总是拦」→ 读取路径断言失败 |
 | 2026-09-23 | 1.6 | **§11.4 仅WiFi下载只读状态行**（commit `732131f`）：在「节目设置」面板的「下载」分组末尾加一行不可点的 `仅WiFi下载 · 开/关`，副文指向设置页 —— 开关本身仍在 `设置 → 播放与收听`（全局开关不复制进按节目面板），但下载路径上终于看得见它的状态。值未加载完显示 `…`（不显示「关」）。副作用：该行 `watch` 了 provider → 原竞态 widget 测试失去牙齿，改用 `resolveDownloadWifiOnly(AsyncLoading, …)` 单元测试顶上（已做有牙验证）。`flutter test` **157/157**、`flutter analyze` **17 info** |
 | 2026-09-23 | 1.5 | **真机第二轮反馈的两处改动**：`0350a72` 取消封面光圈（连带 `startedAt`/`total`/`ringFraction` 一并删掉，不留死代码；倒计时保留在封面之上）；`b1e2390` 修跳过片头/尾面板的**静默裁切**（缺 `isScrollControlled` + 无滚动容器，「保存」被裁且滚不到）与**首帧 `LateInitializationError`**（`late int` 由异步 `_load()` 赋值）。`flutter test` **156/156**、`flutter analyze` **17 info**（比基线低 6：本次改到的 `podcast_skip_sheet.dart` 的 4 条 + 之前两个文件各 1 条 + 光圈代码移除）。两处新守卫都做过有牙验证。另新增 `scripts/git-proxy.ps1`（探测本地代理端口再执行 git/gh）|
