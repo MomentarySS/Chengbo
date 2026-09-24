@@ -1018,7 +1018,13 @@ void _showEpisodeMenu(
               title: Text(starred ? '取消收藏' : '收藏单集'),
               onTap: () {
                 Navigator.pop(sheetContext);
-                unawaited(ref.read(favoriteEpisodeGuidsProvider.notifier).toggle(episode.guid));
+                unawaited(
+                  ref.read(favoriteEpisodeGuidsProvider.notifier).toggle(
+                    episode.guid,
+                    feed: feed,
+                    episode: episode,
+                  ),
+                );
               },
             ),
             ListTile(
@@ -1141,6 +1147,8 @@ Future<void> _confirmDeleteDownload(BuildContext context, WidgetRef ref, Podcast
 }
 
 /// 播客主页：继续收听卡片 + 订阅列表。
+const _inboxPreviewLimit = 3;
+
 class ResumeAndFeedList extends ConsumerWidget {
   const ResumeAndFeedList({
     super.key,
@@ -1170,7 +1178,14 @@ class ResumeAndFeedList extends ConsumerWidget {
             loading: () => const SizedBox(height: 12, child: LinearProgressIndicator()),
             error: (_, __) => const SizedBox.shrink(),
           ),
-          if (inbox.isNotEmpty) _InboxSection(items: inbox),
+          if (inbox.isNotEmpty)
+            _InboxSection(
+              items: inbox.take(_inboxPreviewLimit).toList(),
+              allItems: inbox,
+              onViewAll: () => Navigator.of(context).push(
+                MaterialPageRoute<void>(builder: (_) => const _PodcastInboxScreen()),
+              ),
+            ),
           if (!(ref.watch(isOfflineProvider).value ?? false))
             Align(
               alignment: Alignment.centerLeft,
@@ -1185,6 +1200,16 @@ class ResumeAndFeedList extends ConsumerWidget {
             ),
           const Divider(height: 1),
         ],
+        if (feeds.isNotEmpty)
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+            child: Text(
+              query.isEmpty ? '订阅节目 · ${feeds.length}' : '搜索结果 · ${feeds.length}',
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+            ),
+          ),
         for (final feed in feeds) _FeedItem(feed: feed, context: context, ref: ref),
       ],
     );
@@ -1192,9 +1217,11 @@ class ResumeAndFeedList extends ConsumerWidget {
 }
 
 class _InboxSection extends ConsumerWidget {
-  const _InboxSection({required this.items});
+  const _InboxSection({required this.items, required this.allItems, this.onViewAll});
 
   final List<InboxItem> items;
+  final List<InboxItem> allItems;
+  final VoidCallback? onViewAll;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -1202,7 +1229,7 @@ class _InboxSection extends ConsumerWidget {
     final current = ref.watch(currentPlaybackProvider);
     final downloadState = ref.watch(podcastDownloadsProvider);
     final downloadedGuids = {
-      for (final item in items)
+      for (final item in allItems)
         if (downloadState.statusFor(item.episode.guid) == EpisodeDownloadStatus.ready)
           item.episode.guid,
     };
@@ -1214,16 +1241,18 @@ class _InboxSection extends ConsumerWidget {
           child: Row(
             children: [
               Text(
-                '未听',
+                '未听 · ${allItems.length}',
                 style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
               ),
               const Spacer(),
+              if (onViewAll != null && allItems.length > items.length)
+                TextButton(onPressed: onViewAll, child: const Text('查看全部')),
               PopupMenuButton<_InboxQueueMode>(
                 tooltip: '批量加入播放队列',
                 onSelected: (mode) => _addInboxToQueue(
                   context,
                   ref,
-                  items,
+                  allItems,
                   downloadedGuids: downloadedGuids,
                   downloadedFirst: mode == _InboxQueueMode.downloadedFirst,
                 ),
@@ -1324,6 +1353,28 @@ class _InboxSection extends ConsumerWidget {
               ),
             );
       },
+    );
+  }
+}
+
+class _PodcastInboxScreen extends ConsumerWidget {
+  const _PodcastInboxScreen();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final items = ref.watch(inboxProvider);
+    return Scaffold(
+      appBar: AppBar(title: Text('全部未听 · ${items.length}')),
+      body: items.isEmpty
+          ? const AppEmptyState(
+              icon: Icons.done_all_rounded,
+              message: '暂时没有未听单集',
+              detail: '返回订阅列表，新节目更新后会显示在这里',
+            )
+          : ListView(
+              padding: const EdgeInsets.only(bottom: ChengboTheme.listBottomPadding),
+              children: [_InboxSection(items: items, allItems: items)],
+            ),
     );
   }
 }

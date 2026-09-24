@@ -11,6 +11,7 @@ import '../audio/podcast_playback.dart';
 import '../audio/radio_audio_handler.dart';
 import '../audio/sleep_timer.dart';
 import '../brand.dart';
+import '../models/podcast.dart';
 import '../models/radio_station.dart';
 import '../network/network_status.dart';
 import '../platform/cast_controller.dart';
@@ -20,6 +21,7 @@ import '../platform/desk_window_mode.dart';
 import '../platform/desk_sidebar_window_controller.dart';
 import 'package:window_manager/window_manager.dart';
 import '../podcast/podcast_listened.dart';
+import '../podcast/feed_cache.dart';
 import '../storage/podcast_download_store.dart';
 import '../theme.dart';
 import 'listening_stats_provider.dart';
@@ -1055,6 +1057,44 @@ final listenedEpisodeGuidsSetProvider = Provider<Set<String>>((ref) {
   return ref.watch(listenedEpisodeGuidsProvider).value ?? <String>{};
 });
 
+final favoritePodcastEpisodesProvider = StateNotifierProvider<FavoritePodcastEpisodesNotifier,
+    AsyncValue<Map<String, FavoritePodcastEpisode>>>((ref) {
+  return FavoritePodcastEpisodesNotifier(ref);
+});
+
+class FavoritePodcastEpisodesNotifier
+    extends StateNotifier<AsyncValue<Map<String, FavoritePodcastEpisode>>> {
+  FavoritePodcastEpisodesNotifier(this._ref) : super(const AsyncLoading()) {
+    _loaded = _load();
+  }
+
+  final Ref _ref;
+  late final Future<void> _loaded;
+
+  Future<void> _load() async {
+    final storage = await _ref.read(appStorageProvider.future);
+    if (mounted) state = AsyncData(await storage.getFavoritePodcastEpisodes());
+  }
+
+  Future<void> put(FavoritePodcastEpisode episode) async {
+    await _loaded;
+    final next = Map<String, FavoritePodcastEpisode>.from(state.value ?? const {});
+    next[episode.guid] = episode;
+    state = AsyncData(next);
+    final storage = await _ref.read(appStorageProvider.future);
+    await storage.setFavoritePodcastEpisodes(next);
+  }
+
+  Future<void> remove(String guid) async {
+    await _loaded;
+    final next = Map<String, FavoritePodcastEpisode>.from(state.value ?? const {});
+    next.remove(guid);
+    state = AsyncData(next);
+    final storage = await _ref.read(appStorageProvider.future);
+    await storage.setFavoritePodcastEpisodes(next);
+  }
+}
+
 final favoriteEpisodeGuidsProvider =
     StateNotifierProvider<FavoriteEpisodeGuidsNotifier, AsyncValue<Set<String>>>((ref) {
   return FavoriteEpisodeGuidsNotifier(ref);
@@ -1072,15 +1112,23 @@ class FavoriteEpisodeGuidsNotifier extends StateNotifier<AsyncValue<Set<String>>
     state = AsyncData(await storage.getFavoriteEpisodeGuids());
   }
 
-  Future<void> toggle(String episodeGuid) async {
+  Future<void> toggle(String episodeGuid, {PodcastFeed? feed, PodcastEpisode? episode}) async {
     if (episodeGuid.isEmpty) return;
     final current = state.value ?? <String>{};
-    final next = current.contains(episodeGuid)
+    final removing = current.contains(episodeGuid);
+    final next = removing
         ? PodcastStarredLogic.unstar(current, episodeGuid: episodeGuid)
         : PodcastStarredLogic.star(current, episodeGuid: episodeGuid);
     state = AsyncData(next);
     final storage = await _ref.read(appStorageProvider.future);
     await storage.setFavoriteEpisodeGuids(next);
+    if (removing) {
+      await _ref.read(favoritePodcastEpisodesProvider.notifier).remove(episodeGuid);
+    } else if (feed != null && episode != null) {
+      await _ref.read(favoritePodcastEpisodesProvider.notifier).put(
+            FavoritePodcastEpisode.fromEpisode(feed: feed, episode: episode),
+          );
+    }
   }
 }
 

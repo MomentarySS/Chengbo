@@ -75,6 +75,7 @@ class AppStorage {
   static const _podcastCatalogKey = 'podcast_catalog_json';
   static const _listenedEpisodeGuidsKey = 'listened_episode_guids';
   static const _favoriteEpisodeGuidsKey = 'favorite_episode_guids';
+  static const _favoritePodcastEpisodesKey = 'favorite_podcast_episodes_json';
   static const _hideListenedKey = 'hide_listened_episodes';
   static const _stationPatchesKey = 'station_patches_json';
   static const _stationProbeCompletedKey = 'station_probe_completed';
@@ -653,6 +654,33 @@ class AppStorage {
 
   Future<void> setFavoriteEpisodeGuids(Set<String> guids) async {
     await _prefs.setStringList(_favoriteEpisodeGuidsKey, guids.toList());
+  }
+
+  Future<Map<String, FavoritePodcastEpisode>> getFavoritePodcastEpisodes() async {
+    final raw = _prefs.getString(_favoritePodcastEpisodesKey);
+    if (raw == null || raw.isEmpty) return {};
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is! List) return {};
+      final episodes = <String, FavoritePodcastEpisode>{};
+      for (final item in decoded) {
+        if (item is! Map) continue;
+        final episode = FavoritePodcastEpisode.fromJson(Map<String, dynamic>.from(item));
+        if (episode.guid.isNotEmpty) episodes[episode.guid] = episode;
+      }
+      return episodes;
+    } on FormatException {
+      return {};
+    } on TypeError {
+      return {};
+    }
+  }
+
+  Future<void> setFavoritePodcastEpisodes(Map<String, FavoritePodcastEpisode> episodes) async {
+    await _prefs.setString(
+      _favoritePodcastEpisodesKey,
+      jsonEncode([for (final episode in episodes.values) episode.toJson()]),
+    );
   }
 
   Future<bool> getHideListenedEpisodes() async {

@@ -16,6 +16,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/zh-CN/), and the pr
 
 ### Changed
 - 底部迷你条、完整播放器、Windows 浮条和侧栏的播放 / 暂停图标加入轻微淡入缩放切换，并遵循系统「减少动态效果」设置
+- 设置首页按内容、播放、数据分组；播客首页只预览 3 条未听单集，可进入独立列表查看全部，避免订阅节目被长列表挤到下方
 
 ## [2.2.0] - 2026-09-24
 

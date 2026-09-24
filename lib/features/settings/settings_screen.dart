@@ -20,10 +20,11 @@ class SettingsScreen extends ConsumerWidget {
     return ListView(
       padding: const EdgeInsets.only(bottom: ChengboTheme.listBottomPadding),
       children: [
+        _sectionLabel(context, '内容与来源'),
         _Entry(
           icon: Icons.podcasts_outlined,
           title: '播客管理',
-          subtitle: 'RSS 订阅、OPML 导入导出',
+          subtitle: '管理订阅、导入和导出 OPML',
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute<void>(builder: (_) => const PodcastManagementScreen()),
           ),
@@ -31,15 +32,24 @@ class SettingsScreen extends ConsumerWidget {
         _Entry(
           icon: Icons.radio_outlined,
           title: '电台管理',
-          subtitle: '收听范围、检测、刷新、Radio Browser、手动添加',
+          subtitle: '收听范围、源检测和手动添加',
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute<void>(builder: (_) => const SourceSettingsScreen()),
           ),
         ),
         _Entry(
+          icon: Icons.category_outlined,
+          title: '电台分类',
+          subtitle: '管理自定义分类',
+          onTap: () => Navigator.of(context).push(
+            MaterialPageRoute<void>(builder: (_) => const CategoryScreen()),
+          ),
+        ),
+        _sectionLabel(context, '播放与外观'),
+        _Entry(
           icon: Icons.play_circle_outline,
           title: '播放与收听',
-          subtitle: '记住上次收听、迷你窗、摇一摇、新一集通知',
+          subtitle: '播放偏好、设备选项与通知',
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute<void>(builder: (_) => const PlaybackSettingsScreen()),
           ),
@@ -47,11 +57,12 @@ class SettingsScreen extends ConsumerWidget {
         _Entry(
           icon: Icons.contrast,
           title: '外观',
-          subtitle: CastSessionLogic.offered ? '氛围、主题、列表、投屏' : '氛围、主题、列表、配色',
+          subtitle: CastSessionLogic.offered ? '氛围、主题、配色和投屏' : '氛围、主题和配色',
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute<void>(builder: (_) => const AppearanceScreen()),
           ),
         ),
+        _sectionLabel(context, '数据与应用'),
         _Entry(
           icon: Icons.storage_outlined,
           title: '数据管理',
@@ -61,22 +72,28 @@ class SettingsScreen extends ConsumerWidget {
           ),
         ),
         _Entry(
-          icon: Icons.category_outlined,
-          title: '电台分类',
-          subtitle: '自定义分类',
-          onTap: () => Navigator.of(context).push(
-            MaterialPageRoute<void>(builder: (_) => const CategoryScreen()),
-          ),
-        ),
-        _Entry(
           icon: Icons.info_outline,
           title: '关于',
-          subtitle: '版本、隐私说明',
+          subtitle: '版本信息与隐私说明',
           onTap: () => Navigator.of(context).push(
             MaterialPageRoute<void>(builder: (_) => const AboutScreen()),
           ),
         ),
       ],
+    );
+  }
+
+  Widget _sectionLabel(BuildContext context, String label) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 4),
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.labelLarge?.copyWith(
+              color: colorScheme.primary,
+              fontWeight: FontWeight.w600,
+            ),
+      ),
     );
   }
 }

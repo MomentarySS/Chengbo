@@ -6,14 +6,20 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
+import '../../core/audio/now_playing_indicator.dart';
+import '../../core/models/podcast.dart';
+import '../../core/models/radio_station.dart';
 import '../../core/network/network_status.dart';
+import '../../core/podcast/feed_cache.dart';
 import '../../core/providers/app_providers.dart';
 import '../../core/providers/listening_stats_provider.dart';
 import '../../core/providers/podcast_history_provider.dart';
 import '../../core/stats/listening_stats.dart';
 import '../../core/theme.dart';
 import '../../shared/widgets/empty_state.dart';
+import '../../shared/widgets/now_playing_leading.dart';
 import '../../shared/widgets/resume_listening_card.dart';
+import '../../shared/widgets/station_artwork.dart';
 import '../../shared/widgets/station_list_tile.dart';
 import '../../shared/widgets/station_probe_status.dart';
 import '../podcast/podcast_providers.dart';
@@ -64,8 +70,54 @@ class ListeningScreen extends StatelessWidget {
   }
 }
 
-class _FavoritesTab extends ConsumerWidget {
+enum _FavoriteKind { radio, podcast }
+
+class _FavoritesTab extends ConsumerStatefulWidget {
   const _FavoritesTab();
+
+  @override
+  ConsumerState<_FavoritesTab> createState() => _FavoritesTabState();
+}
+
+class _FavoritesTabState extends ConsumerState<_FavoritesTab> {
+  _FavoriteKind _selected = _FavoriteKind.radio;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+          child: SegmentedButton<_FavoriteKind>(
+            showSelectedIcon: false,
+            segments: const [
+              ButtonSegment(
+                value: _FavoriteKind.radio,
+                label: Text('电台'),
+                icon: Icon(Icons.radio_outlined),
+              ),
+              ButtonSegment(
+                value: _FavoriteKind.podcast,
+                label: Text('播客单集'),
+                icon: Icon(Icons.podcasts_outlined),
+              ),
+            ],
+            selected: {_selected},
+            onSelectionChanged: (selection) => setState(() => _selected = selection.first),
+          ),
+        ),
+        Expanded(
+          child: _selected == _FavoriteKind.radio
+              ? const _RadioFavoritesTab()
+              : const _PodcastFavoritesTab(),
+        ),
+      ],
+    );
+  }
+}
+
+class _RadioFavoritesTab extends ConsumerWidget {
+  const _RadioFavoritesTab();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -107,6 +159,143 @@ class _FavoritesTab extends ConsumerWidget {
       error: (error, _) => ListTile(title: Text('加载收藏失败: $error')),
     );
   }
+}
+
+class _PodcastFavoritesTab extends ConsumerWidget {
+  const _PodcastFavoritesTab();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final favoriteGuids = ref.watch(favoriteEpisodeGuidsProvider);
+    final favoriteDetails = ref.watch(favoritePodcastEpisodesProvider);
+    final feeds = ref.watch(subscribedFeedsProvider).value ?? const <PodcastFeed>[];
+    final cache = ref.watch(feedCacheProvider);
+    final history = ref.watch(podcastHistoryProvider).value ?? const [];
+
+    return favoriteGuids.when(
+      loading: () => const Center(child: CircularProgressIndicator()),
+      error: (error, _) => ListTile(title: Text('加载播客收藏失败: $error')),
+      data: (guids) {
+        if (guids.isEmpty) {
+          return const AppEmptyState(
+            icon: Icons.star_outline,
+            message: '还没有收藏播客单集',
+            detail: '在播客单集列表中长按，选择“收藏单集”',
+          );
+        }
+        return favoriteDetails.when(
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, _) => ListTile(title: Text('加载播客收藏失败: $error')),
+          data: (savedDetails) {
+            final episodes = <String, FavoritePodcastEpisode>{};
+            for (final guid in guids) {
+              final saved = savedDetails[guid];
+              if (saved != null) episodes[guid] = saved;
+            }
+            for (final feed in feeds) {
+              final snapshot = cache[feed.id];
+              if (snapshot == null) continue;
+              for (final cached in snapshot.episodes) {
+                if (guids.contains(cached.guid) && !episodes.containsKey(cached.guid)) {
+                  episodes[cached.guid] = FavoritePodcastEpisode.fromEpisode(
+                    feed: feed,
+                    episode: cached.toEpisode(),
+                  );
+                }
+              }
+            }
+            for (final entry in history) {
+              if (guids.contains(entry.episodeGuid) && !episodes.containsKey(entry.episodeGuid)) {
+                episodes[entry.episodeGuid] = FavoritePodcastEpisode(
+                  feedId: entry.feedId,
+                  feedTitle: entry.podcastTitle,
+                  guid: entry.episodeGuid,
+                  title: entry.episodeTitle,
+                  audioUrl: entry.streamUrl,
+                  imageUrl: entry.artworkUrl,
+                  durationMs: entry.durationMs,
+                );
+              }
+            }
+            final sorted = episodes.values.toList()
+              ..sort(
+                (a, b) => (b.publishedAt ?? DateTime.fromMillisecondsSinceEpoch(0))
+                    .compareTo(a.publishedAt ?? DateTime.fromMillisecondsSinceEpoch(0)),
+              );
+            if (sorted.isEmpty) {
+              return const AppEmptyState(
+                icon: Icons.podcasts_outlined,
+                message: '暂时找不到收藏的单集',
+                detail: '旧收藏的信息可能已不在本机缓存；打开对应节目刷新后会补回',
+              );
+            }
+            return ListView(
+              padding: const EdgeInsets.only(bottom: ChengboTheme.listBottomPadding),
+              children: [for (final item in sorted) _PodcastFavoriteTile(item: item)],
+            );
+          },
+        );
+      },
+    );
+  }
+}
+
+class _PodcastFavoriteTile extends ConsumerWidget {
+  const _PodcastFavoriteTile({required this.item});
+
+  final FavoritePodcastEpisode item;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final current = ref.watch(currentPlaybackProvider);
+    final progress = ref.watch(podcastProgressProvider(item.guid));
+    final episode = item.toEpisode();
+    final isCurrent = NowPlayingIndicatorLogic.isCurrentEpisode(current, item.guid);
+    final progressText = progress != null && progress > Duration.zero
+        ? '已播放 ${_formatFavoriteDuration(progress)}'
+        : null;
+    final subtitle = [
+      item.feedTitle,
+      if (item.publishedAt != null)
+        '${item.publishedAt!.year}-${item.publishedAt!.month.toString().padLeft(2, '0')}-${item.publishedAt!.day.toString().padLeft(2, '0')}',
+      if (progressText != null) progressText,
+    ].join(' · ');
+
+    return ListTile(
+      selected: isCurrent,
+      visualDensity: ListDensityLogic.visualDensity(
+        compact: ref.watch(listDensityCompactProvider).value ?? false,
+      ),
+      leading: NowPlayingLeading(
+        active: isCurrent,
+        child: StationArtwork(url: item.artworkUrl, size: 48, icon: Icons.podcasts),
+      ),
+      title: Text(item.title, maxLines: 2, overflow: TextOverflow.ellipsis),
+      subtitle: Text(subtitle, maxLines: 2, overflow: TextOverflow.ellipsis),
+      trailing: IconButton(
+        tooltip: '取消收藏',
+        icon: Icon(Icons.star, color: Theme.of(context).colorScheme.primary),
+        onPressed: () => ref.read(favoriteEpisodeGuidsProvider.notifier).toggle(item.guid),
+      ),
+      onTap: () => ref.read(playerControllerProvider).play(
+            PlaybackItem.fromPodcastEpisode(
+              podcastTitle: item.feedTitle,
+              episodeTitle: item.title,
+              audioUrl: item.audioUrl,
+              episodeGuid: item.guid,
+              artworkUrl: item.artworkUrl,
+              duration: episode.duration,
+              feedId: item.feedId,
+            ),
+          ),
+    );
+  }
+}
+
+String _formatFavoriteDuration(Duration duration) {
+  final minutes = duration.inMinutes;
+  final seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
+  return '$minutes:$seconds';
 }
 
 Future<void> _exportListeningData(BuildContext context, WidgetRef ref) async {

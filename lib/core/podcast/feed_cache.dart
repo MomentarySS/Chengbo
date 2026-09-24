@@ -70,6 +70,91 @@ class CachedEpisode {
   }
 }
 
+/// 收藏单集使用的独立快照，RSS 缓存淘汰后仍可从收藏页播放。
+class FavoritePodcastEpisode {
+  const FavoritePodcastEpisode({
+    required this.feedId,
+    required this.feedTitle,
+    required this.guid,
+    required this.title,
+    required this.audioUrl,
+    this.feedImageUrl,
+    this.publishedAt,
+    this.durationMs,
+    this.imageUrl,
+  });
+
+  factory FavoritePodcastEpisode.fromEpisode({
+    required PodcastFeed feed,
+    required PodcastEpisode episode,
+  }) {
+    return FavoritePodcastEpisode(
+      feedId: feed.id,
+      feedTitle: feed.title,
+      guid: episode.guid,
+      title: episode.title,
+      audioUrl: episode.audioUrl,
+      feedImageUrl: feed.imageUrl,
+      publishedAt: episode.publishedAt,
+      durationMs: episode.duration?.inMilliseconds,
+      imageUrl: episode.imageUrl,
+    );
+  }
+
+  factory FavoritePodcastEpisode.fromJson(Map<String, dynamic> json) {
+    final publishedMs = json['publishedAtMs'];
+    return FavoritePodcastEpisode(
+      feedId: json['feedId'] as String? ?? '',
+      feedTitle: json['feedTitle'] as String? ?? '',
+      guid: json['guid'] as String? ?? '',
+      title: json['title'] as String? ?? '',
+      audioUrl: json['audioUrl'] as String? ?? '',
+      feedImageUrl: json['feedImageUrl'] as String?,
+      publishedAt: publishedMs is int
+          ? DateTime.fromMillisecondsSinceEpoch(publishedMs)
+          : DateTime.tryParse(json['publishedAt']?.toString() ?? ''),
+      durationMs: json['durationMs'] as int?,
+      imageUrl: json['imageUrl'] as String?,
+    );
+  }
+
+  final String feedId;
+  final String feedTitle;
+  final String guid;
+  final String title;
+  final String audioUrl;
+  final String? feedImageUrl;
+  final DateTime? publishedAt;
+  final int? durationMs;
+  final String? imageUrl;
+
+  Duration? get duration =>
+      durationMs != null && durationMs! > 0 ? Duration(milliseconds: durationMs!) : null;
+
+  String? get artworkUrl => imageUrl ?? feedImageUrl;
+
+  PodcastEpisode toEpisode() => PodcastEpisode(
+        guid: guid,
+        title: title,
+        audioUrl: audioUrl,
+        publishedAt: publishedAt,
+        duration: duration,
+        imageUrl: imageUrl,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'feedId': feedId,
+        'feedTitle': feedTitle,
+        'guid': guid,
+        'title': title,
+        'audioUrl': audioUrl,
+        if (feedImageUrl != null) 'feedImageUrl': feedImageUrl,
+        if (publishedAt != null) 'publishedAtMs': publishedAt!.millisecondsSinceEpoch,
+        if (durationMs != null) 'durationMs': durationMs,
+        if (imageUrl != null) 'imageUrl': imageUrl,
+      };
+}
+
 class CachedFeedSnapshot {
   const CachedFeedSnapshot({
     required this.feedId,

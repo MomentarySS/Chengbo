@@ -22,12 +22,17 @@ class PlaybackSettingsScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final hasWindowsSettings = DeskCompactLogic.offeredOnThisPlatform ||
+        DeskLaunchLogic.offeredOnThisPlatform ||
+        DeskTrayLogic.offeredOnThisPlatform ||
+        DeskHotkeyLogic.offeredOnThisPlatform;
+
     return Scaffold(
       appBar: AppBar(title: const Text('播放与收听')),
       body: ListView(
         padding: const EdgeInsets.only(bottom: 96),
         children: [
-          PlaybackSettingsScreen.sectionLabel('播放', context),
+          PlaybackSettingsScreen.sectionLabel('通用', context),
           ref.watch(rememberLastListeningProvider).when(
                 data: (enabled) => SwitchListTile(
                   secondary: const Icon(Icons.history_toggle_off_outlined),
@@ -48,6 +53,8 @@ class PlaybackSettingsScreen extends ConsumerWidget {
                   subtitle: Text('加载失败: $error'),
                 ),
               ),
+          if (hasWindowsSettings)
+            PlaybackSettingsScreen.sectionLabel('Windows', context),
           if (DeskCompactLogic.offeredOnThisPlatform)
             ref.watch(deskWindowModeProvider).when(
                   data: (mode) => ListTile(
@@ -123,6 +130,8 @@ class PlaybackSettingsScreen extends ConsumerWidget {
               subtitle: Text(DeskHotkeyLogic.subtitle()),
             ),
           if (defaultTargetPlatform == TargetPlatform.android)
+            PlaybackSettingsScreen.sectionLabel('Android', context),
+          if (defaultTargetPlatform == TargetPlatform.android)
             ref.watch(shakeExtendSleepProvider).when(
                   data: (enabled) => SwitchListTile(
                     secondary: const Icon(Icons.vibration),
@@ -164,7 +173,7 @@ class PlaybackSettingsScreen extends ConsumerWidget {
                     subtitle: Text('加载失败: $error'),
                   ),
                 ),
-          PlaybackSettingsScreen.sectionLabel('播客', context),
+          PlaybackSettingsScreen.sectionLabel('播客与下载', context),
           // 全局下载开关。原先挂在「某个节目」的详情页里 —— 语义错位，且占着
           // 最高频的浏览路径；它属于「下载策略」，与下面的自动清理同组。
           ref.watch(downloadWifiOnlyProvider).when(
