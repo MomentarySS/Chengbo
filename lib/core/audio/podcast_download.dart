@@ -202,6 +202,33 @@ abstract final class PodcastDownloadLogic {
     return '将下载未保存的单集 · 还剩 $remain 集';
   }
 
+  /// 「下载设置」入口行的一行摘要。
+  ///
+  /// 只显示**非默认态**：默认（没下载、两个开关都关、没设跳过片头尾）时给
+  /// 「按需下载」，其余逐项追加。这样任何状态组合下都是单行可读的，也不会把
+  /// 没发生的状态写出来。条目顺序固定，方便测试与肉眼比对。
+  static String downloadSettingsSummary({
+    required int total,
+    required int ready,
+    required int downloading,
+    required bool allEnabled,
+    required bool latestEnabled,
+    required int skipIntroSeconds,
+    required int skipOutroSeconds,
+  }) {
+    final parts = <String>[
+      if (downloading > 0) '正在下载 ${ready + downloading}/$total',
+      if (downloading == 0 && ready > 0) '已下载 $ready/$total 集',
+      if (allEnabled) '全部下载 开',
+      if (latestEnabled) '自动下载最新 开',
+      if (skipIntroSeconds > 0)
+        '跳过片头 ${PodcastPlaybackLogic.skipDurationLabel(skipIntroSeconds)}',
+      if (skipOutroSeconds > 0)
+        '跳过片尾 ${PodcastPlaybackLogic.skipDurationLabel(skipOutroSeconds)}',
+    ];
+    return parts.isEmpty ? '按需下载' : parts.join(' · ');
+  }
+
   /// 已听完且超过保留天数的下载。缺 `completedAtMs` 的旧记录视为已到期。
   static Set<String> guidsDueForCleanup({
     required Iterable<PodcastDownloadRecord> records,

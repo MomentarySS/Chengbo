@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
@@ -38,6 +39,7 @@ import 'package:chengbo/core/network/station_probe.dart';
 import 'package:chengbo/core/station/station_catalog_selection.dart';
 import 'package:chengbo/core/station/station_hide.dart';
 import 'package:chengbo/core/station/station_skip.dart';
+import 'package:chengbo/core/network/podcast_catalog.dart';
 import 'package:chengbo/core/network/podcast_discovery.dart';
 import 'package:chengbo/core/network/podcast_feed_logic.dart';
 import 'package:chengbo/core/podcast/episode_bookmark.dart';
@@ -965,25 +967,48 @@ void main() {
     );
     expect(PodcastFeedLogic.shouldRetryWithFallbackUa(400), isTrue);
     expect(PodcastFeedLogic.shouldRetryWithFallbackUa(404), isFalse);
+    // 第三方转接源：只有 RSSHub 被拦。
+    expect(PodcastFeedLogic.isDeniedCatalogFeed('https://rsshub.app/xiaoyuzhou/123'), isTrue);
+    expect(PodcastFeedLogic.isDeniedCatalogFeed('https://rsshub.app/x/1'), isTrue);
+    // 平台自己的 RSS 出口：喜马拉雅 / 荔枝 / 蜻蜓 全部放行。
     expect(
       PodcastFeedLogic.isDeniedCatalogFeed('https://www.ximalaya.com/album/123.xml'),
-      isTrue,
+      isFalse,
     );
-    expect(PodcastFeedLogic.isDeniedCatalogFeed('https://rsshub.app/xiaoyuzhou/123'), isTrue);
-    expect(PodcastFeedLogic.isDeniedCatalogFeed('https://rss.lizhi.fm/rss/1.xml'), isTrue);
+    expect(PodcastFeedLogic.isDeniedCatalogFeed('https://rss.lizhi.fm/rss/1.xml'), isFalse);
+    expect(
+      PodcastFeedLogic.isDeniedCatalogFeed('https://c.qingting.fm/podcast/v1/vchannels/1'),
+      isFalse,
+    );
     expect(
       PodcastFeedLogic.isDeniedCatalogFeed('https://feed.xyzfm.space/hwen8wf69c6g'),
       isFalse,
     );
+    // 拦截只在**新增订阅**时施加；读取路径（已订阅的节目刷新）不能再拦 ——
+    // 否则用户已有的订阅会变成打不开的死链。
     expect(
-      () => PodcastFeedLogic.resolveUrl('https://www.ximalaya.com/album/991.xml'),
-      throwsA(
-        isA<PodcastFeedException>().having(
-          (e) => e.message,
-          'message',
-          PodcastFeedLogic.catalogDeniedMessage,
-        ),
+      () => PodcastFeedLogic.resolveUrl(
+        'https://rsshub.app/xiaoyuzhou/123',
+        enforceCatalogPolicy: true,
       ),
+      throwsA(
+        isA<PodcastFeedException>()
+            .having((e) => e.message, 'message', PodcastFeedLogic.catalogDeniedMessage)
+            .having((e) => e.saveAddress, 'saveAddress', isFalse),
+      ),
+    );
+    expect(
+      PodcastFeedLogic.resolveUrl('https://rsshub.app/xiaoyuzhou/123'),
+      'https://rsshub.app/xiaoyuzhou/123',
+    );
+    // 喜马拉雅：裸专辑页自动补平台自己的 RSS 出口；带 .xml 的原样通过。
+    expect(
+      PodcastFeedLogic.resolveUrl('https://www.ximalaya.com/album/56109512'),
+      'https://www.ximalaya.com/album/56109512.xml',
+    );
+    expect(
+      PodcastFeedLogic.resolveUrl('https://www.ximalaya.com/album/56109512.xml'),
+      'https://www.ximalaya.com/album/56109512.xml',
     );
   });
 
@@ -1008,14 +1033,14 @@ void main() {
             'trackExplicitness': 'explicit',
           },
           {
-            'collectionName': '喜马转接',
-            'feedUrl': 'https://www.ximalaya.com/album/1.xml',
+            'collectionName': '转接源',
+            'feedUrl': 'https://rsshub.app/podcast/ximalaya/1',
           },
         ],
       },
       hideExplicit: true,
     );
-    expect(itunes.map((h) => h.title), ['故事FM', '喜马转接']);
+    expect(itunes.map((h) => h.title), ['故事FM', '转接源']);
     expect(itunes.first.canSubscribe, isTrue);
     expect(itunes.last.denied, isTrue);
     expect(itunes.last.canSubscribe, isFalse);
@@ -1035,9 +1060,9 @@ void main() {
           ],
         },
         {
-          'name': '版权库',
+          'name': '转接源',
           'links': [
-            {'name': 'rss', 'url': 'https://www.ximalaya.com/album/9.xml'},
+            {'name': 'rss', 'url': 'https://rsshub.app/podcast/x/9'},
           ],
         },
       ],
@@ -1135,18 +1160,25 @@ void main() {
     );
   });
 
-  test('OPML merge skips denied catalog feeds', () {
+  test('OPML merge skips denied catalog feeds but keeps platform feeds', () {
     final result = PodcastOpml.merge(
       existing: const [],
       incoming: const [
         PodcastFeed(id: 'ok', title: '故事', feedUrl: 'https://feeds.storyfm.cn/storyfm.xml'),
-        PodcastFeed(id: 'bad', title: '喜马', feedUrl: 'https://www.ximalaya.com/album/1.xml'),
+        PodcastFeed(id: 'bad', title: '转接', feedUrl: 'https://rsshub.app/podcast/x/1'),
+        PodcastFeed(id: 'ximalaya', title: '喜马', feedUrl: 'https://www.ximalaya.com/album/1.xml'),
       ],
       newId: () => 'n1',
     );
-    expect(result.added, 1);
+    expect(result.added, 2);
     expect(result.skipped, 1);
-    expect(result.feeds.single.feedUrl, 'https://feeds.storyfm.cn/storyfm.xml');
+    expect(
+      result.feeds.map((f) => f.feedUrl),
+      containsAll(<String>[
+        'https://feeds.storyfm.cn/storyfm.xml',
+        'https://www.ximalaya.com/album/1.xml',
+      ]),
+    );
   });
 
   test('Android load control is construction-only and skipped on Windows', () {
@@ -1531,6 +1563,131 @@ void main() {
       ),
       '已全部下载 · 3 集',
     );
+  });
+
+  test('PodcastDownloadLogic.downloadSettingsSummary only lists non-default state', () {
+    String summary({
+      int total = 12,
+      int ready = 0,
+      int downloading = 0,
+      bool allEnabled = false,
+      bool latestEnabled = false,
+      int skipIntroSeconds = 0,
+      int skipOutroSeconds = 0,
+    }) {
+      return PodcastDownloadLogic.downloadSettingsSummary(
+        total: total,
+        ready: ready,
+        downloading: downloading,
+        allEnabled: allEnabled,
+        latestEnabled: latestEnabled,
+        skipIntroSeconds: skipIntroSeconds,
+        skipOutroSeconds: skipOutroSeconds,
+      );
+    }
+
+    // 默认态：没有下载、两个开关都关、没设跳过片头尾 → 一句「按需下载」。
+    expect(summary(), '按需下载');
+
+    // 单个开关打开。
+    expect(summary(allEnabled: true), '全部下载 开');
+    expect(summary(latestEnabled: true), '自动下载最新 开');
+
+    // 已下载 / 下载中优先于开关状态，且「下载中」把在下的一起算进分子。
+    expect(summary(ready: 3), '已下载 3/12 集');
+    expect(summary(ready: 1, downloading: 2), '正在下载 3/12');
+
+    // 跳过片头尾只在设过时出现，秒数按 0:30 / 1:30 展示。
+    expect(summary(skipIntroSeconds: 30), '跳过片头 0:30');
+    expect(summary(skipOutroSeconds: 90), '跳过片尾 1:30');
+    expect(summary(skipIntroSeconds: 30, skipOutroSeconds: 45), '跳过片头 0:30 · 跳过片尾 0:45');
+
+    // 组合：顺序固定，分隔符固定。
+    expect(
+      summary(ready: 1, downloading: 2, allEnabled: true, latestEnabled: true, skipIntroSeconds: 120),
+      '正在下载 3/12 · 全部下载 开 · 自动下载最新 开 · 跳过片头 2:00',
+    );
+  });
+
+  test('PodcastCatalogLogic extracts __INITIAL_DATA__ and searches the local catalog', () {
+    const html = '<script>window.__INITIAL_DATA__ = {"featured":'
+        '[{"title":"岩中花述","rssUrl":"https://a/1.xml","author":"GIADA","tags":["艺术"]},'
+        '{"title":"付费专辑","rssUrl":"https://a/2.xml","isPaid":true},'
+        '{"title":"","rssUrl":"https://a/3.xml"},'
+        '{"title":"重复的","rssUrl":"https://a/1.xml"}],'
+        '"rightNow":[{"title":"声动早咖啡","rssUrl":"https://a/4.xml"}],'
+        '"generatedAt":"x"};</script><p>{"not":"data"}</p>';
+
+    final json = PodcastCatalogLogic.extractInitialData(html);
+    expect(json, isNotNull);
+    expect(jsonDecode(json!), isA<Map<String, dynamic>>());
+    // 页面里没有这段数据时要返回 null，而不是抛。
+    expect(PodcastCatalogLogic.extractInitialData('<html></html>'), isNull);
+
+    final entries = PodcastCatalogLogic.parseInitialData(jsonDecode(json));
+    expect(
+      entries.map((entry) => entry.title),
+      ['岩中花述', '声动早咖啡'],
+      reason: '付费专辑 / 空标题 / 重复 rssUrl 都该被跳过，rightNow 要合并进来',
+    );
+
+    // 搜索排序：标题精确 > 前缀 > 包含 > 作者 > 标签。
+    const catalog = [
+      PodcastCatalogEntry(title: '科技早8点', rssUrl: 'https://a/k.xml', author: '编辑部', tags: ['科技']),
+      PodcastCatalogEntry(title: '新闻酸菜馆', rssUrl: 'https://a/n.xml', author: '老张', tags: ['新闻']),
+      PodcastCatalogEntry(title: '八点新闻', rssUrl: 'https://a/b.xml', author: '新闻组'),
+      PodcastCatalogEntry(title: '新闻', rssUrl: 'https://a/e.xml'),
+    ];
+    expect(
+      PodcastCatalogLogic.search(catalog, '新闻').map((entry) => entry.title),
+      ['新闻', '新闻酸菜馆', '八点新闻'],
+    );
+    expect(PodcastCatalogLogic.search(catalog, '科技').map((entry) => entry.title), ['科技早8点']);
+    expect(PodcastCatalogLogic.search(catalog, '老张').map((entry) => entry.title), ['新闻酸菜馆']);
+    expect(PodcastCatalogLogic.search(catalog, '   '), isEmpty);
+
+    // xyzrank 榜单页 → 目录条目（取 links 里的 rss）；没有 rss 的条目要跳过。
+    final xyzrank = PodcastCatalogLogic.parseXyzrankPage(
+      jsonDecode(
+        '{"total":8097,"items":['
+        '{"name":"岩中花述","authorsText":"GIADA","logoURL":"https://x/a.jpg",'
+        '"primaryGenreName":"艺术","links":['
+        '{"name":"xyz","url":"https://www.xiaoyuzhoufm.com/podcast/1"},'
+        '{"name":"rss","url":"https://feed.xyzfm.space/aaa"}]},'
+        '{"name":"没有 rss 的","links":[]}]}',
+      ),
+    );
+    expect(xyzrank.map((entry) => entry.title), ['岩中花述']);
+    expect(xyzrank.single.rssUrl, 'https://feed.xyzfm.space/aaa');
+    expect(xyzrank.single.author, 'GIADA');
+    expect(xyzrank.single.tags, ['艺术']);
+
+    // 合并去重：先到先得，两个来源不重叠时都保留。
+    final merged = PodcastCatalogLogic.merge([entries, xyzrank, entries]);
+    expect(merged.length, entries.length + xyzrank.length);
+    expect(merged.map((entry) => entry.rssUrl).toSet().length, merged.length);
+
+    // 缓存往返 + 新鲜度。
+    final encoded = PodcastCatalogLogic.encode(entries, DateTime(2026, 9, 24));
+    final cached = PodcastCatalogLogic.decode(encoded);
+    expect(cached?.entries.map((entry) => entry.title), ['岩中花述', '声动早咖啡']);
+    expect(PodcastCatalogLogic.isStale(cached!.fetchedAt, DateTime(2026, 9, 25)), isFalse);
+    expect(PodcastCatalogLogic.isStale(cached.fetchedAt, DateTime(2026, 10, 5)), isTrue);
+    expect(PodcastCatalogLogic.decode(''), isNull);
+    expect(PodcastCatalogLogic.decode('{"entries":[]}'), isNull);
+    // 缓存格式版本不符（例如语料来源变了）→ 当作没有缓存，强制重拉。
+    expect(PodcastCatalogLogic.decode('{"v":1,"entries":[{"title":"x","rssUrl":"y"}]}'), isNull);
+  });
+
+  test('PodcastPlaybackLogic.skipDurationLabel formats mm:ss', () {
+    expect(PodcastPlaybackLogic.skipDurationLabel(0), '0:00');
+    expect(PodcastPlaybackLogic.skipDurationLabel(5), '0:05');
+    expect(PodcastPlaybackLogic.skipDurationLabel(30), '0:30');
+    expect(PodcastPlaybackLogic.skipDurationLabel(60), '1:00');
+    expect(PodcastPlaybackLogic.skipDurationLabel(90), '1:30');
+    expect(PodcastPlaybackLogic.skipDurationLabel(120), '2:00');
+    // 负数按 0 处理，不产出 '-1:-30' 这类文案。
+    expect(PodcastPlaybackLogic.skipDurationLabel(-5), '0:00');
   });
 
   test('AppStorage persists podcast sort and download-all feeds', () async {

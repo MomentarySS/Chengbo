@@ -40,6 +40,17 @@ abstract final class PodcastPlaybackLogic {
   /// Available skip durations in seconds for intro/outro skip.
   static const skipDurationOptions = [0, 5, 10, 15, 20, 30, 45, 60, 90, 120];
 
+  /// 跳过片头/尾的秒数展示：`0:30` / `1:30` / `2:00`。
+  ///
+  /// 与 `podcast_skip_sheet` 的 chip 标签同口径 —— 那边用的是私有实现，这里
+  /// 供「下载设置」入口摘要等**非交互**文案复用。
+  static String skipDurationLabel(int seconds) {
+    final safe = seconds < 0 ? 0 : seconds;
+    final minutes = safe ~/ 60;
+    final rest = safe % 60;
+    return '$minutes:${rest.toString().padLeft(2, '0')}';
+  }
+
   static int skipStepFromSeconds(int? seconds) {
     if (seconds == null) return defaultSkipStepSeconds;
     return skipStepOptions.contains(seconds) ? seconds : defaultSkipStepSeconds;

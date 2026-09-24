@@ -151,7 +151,7 @@ class SleepTimerNotifier extends StateNotifier<SleepTimerState> {
     state = SleepTimerState(endsAt: endsAt);
     unawaited(_remember(SleepLastValue.minutes(clamped.inMinutes)));
     _timer = Timer(clamped, () => unawaited(stopBecauseTimer()));
-    final fadeDelay = clamped - Duration(seconds: SleepTimerLogic.fadeOutSeconds);
+    final fadeDelay = clamped - const Duration(seconds: SleepTimerLogic.fadeOutSeconds);
     if (fadeDelay > Duration.zero) {
       _fadeTimer = Timer(fadeDelay, () => unawaited(_beginFadeOut()));
     } else if (clamped > Duration.zero) {

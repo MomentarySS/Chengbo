@@ -39,7 +39,7 @@
 
 | 分支 | 状态 | 内容 |
 |---|---|---|
-| `main` | 最新 = `17956b2` | v2.1 全部代码 + 文档已合，tag `v2.1.0` 已发布 |
+| `main` | v2.1 发布时 = `17956b2`（**当前值见 §7.3**）| v2.1 全部代码 + 文档已合，tag `v2.1.0` 已发布 |
 | ~~`docs/brand-slogan`~~ | 已合入 PR #4 后删除 | |
 | ~~`feat/v2-1-mobile`~~ | PR #3 已合并后删除 | |
 | ~~`feat/v2-1-widget-b1`~~ | docs-only，PR #5 已合并后删除 | |
@@ -91,10 +91,52 @@
 
 ---
 
-## 7. 变更记录
+## 7. v2.2 范围与状态（进行中）
+
+> v2.1 已发布完毕（含 v2.1.1 补丁）。此后仓库进入 **v2.2** 周期，本节起承接状态；v2.2 决定**不单独发 v2.1.1**，补丁与 v2.2 改动合并为 **v2.2.0** 出货。
+
+### 7.1 已合入 main
+
+| 编号 | 名称 | PR | 状态 |
+|---|---|---|---|
+| R1 | 电台页三处改动（生成式台名卡 + 睡眠定时图标开关 + 播放列表半屏 sheet）| #9 `feat/radio-page` | ✅ 已合 main（`dd8990c`）|
+| R2 | **两页共享播放器视觉规格**（`ChengboSkinTheme.anchorMaxSide` / `anchorRadius` / `nowPlayingBackdrop()`）| #9（同上）| ✅ 已合 —— 消除了此前「电台 300 / 播客 360」的分叉 |
+| F1 | 单集长按菜单尾部被裁（8–9 条 + 标题两行 > 屏高 9/16 上限）| #10 `fix/podcast-episode-menu` | ✅ 已合 main |
+
+### 7.2 进行中
+
+| 编号 | 名称 | 工单 | 代码状态 |
+|---|---|---|---|
+| P1 | 播客详情页 + 播客播放器页瘦身（8 条 + 真机评审后 8 轮追加改动）| [`mobile-v2-2-density-work-order.md`](./mobile-v2-2-density-work-order.md) | ✅ **代码已完成并推送**（37 commit，PR #11 待合并）|
+| R3 | v2.2.0 收尾（版本 bump / CHANGELOG / ROADMAP / tag / `gh release` / `pack.ps1` 产物）| 见 P1 工单 §12 变更记录 | 🟡 **bump + CHANGELOG + ROADMAP 已做**；tag / `gh release` / 2.2.0 产物待用户点头 |
+
+### 7.3 基线（P1 起点）与实施后
+
+| 项 | P1 起点 | P1 实施后 |
+|---|---|---|
+| main | `dd8990c` | `dd8990c`（未动）|
+| 分支 | `feat/podcast-density` | `feat/podcast-density` |
+| `flutter test` | 143/143 | **165/165**（+22）|
+| `flutter analyze` | 23 info（既有基线，非修复目标）| **15 info**（比基线低 8）|
+
+### 7.4 设计产物（效果图）
+
+> 两个都是**自包含 HTML**（唯一外部依赖是 Google Fonts），双击即可在浏览器打开。
+
+| 文件 | 内容 | 对应 |
+|---|---|---|
+| [`radio-nowplaying-design.html`](./radio-nowplaying-design.html) | 电台 Now Playing 封面替代方案三选一：A 生成式台名卡 / B 大字号台名排版 / A+C 呼吸光环 | R1（选定 **A**；C 未做，是独立一层，以后可加）|
+| [`podcast-density-design.html`](./podcast-density-design.html) | 播客详情页 + 播放器页 before/after 对比、首屏高度账、逐条取舍表 | P1（8 条，见 §7.2）|
+
+---
+
+## 8. 变更记录
 
 | 日期 | 版本 | 变更 |
 |---|---|---|
+| 2026-09-23 | 1.5 | **P1 实施完成**（分支 `feat/podcast-density`，7 commit `9238f2d` D1 / `c6cb813` D3 / `5156e50` P2 / `fa8ac30` P1+P3 / `7aa62f1` D2 / `316039d` D4 / `e6de631` 守卫测试）。§7.2 的 P1 状态改为「代码已实施，PR 待开」，§7.3 改为「起点 / 实施后」双列：`flutter test` 143→**152**、`flutter analyze` 23→**23**（持平）。有牙验证 6 处改坏全部按预期理由失败，记录在工单 §11 |
+| 2026-09-23 | 1.4 | 加 **§7.4 设计产物（效果图）**：把两张 before/after 效果图从 gitignored 的 `dist/` 挪进 `docs/design/` 并在此登记 —— `radio-nowplaying-design.html`（R1 封面方案三选一，选定 A）、`podcast-density-design.html`（P1 的 8 条）。此前 `radio-nowplaying-design.html` 无任何引用，属孤儿文件 |
+| 2026-09-23 | 1.3 | 补 **§7 v2.2 段**：记录已合 main 的 PR #9（电台页三处 + 两页共享播放器规格）与 PR #10（单集菜单尾部裁切），并登记进行中的 P1（播客两页瘦身，工单 `mobile-v2-2-density-work-order.md`）与 R3（v2.2.0 收尾）。此前 tracker 停留在 v2.1.1，未记录 v2.2 的两条 PR |
 | 2026-09-23 | 1.2 | **v2.1.1 补丁**（分支 `fix/v2-1-1-radio-mini-bar`）。两处修复：① `lib/core/brand.dart` 版本常量停在 `2.0.2`（v2.1.0 release prep 漏 bump，`layer_test` 版本守卫一直红；影响关于页 / 隐私说明 / 备份 JSON / 全部网络 UA）② 移除电台迷你条底部 3px 主色条（无信息量 + 圆角裁切后像残留色带）。版本 bump 到 `2.1.1+40`，含 pubspec + brand.dart + .iss |
 | 2026-09-23 | 1.1 | v2.1 完成：P0-A + B1 + B2 全部合 main；Step 5 release prep（CHANGELOG + pubspec bump + ROADMAP + tracker + plan）执行中；feature branch 已清理；tag v2.1.0 已发布 |
 | 2026-09-22 | 1.0 | 初稿。P0-A 已合 main；P0-B1+B2 工单已入仓（feat/v2-1-widget-b1）；B1+B2 代码待实施；release prep 待 v1.4 plan bump 后启动 |

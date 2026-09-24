@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>电台 Now Playing 页 · 封面替代方案</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#f7f5f0;
+    --card:#ffffff;
+    --line:#e9e3d6;
+    --line-soft:#f0ebe0;
+    --ink:#14171e;
+    --ink-2:#3a4256;
+    --muted:#7c7a72;
+    --primary:#2f6f5e;
+    --accent-soft:rgba(47,111,94,.08);
+    /* 产品真实色（mockup 用） */
+    --cb-blue:#1565c0;
+    --cb-green-a:#4c9a5a;
+    --cb-green-b:#2f8f6e;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--cream);
+    color:var(--ink);
+    font-family:"Outfit","PingFang SC","Microsoft YaHei",sans-serif;
+    font-size:14.5px;
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;
+    background:
+      radial-gradient(600px 400px at 8% -4%, rgba(47,111,94,.05), transparent 70%),
+      radial-gradient(500px 360px at 96% 8%, rgba(201,123,63,.05), transparent 70%);
+  }
+  .wrap{max-width:1080px;margin:0 auto;padding:56px 24px 80px;position:relative}
+  h1{font-family:"DM Serif Display",Georgia,serif;font-weight:400;font-size:32px;line-height:1.25;letter-spacing:-.005em;margin:0 0 12px}
+  h2{font-family:"DM Serif Display",Georgia,serif;font-weight:400;font-size:23px;letter-spacing:-.005em;margin:0 0 6px}
+  .lede{color:var(--ink-2);max-width:66ch;margin:0}
+  .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--primary);font-weight:600;margin:0 0 14px}
+  section{margin-top:48px}
+  .sub{color:var(--muted);margin:2px 0 18px;max-width:70ch}
+  code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12.5px}
+  code{background:var(--accent-soft);color:var(--primary);padding:1px 5px;border-radius:5px}
+
+  /* ---------- 手机 mockup ---------- */
+  .frames{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  @media(max-width:820px){.frames{grid-template-columns:1fr}}
+  .frame{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px 14px 14px;box-shadow:0 2px 8px rgba(0,0,0,.04)}
+  .frame-tag{display:flex;align-items:baseline;gap:8px;margin:0 0 12px}
+  .frame-tag b{font-size:15px;font-weight:600}
+  .frame-tag span{font-size:12px;color:var(--muted)}
+  .phone{
+    width:100%;aspect-ratio:390/720;border-radius:26px;overflow:hidden;
+    border:1px solid var(--line);position:relative;
+    display:flex;flex-direction:column;
+  }
+  /* 浅色模式页面底色：wash 渐变（当前实现） */
+  .phone{background:linear-gradient(180deg,#dfeadb 0%,#f7faf6 45%,#fafafa 100%)}
+  .phone.dark{background:linear-gradient(180deg,#1b2a22 0%,#101613 45%,#0d1210 100%)}
+  .p-top{padding:12px 14px 0;display:flex}
+  .p-slot{flex:1;display:flex;align-items:center;justify-content:center;padding:6px 18px;position:relative}
+  .p-meta{padding:0 18px;text-align:center}
+  .p-title{font-size:17px;font-weight:700;color:#14181a;line-height:1.25}
+  .p-sub{font-size:11.5px;color:#7d8a83;margin-top:3px}
+  .p-vol{display:flex;align-items:center;gap:8px;padding:12px 16px 6px;color:#3d4a44}
+  .p-track{flex:1;height:3px;border-radius:2px;background:#c9d4ce;position:relative}
+  .p-track i{position:absolute;left:0;top:0;bottom:0;width:100%;background:#2c3a34;border-radius:2px}
+  .p-track u{position:absolute;right:-4px;top:-4px;width:11px;height:11px;border-radius:50%;background:#2c3a34}
+  .p-vol b{font-size:11px;font-weight:500}
+  .p-transport{display:flex;align-items:center;justify-content:space-evenly;padding:8px 10px 18px;color:#14181a}
+
+  /* 台名卡（方案 A / A+C） */
+  .monogram{
+    width:60%;aspect-ratio:1;border-radius:20px;
+    background:linear-gradient(135deg,var(--cb-green-a),var(--cb-green-b));
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;
+    color:#fff;box-shadow:0 8px 22px -10px rgba(47,111,94,.55);
+    position:relative;z-index:1;
+  }
+  .monogram b{font-size:30px;font-weight:700;letter-spacing:.02em;line-height:1}
+  .monogram em{font-size:11px;font-style:normal;opacity:.85;letter-spacing:.06em}
+  /* 呼吸光环（方案 C） */
+  .pulse{position:absolute;width:60%;aspect-ratio:1;border-radius:50%;
+    background:radial-gradient(circle,rgba(76,154,90,.42) 0%,rgba(76,154,90,.14) 46%,transparent 72%);
+    filter:blur(14px);animation:breathe 3.6s ease-in-out infinite}
+  @keyframes breathe{0%,100%{transform:scale(.92);opacity:.55}50%{transform:scale(1.1);opacity:1}}
+  /* 大字号排版（方案 B） */
+  .typo{text-align:center;padding:0 8px}
+  .typo b{display:block;font-size:26px;font-weight:700;line-height:1.18;letter-spacing:-.01em;color:#14181a}
+  .typo u{display:block;width:34px;height:2px;border-radius:2px;background:var(--cb-green-b);margin:14px auto 12px}
+  .typo span{font-size:11.5px;color:#7d8a83;letter-spacing:.04em}
+
+  /* ---------- 约束条 ---------- */
+  .ban{display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:start;
+    background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px}
+  .ban .x{width:26px;height:26px;border-radius:50%;background:rgba(176,99,103,.1);color:#b06367;
+    display:flex;align-items:center;justify-content:center;flex:0 0 auto}
+  .ban ul{margin:0;padding-left:16px}
+  .ban li{margin-bottom:3px}
+  .ban li:last-child{margin-bottom:0}
+
+  /* ---------- 规格表 ---------- */
+  .specs{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:4px}
+  @media(max-width:820px){.specs{grid-template-columns:1fr}}
+  .kv{display:grid;grid-template-columns:74px 1fr;row-gap:9px;column-gap:12px;margin:0;font-size:13.5px}
+  .kv dt{color:var(--muted);border-bottom:1px dashed var(--line);padding-bottom:7px}
+  .kv dd{margin:0;border-bottom:1px dashed var(--line);padding-bottom:7px}
+  .pick{display:inline-block;margin-top:10px;font-size:12px;font-weight:600;color:var(--primary);
+    background:var(--accent-soft);border-radius:999px;padding:3px 10px}
+
+  /* ---------- 渐变对比 ---------- */
+  .cmp{display:grid;gap:14px}
+  .cmp-row{display:grid;grid-template-columns:96px 1fr;gap:14px;align-items:center}
+  .cmp-row>span{font-size:12.5px;color:var(--muted)}
+  .strip{height:44px;border-radius:12px;border:1px solid var(--line);position:relative;overflow:hidden}
+  .strip.now{background:linear-gradient(180deg,#dfeadb 0%,#fafafa 45%,#fafafa 100%)}
+  .strip.fix{background:linear-gradient(180deg,#d4e3cf 0%,#eef4ea 65%,#fafafa 100%)}
+  .strip i{position:absolute;left:0;right:0;top:0;bottom:0;
+    background:repeating-linear-gradient(90deg,transparent 0 1px,rgba(0,0,0,.06) 1px 2px);
+    pointer-events:none}
+  .note{font-size:12.5px;color:var(--muted);margin-top:10px}
+  footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="eyebrow">澄波 · 电台 Now Playing</p>
+  <h1>封面移除后，封面位（约 40% 高度）用什么替代</h1>
+  <p class="lede">三个候选。共同前提：<strong>不依赖图片、不依赖音频分析</strong>，所以在任何台上都长一样好、且零网络请求。下面是真实布局比例的 mockup（浅色模式，用产品实际配色）。</p>
+
+  <section>
+    <div class="frames">
+
+      <!-- A -->
+      <div class="frame">
+        <div class="frame-tag"><b>A</b><span>生成式台名卡</span></div>
+        <div class="phone">
+          <div class="p-top">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3d4a44" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+          <div class="p-slot">
+            <div class="monogram">
+              <b>东莞</b>
+              <em>地方台</em>
+            </div>
+          </div>
+          <div class="p-meta">
+            <div class="p-title">东莞阳光1008</div>
+            <div class="p-sub">地方台</div>
+          </div>
+          <div class="p-vol">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>
+            <div class="p-track"><i></i><u></u></div><b>100</b>
+          </div>
+          <div class="p-transport">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9"/></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2v14H6zM18 5v14l-9-7z"/></svg>
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h3.4v14H7zM13.6 5H17v14h-3.4z"/></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M16 5h2v14h-2zM6 5v14l9-7z"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h13M3 12h9M3 18h11"/><circle cx="19" cy="16" r="3"/><path d="M22 16V8l-3 1"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- B -->
+      <div class="frame">
+        <div class="frame-tag"><b>B</b><span>大字号台名排版</span></div>
+        <div class="phone">
+          <div class="p-top">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3d4a44" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+          <div class="p-slot">
+            <div class="typo">
+              <b>东莞阳光<br>1008</b>
+              <u></u>
+              <span>地方台 · FM 100.8</span>
+            </div>
+          </div>
+          <div class="p-meta">
+            <div class="p-title">东莞阳光1008</div>
+            <div class="p-sub">地方台</div>
+          </div>
+          <div class="p-vol">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>
+            <div class="p-track"><i></i><u></u></div><b>100</b>
+          </div>
+          <div class="p-transport">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9"/></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2v14H6zM18 5v14l-9-7z"/></svg>
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h3.4v14H7zM13.6 5H17v14h-3.4z"/></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M16 5h2v14h-2zM6 5v14l9-7z"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h13M3 12h9M3 18h11"/><circle cx="19" cy="16" r="3"/><path d="M22 16V8l-3 1"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <!-- A+C -->
+      <div class="frame">
+        <div class="frame-tag"><b>A + C</b><span>台名卡 + 呼吸光环</span></div>
+        <div class="phone">
+          <div class="p-top">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#3d4a44" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+          </div>
+          <div class="p-slot">
+            <div class="pulse"></div>
+            <div class="monogram">
+              <b>东莞</b>
+              <em>地方台</em>
+            </div>
+          </div>
+          <div class="p-meta">
+            <div class="p-title">东莞阳光1008</div>
+            <div class="p-sub">地方台</div>
+          </div>
+          <div class="p-vol">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/></svg>
+            <div class="p-track"><i></i><u></u></div><b>100</b>
+          </div>
+          <div class="p-transport">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9"/></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2v14H6zM18 5v14l-9-7z"/></svg>
+            <svg width="34" height="34" viewBox="0 0 24 24" fill="currentColor"><path d="M7 5h3.4v14H7zM13.6 5H17v14h-3.4z"/></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M16 5h2v14h-2zM6 5v14l9-7z"/></svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h13M3 12h9M3 18h11"/><circle cx="19" cy="16" r="3"/><path d="M22 16V8l-3 1"/></svg>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <p class="note">光环是 3.6s 缓慢呼吸；<code>playing</code> 时呼吸、暂停即静止。mockup 里只有 A+C 那张带动画。</p>
+  </section>
+
+  <section>
+    <h2>先划清约束</h2>
+    <p class="sub">ROADMAP 的「明确不做」把两条最顺手的路堵掉了，所以只能走「生成式视觉」。</p>
+    <div class="ban">
+      <div class="x">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </div>
+      <ul>
+        <li><strong>复古全屏收音机 / 调频刻度 UI</strong> —— 大刻度盘、指针、频率条都不能做</li>
+        <li><strong>均衡器 / 音量增强</strong> —— 所以频谱条、跳动的 EQ 柱也不能做</li>
+        <li>顺带：电台直播流没有时长语义，<strong>环形进度</strong>也没意义</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>三个方案的规格</h2>
+    <p class="sub">颜色全部来自主题与 <code>StationArtwork.gradientColors</code>（按台名 + 标签确定性生成），因此 4 套氛围包与深浅色自动跟随。</p>
+    <div class="specs">
+      <div class="frame">
+        <div class="frame-tag"><b>A</b><span>生成式台名卡</span><span class="pick">推荐</span></div>
+        <dl class="kv">
+          <dt>尺寸</dt><dd>卡片 60% 宽，圆角 20</dd>
+          <dt>底色</dt><dd><code>gradientColors</code> 135° 渐变（与列表无封面占位同源）</dd>
+          <dt>卡内</dt><dd>2 字缩写 30px/w700 + 分类 11px</dd>
+          <dt>依赖</dt><dd>零网络、零新包</dd>
+          <dt>风险</dt><dd>本质是「把列表占位放大」，不算全新</dd>
+        </dl>
+      </div>
+      <div class="frame">
+        <div class="frame-tag"><b>B</b><span>大字号台名排版</span></div>
+        <dl class="kv">
+          <dt>尺寸</dt><dd>无卡片，占满封面位</dd>
+          <dt>主体</dt><dd>台名 26px/w700，居中，可换行</dd>
+          <dt>点缀</dt><dd>34×2px accent 短线 + 「分类 · 频率」11.5px</dd>
+          <dt>依赖</dt><dd>零网络、零新包</dd>
+          <dt>风险</dt><dd>超长台名（如「FM93.7无锡新闻综合广播」）需限行或缩字</dd>
+        </dl>
+      </div>
+      <div class="frame">
+        <div class="frame-tag"><b>C</b><span>呼吸光环（叠在 A 或 B 上）</span><span class="pick">推荐</span></div>
+        <dl class="kv">
+          <dt>形态</dt><dd>径向光晕，<code>blur(14px)</code>，缩放 0.92→1.1</dd>
+          <dt>节奏</dt><dd>3.6s ease-in-out 无限循环</dd>
+          <dt>联动</dt><dd><code>playing</code> 时呼吸；暂停停在静止态</dd>
+          <dt>依赖</dt><dd>零网络、零新包（<code>AnimationController</code> + 现有 glow 色）</dd>
+          <dt>风险</dt><dd>纯装饰，需明确不做频谱形态以免撞 ban</dd>
+        </dl>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>附带要修的：浅色模式整页发白</h2>
+    <p class="sub">现在渐变是 <code>[wash, surface, surface]</code>、stops <code>[0, 0.45, 1]</code>，下面 55% 是纯 <code>surface</code>（浅色下接近纯白），加上无封面时封面位是一块平涂灰，整页就读作「白」。修法是把 wash 延伸到 65% 并略提不透明度。</p>
+    <div class="cmp">
+      <div class="cmp-row"><span>现在</span><div class="strip now"><i></i></div></div>
+      <div class="cmp-row"><span>改后</span><div class="strip fix"><i></i></div></div>
+    </div>
+    <p class="note">两条都是浅色模式下的页面底色渐变（上→下）。改后上半屏保留明显色调，不再在 45% 处直接掉到纯白。</p>
+  </section>
+
+  <footer>
+    选一个（A / B / A+C），我就开分支 <code>feat/radio-page</code> 动手。附带说明：播客页封面<strong>保留</strong>，所以两页结构从此不同；月亮图标改成开关、播放列表改半屏可拖这两项也在同一批。
+  </footer>
+
+</div>
+</body>
+</html>

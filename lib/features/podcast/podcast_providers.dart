@@ -17,12 +17,15 @@ import '../../core/podcast/podcast_opml.dart';
 import '../../core/models/radio_station.dart';
 import '../../core/network/itunes_podcast_client.dart';
 import '../../core/network/podcast_feed_logic.dart';
+import '../../core/network/podcast_catalog.dart';
+import '../../core/network/podcast_catalog_client.dart';
 import '../../core/network/podcast_index.dart';
 import '../../core/network/podcast_index_client.dart';
 import '../../core/network/podcast_service.dart';
 import '../../core/network/xyzrank_catalog_client.dart';
 import '../../core/providers/app_providers.dart';
 import '../../core/providers/podcast_history_provider.dart';
+import '../../core/storage/app_storage.dart';
 
 final podcastServiceProvider = Provider<PodcastService>((ref) => PodcastService());
 
@@ -89,7 +92,9 @@ class SubscribedFeedsNotifier extends StateNotifier<AsyncValue<List<PodcastFeed>
       imageUrl: imageUrl,
     );
     try {
-      final detail = await _ref.read(podcastServiceProvider).fetchFeed(draft);
+      final detail = await _ref
+          .read(podcastServiceProvider)
+          .fetchFeed(draft, forNewSubscription: true);
       final feed = PodcastFeed(
         id: draft.id,
         title: draft.title == '自定义播客' ? detail.feed.title : draft.title,
@@ -118,7 +123,9 @@ class SubscribedFeedsNotifier extends StateNotifier<AsyncValue<List<PodcastFeed>
     await _persist(result.feeds);
     for (final feed in result.addedFeeds) {
       try {
-        final detail = await _ref.read(podcastServiceProvider).fetchFeed(feed);
+        final detail = await _ref
+            .read(podcastServiceProvider)
+            .fetchFeed(feed, forNewSubscription: true);
         final keepTitle = feed.title.trim().isNotEmpty && feed.title != feed.feedUrl;
         await updateFeedMeta(
           PodcastFeed(
@@ -262,6 +269,60 @@ final podcastIndexClientProvider = Provider<PodcastIndexClient>((ref) => Podcast
 
 final itunesPodcastClientProvider = Provider<ItunesPodcastClient>((ref) => ItunesPodcastClient());
 
+final podcastCatalogClientProvider =
+    Provider<PodcastCatalogClient>((ref) => PodcastCatalogClient());
+
+/// 本机播客目录。拉一次存本机，搜索时读本机 —— 不依赖搜索 API，国内直连可拉。
+/// 拉不动时用旧缓存（哪怕是过期的），目录只是搜索兜底，不该报错。
+///
+/// 语料来自两处：GetPodcast 的两百多精选 + xyzrank 榜单前 1000（按热度）。后者是
+/// 覆盖面的主要来源；两处任一失败都不影响另一处。
+final podcastCatalogProvider = FutureProvider<List<PodcastCatalogEntry>>((ref) async {
+  final storage = await ref.watch(appStorageProvider.future);
+  final cached = PodcastCatalogLogic.decode(storage.getPodcastCatalogRaw());
+  if (cached != null && !PodcastCatalogLogic.isStale(cached.fetchedAt, DateTime.now())) {
+    return cached.entries;
+  }
+  final client = ref.watch(podcastCatalogClientProvider);
+  final results = await Future.wait([
+    _safeCatalog(client.fetch),
+    _safeCatalog(client.fetchXyzrankCatalog),
+  ]);
+  final entries = PodcastCatalogLogic.merge(results);
+  if (entries.isEmpty) return cached?.entries ?? const [];
+  await storage.setPodcastCatalogRaw(PodcastCatalogLogic.encode(entries, DateTime.now()));
+  return entries;
+});
+
+Future<List<PodcastCatalogEntry>> _safeCatalog(
+  Future<List<PodcastCatalogEntry>> Function() load,
+) async {
+  try {
+    return await load();
+  } catch (_) {
+    return const [];
+  }
+}
+
+/// 启动时**后台预热**本机目录，让「发现播客 → 搜索」走到第 3 级时不必等抓取。
+///
+/// 判断依据是**本机存过目录数据**（哪怕格式过期 —— 那正是该刷新的情况），
+/// 而不是「缓存当前可用」：用过搜索的人值得让它保持新鲜；从没搜过的人不该为它
+/// 白拉约 1MB。缓存新鲜时这一步只命中本机，不产生网络请求。
+final podcastCatalogPrewarmProvider = Provider<void>((ref) {
+  Future<void> run() async {
+    try {
+      final storage = await ref.read(appStorageProvider.future);
+      if (storage.getPodcastCatalogRaw() == null) return;
+      await ref.read(podcastCatalogProvider.future);
+    } catch (_) {
+      // 预热失败无所谓：搜索那一级自己会处理（用旧缓存或提示网络受限）。
+    }
+  }
+
+  unawaited(run());
+});
+
 final xyzrankCatalogClientProvider =
     Provider<XyzrankCatalogClient>((ref) => XyzrankCatalogClient());
 
@@ -355,11 +416,34 @@ class PodcastDownloadLatestFeedsNotifier extends StateNotifier<AsyncValue<Set<St
 
 final podcastDetailProvider =
     FutureProvider.family<PodcastDetail, PodcastFeed>((ref, feed) async {
-  final detail = await ref.watch(podcastServiceProvider).fetchFeed(feed);
-  await ref.read(subscribedFeedsProvider.notifier).updateFeedMeta(detail.feed);
-  await ref.read(feedCacheProvider.notifier).put(detail);
-  return detail;
+  try {
+    final detail = await ref.watch(podcastServiceProvider).fetchFeed(feed);
+    await ref.read(subscribedFeedsProvider.notifier).updateFeedMeta(detail.feed);
+    await ref.read(feedCacheProvider.notifier).put(detail);
+    ref.read(detailFromCacheProvider(feed.id).notifier).state = false;
+    return detail;
+  } catch (_) {
+    // 拉取失败时回落到**本机缓存**：已订阅的节目不该因为源暂时不可达就整页打不开
+    // （缓存里的单集地址通常还能播）。缓存里也没有，才把错误抛上去。
+    //
+    // 先从存储重读一次缓存：冷启动时 `feedCacheProvider` 可能还没加载完，直接读
+    // state 会拿到空 map，回落就失效了。
+    await ref.read(feedCacheProvider.notifier).reload();
+    final snapshot = ref.read(feedCacheProvider)[feed.id];
+    if (snapshot == null || snapshot.episodes.isEmpty) rethrow;
+    ref.read(detailFromCacheProvider(feed.id).notifier).state = true;
+    return PodcastDetail(
+      feed: feed,
+      episodes: [for (final episode in snapshot.episodes) episode.toEpisode()],
+    );
+  }
 });
+
+/// 某个节目的详情页当前是不是「本机缓存兜底」的列表（源拉不动）。
+///
+/// 由 [podcastDetailProvider] 在回落后写入；页面据此显示一条提示 —— 否则用户会
+/// 以为看到的是刚拉下来的列表。
+final detailFromCacheProvider = StateProvider.family<bool, String>((ref, feedId) => false);
 
 /// 当前播客单集章节：有 JSON 地址时才现拉，失败则用 Feed 里的 Podlove 章节。
 final playingEpisodeChaptersProvider = FutureProvider<List<PodcastChapter>>((ref) async {
@@ -447,6 +531,37 @@ class DownloadWifiOnlyNotifier extends StateNotifier<AsyncValue<bool>> {
   }
 }
 
+/// 仅WiFi下载开关的**权威**取值。
+///
+/// `downloadWifiOnlyProvider` 是 `AsyncValue<bool>`，而且**第一次读它才会现场
+/// 创建**：那一刻状态是 `AsyncLoading`、`.value == null`。把这个 null 当成
+/// 「没开」就会在蜂窝网下放行下载。
+///
+/// 详情页原先有个常驻的「仅WiFi下载」开关在 `watch` 它，顺手把 provider 预热了；
+/// v2.2 把那个开关搬去设置之后（D3）没人预热，「全部下载」在移动网络下就会照下
+/// 不误。所以**没加载完时直接问存储** —— 存储本来就是它的数据源。
+Future<bool> resolveDownloadWifiOnly(
+  AsyncValue<bool> cached, {
+  required Future<AppStorage> storage,
+}) async {
+  if (cached.hasValue) return cached.value ?? false;
+  return (await storage).getDownloadWifiOnly();
+}
+
+/// 某个节目的「跳过片头/尾」持久值（秒）。
+///
+/// `AppStorage` 是可变对象：`setPodcastSkipIntro/Outro` 不会让 Riverpod 收到
+/// 通知，所以写入方（下载设置面板）在编辑 sheet 关闭后要 `invalidate` 一次，
+/// 否则详情页入口行的摘要不会刷新。
+final podcastSkipSettingsProvider =
+    FutureProvider.family<({int intro, int outro}), String>((ref, feedId) async {
+  final storage = await ref.watch(appStorageProvider.future);
+  return (
+    intro: storage.getPodcastSkipIntro(feedId),
+    outro: storage.getPodcastSkipOutro(feedId),
+  );
+});
+
 class PodcastDownloadsNotifier extends StateNotifier<PodcastDownloadState> {
   PodcastDownloadsNotifier(this._ref) : super(const PodcastDownloadState()) {
     _load();
@@ -469,8 +584,11 @@ class PodcastDownloadsNotifier extends StateNotifier<PodcastDownloadState> {
         state.statusFor(episode.guid) == EpisodeDownloadStatus.ready) {
       return;
     }
-    final wifiOnlyAsync = _ref.read(downloadWifiOnlyProvider);
-    if (wifiOnlyAsync.value == true) {
+    final wifiOnly = await resolveDownloadWifiOnly(
+      _ref.read(downloadWifiOnlyProvider),
+      storage: _ref.read(appStorageProvider.future),
+    );
+    if (wifiOnly) {
       final allowed = await _ref.read(networkMonitorProvider).allowsWifiOnlyDownload;
       if (!allowed) return;
     }

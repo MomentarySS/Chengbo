@@ -22,6 +22,7 @@ import '../../core/theme.dart';
 import '../../shared/widgets/empty_state.dart';
 import '../../shared/widgets/episode_bookmark_sheet.dart';
 import '../../shared/widgets/now_playing_leading.dart';
+import '../../shared/widgets/podcast_settings_sheet.dart';
 import '../../shared/widgets/resume_listening_card.dart';
 import '../../shared/widgets/station_artwork.dart';
 import 'episode_notes_sheet.dart';
@@ -61,7 +62,12 @@ Future<bool> ensureCanDownload(BuildContext context, WidgetRef ref) async {
     }
     return false;
   }
-  final wifiOnly = ref.read(downloadWifiOnlyProvider).value ?? false;
+  // 不能直接读 `.value`：第一次读会现场创建 provider，此刻还是 AsyncLoading
+  // —— 见 resolveDownloadWifiOnly 的注释。
+  final wifiOnly = await resolveDownloadWifiOnly(
+    ref.read(downloadWifiOnlyProvider),
+    storage: ref.read(appStorageProvider.future),
+  );
   if (wifiOnly) {
     final allowed = await ref.read(networkMonitorProvider).allowsWifiOnlyDownload;
     if (!allowed) {
@@ -221,7 +227,11 @@ class _PodcastScreenState extends ConsumerState<PodcastScreen> {
       feedUrl: draft.url,
     );
     try {
-      final detail = await ref.read(podcastServiceProvider).fetchFeed(feed          );
+      // 新增订阅：第三方转接源在这里拦下（saveAddress: false → 连地址都不留）。
+      final detail = await ref.read(podcastServiceProvider).fetchFeed(
+            feed,
+            forNewSubscription: true,
+          );
       await ref.read(subscribedFeedsProvider.notifier).addFeed(
             PodcastFeed(
               id: feed.id,
@@ -457,11 +467,6 @@ class _PodcastDetailScreenState extends ConsumerState<PodcastDetailScreen> {
                     },
             ),
           ] else ...[
-            IconButton(
-              tooltip: '选择多项',
-              icon: const Icon(Icons.checklist),
-              onPressed: _enterSelect,
-            ),
             PopupMenuButton<_DetailMoreAction>(
               tooltip: '更多',
               onSelected: (action) async {
@@ -554,6 +559,33 @@ class _PodcastDetailScreenState extends ConsumerState<PodcastDetailScreen> {
           return Column(
             children: [
               if (!_selecting) const _EpisodeFilterBar(),
+              // 源拉不动、列表来自本机缓存时明说一句 —— 否则用户会以为这是刚拉的。
+              if (!_selecting && ref.watch(detailFromCacheProvider(feed.id)))
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 8, 4),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.cloud_off_outlined,
+                        size: 16,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          '源暂时打不开，下面是本机缓存',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              ),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () => ref.invalidate(podcastDetailProvider(feed)),
+                        child: const Text('重试'),
+                      ),
+                    ],
+                  ),
+                ),
               Expanded(
                 child: RefreshIndicator(
             onRefresh: () async {
@@ -581,7 +613,7 @@ class _PodcastDetailScreenState extends ConsumerState<PodcastDetailScreen> {
                   );
                 }
                 if (showDownloadBar && index == (header.isEmpty ? 0 : 1)) {
-                  return _DownloadAllTile(feed: detail.feed, episodes: detail.episodes);
+                  return _ShowSettingsTile(feed: detail.feed, episodes: detail.episodes);
                 }
                 final episode = listEpisodes[index - leadingCount];
                 return _EpisodeTile(
@@ -650,151 +682,70 @@ class _EpisodeFilterBar extends ConsumerWidget {
   }
 }
 
-class _DownloadAllTile extends ConsumerWidget {
-  const _DownloadAllTile({required this.feed, required this.episodes});
+/// 详情页的「节目设置」入口行。
+///
+/// 收在这里的都是**按节目**、设一次就不动的低频项（三个下载策略 + 跳过片头/尾），
+/// 却占着最高频的浏览路径，所以进面板，本行只留一行状态摘要。
+///
+/// 注意：只显示摘要 → 必须**单行**，否则吃回省下的高度。
+class _ShowSettingsTile extends ConsumerWidget {
+  const _ShowSettingsTile({required this.feed, required this.episodes});
 
   final PodcastFeed feed;
   final List<PodcastEpisode> episodes;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final enabled = ref.watch(podcastDownloadAllFeedsProvider).value?.contains(feed.id) ?? false;
-    final downloads = ref.watch(podcastDownloadsProvider);
-    final wifiOnly = ref.watch(downloadWifiOnlyProvider).value ?? false;
+    final allEnabled = ref.watch(podcastDownloadAllFeedsProvider).value?.contains(feed.id) ?? false;
     final latestEnabled =
         ref.watch(podcastDownloadLatestFeedsProvider).value?.contains(feed.id) ?? false;
-    final latestFlags = PodcastDownloadLogic.latestDownloadFlags(
-      episodes: episodes,
-      statusFor: downloads.statusFor,
+    // 只 select 出「摘要用得到的那几个数」：下载进度 tick 会换掉整个 state，
+    // 直接 watch 整份 state 会让本行跟着每块进度重建。record 是值类型，所以
+    // 计数不变时 select 的结果相等，不会触发重建。
+    final counts = ref.watch(
+      podcastDownloadsProvider.select((state) {
+        var ready = 0;
+        var downloading = 0;
+        var bytes = 0;
+        for (final episode in episodes) {
+          switch (state.statusFor(episode.guid)) {
+            case EpisodeDownloadStatus.ready:
+              ready++;
+            case EpisodeDownloadStatus.downloading:
+              downloading++;
+            case EpisodeDownloadStatus.none:
+            case EpisodeDownloadStatus.failed:
+              break;
+          }
+          bytes += state.records[episode.guid]?.bytes ?? 0;
+        }
+        return (ready: ready, downloading: downloading, bytes: bytes);
+      }),
     );
-    final ready = episodes.where((item) => downloads.statusFor(item.guid) == EpisodeDownloadStatus.ready).length;
-    final downloading =
-        episodes.where((item) => downloads.statusFor(item.guid) == EpisodeDownloadStatus.downloading).length;
-    // Feed download size.
-    int feedBytes = 0;
-    for (final ep in episodes) {
-      final rec = downloads.records[ep.guid];
-      if (rec != null) feedBytes += rec.bytes;
-    }
+    final skip = ref.watch(podcastSkipSettingsProvider(feed.id)).value;
 
-    return Column(
-      children: [
-        SwitchListTile(
-          secondary: const Icon(Icons.download_for_offline_outlined),
-          title: const Text('全部下载'),
-          subtitle: Text(
-            [
-              PodcastDownloadLogic.downloadAllSubtitle(
-                total: episodes.length,
-                ready: ready,
-                downloading: downloading,
-                enabled: enabled,
-              ),
-              if (feedBytes > 0) PodcastDownloadLogic.formatBytes(feedBytes),
-            ].where((s) => s.isNotEmpty).join(' · '),
-          ),
-          value: enabled,
-          onChanged: (value) async {
-            if (value && !await ensureCanDownload(context, ref)) return;
-            await ref.read(podcastDownloadAllFeedsProvider.notifier).setEnabled(feed.id, value);
-            if (value) {
-              await ref.read(podcastDownloadsProvider.notifier).downloadAll(feed, episodes);
-            } else {
-              await ref.read(podcastDownloadsProvider.notifier).cancelForGuids(
-                    episodes.map((item) => item.guid),
-                  );
-            }
-          },
+    return ListTile(
+      leading: const Icon(Icons.download_for_offline_outlined),
+      title: const Text('节目设置'),
+      subtitle: Text(
+        PodcastDownloadLogic.downloadSettingsSummary(
+          total: episodes.length,
+          ready: counts.ready,
+          downloading: counts.downloading,
+          allEnabled: allEnabled,
+          latestEnabled: latestEnabled,
+          skipIntroSeconds: skip?.intro ?? 0,
+          skipOutroSeconds: skip?.outro ?? 0,
         ),
-        SwitchListTile(
-          secondary: const Icon(Icons.file_download_outlined),
-          title: const Text('自动下载最新一集'),
-          subtitle: Text(
-            PodcastDownloadLogic.autoDownloadLatestSubtitle(
-              enabled: latestEnabled,
-              latestReady: latestFlags.ready,
-              latestDownloading: latestFlags.downloading,
-            ),
-          ),
-          value: latestEnabled,
-          onChanged: (value) async {
-            if (value && !await ensureCanDownload(context, ref)) return;
-            await ref.read(podcastDownloadLatestFeedsProvider.notifier).setEnabled(feed.id, value);
-            if (value) {
-              await ref.read(podcastDownloadsProvider.notifier).downloadLatestIfEnabled(feed, episodes);
-            }
-          },
-        ),
-        // Secondary row: WiFi-only + download recent N.
-        Padding(
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-          child: Row(
-            children: [
-              Expanded(
-                child: Text(
-                  '仅WiFi下载',
-                  style: Theme.of(context).textTheme.bodySmall,
-                ),
-              ),
-              Switch(
-                value: wifiOnly,
-                onChanged: (value) {
-                  ref.read(downloadWifiOnlyProvider.notifier).set(value);
-                },
-              ),
-              const SizedBox(width: 16),
-              PopupMenuButton<int>(
-                tooltip: '下载最近几集',
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    border: Border.all(color: Theme.of(context).colorScheme.outline),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Text(
-                        '最近几集',
-                        style: Theme.of(context).textTheme.bodySmall,
-                      ),
-                      const Icon(Icons.arrow_drop_down, size: 18),
-                    ],
-                  ),
-                ),
-                onSelected: (count) async {
-                  if (!await ensureCanDownload(context, ref)) return;
-                  final pending = PodcastDownloadLogic.recentPendingForDownload(
-                    episodes: episodes,
-                    statusFor: ref.read(podcastDownloadsProvider).statusFor,
-                    count: count,
-                  );
-                  if (!context.mounted) return;
-                  if (pending.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('最近 $count 集都已下载')),
-                    );
-                    return;
-                  }
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('开始下载最近 ${pending.length} 集')),
-                  );
-                  unawaited(
-                    ref.read(podcastDownloadsProvider.notifier).downloadEpisodes(feed, pending),
-                  );
-                },
-                itemBuilder: (context) => [
-                  for (final n in [3, 5, 10])
-                    PopupMenuItem(
-                      value: n,
-                      child: Text('最近 $n 集'),
-                    ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ],
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+      ),
+      trailing: const Icon(Icons.chevron_right),
+      onTap: () => showPodcastSettingsSheet(
+        context,
+        feed: feed,
+        episodes: episodes,
+      ),
     );
   }
 }
@@ -875,6 +826,10 @@ class _EpisodeTile extends ConsumerWidget {
             Expanded(
               child: Text(
                 episode.title,
+                // 长标题原本能占 3 行，把列表撑得很松。要读全文可以长按 ——
+                // 菜单第一行就是完整标题。
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
                 style: !selecting && isCurrent ? const TextStyle(fontWeight: FontWeight.w600) : null,
               ),
             ),

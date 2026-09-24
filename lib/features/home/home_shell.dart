@@ -135,6 +135,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     ref.watch(autoBrowseSyncProvider);
     ref.watch(podcastQueueSyncProvider);
     ref.watch(autoDownloadLatestSyncProvider);
+    ref.watch(podcastCatalogPrewarmProvider);
     ref.watch(deskWidgetSyncProvider);
     ref.watch(deskTraySyncProvider);
     ref.watch(deskLaunchAtStartupProvider);

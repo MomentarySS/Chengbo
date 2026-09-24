@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/network/network_status.dart';
 import '../../core/network/podcast_discovery.dart';
+import '../../core/network/podcast_catalog.dart';
 import '../../core/network/podcast_feed_logic.dart';
 import '../../core/network/podcast_index_client.dart';
 import '../../core/providers/app_providers.dart';
@@ -29,6 +30,9 @@ class _PodcastDiscoveryScreenState extends ConsumerState<PodcastDiscoveryScreen>
   var _searching = false;
   var _subscribingUrl = '';
   String? _searchError;
+
+  /// 结果来自哪个目录（iTunes / Podcast Index / 本机目录），用来在结果上方标明。
+  String? _searchSource;
   List<PodcastDiscoveryHit> _searchHits = const [];
 
   var _rankLoading = false;
@@ -57,7 +61,14 @@ class _PodcastDiscoveryScreenState extends ConsumerState<PodcastDiscoveryScreen>
     super.dispose();
   }
 
-  Future<void> _searchItunes() async {
+  /// 搜索按「覆盖优先、可达性兜底」分两级，并把**真实原因**说出来：
+  ///
+  /// 1. iTunes —— 覆盖最好，但境内常连不上（实测手机浏览器能开、应用里常失败）；
+  /// 2. Podcast Index —— 国内可达（api.podcastindex.org 实测可达），需要免费密钥，
+  ///    在「高级：Podcast Index」里填过就自动兜底。
+  ///
+  /// 两级都不行时，报错要能照做（提示去填密钥），而不是笼统的「搜索失败」。
+  Future<void> _search() async {
     final query = _queryController.text.trim();
     if (query.isEmpty || _searching) return;
     if (await ref.read(networkMonitorProvider).isOffline) {
@@ -68,9 +79,12 @@ class _PodcastDiscoveryScreenState extends ConsumerState<PodcastDiscoveryScreen>
     setState(() {
       _searching = true;
       _searchError = null;
+      _searchSource = null;
     });
+
+    final hideExplicit = ref.read(podcastIndexSettingsProvider).value?.hideExplicit ?? true;
+    Object? itunesError;
     try {
-      final hideExplicit = ref.read(podcastIndexSettingsProvider).value?.hideExplicit ?? true;
       final hits = await ref.read(itunesPodcastClientProvider).search(
             query: query,
             hideExplicit: hideExplicit,
@@ -79,15 +93,69 @@ class _PodcastDiscoveryScreenState extends ConsumerState<PodcastDiscoveryScreen>
       setState(() {
         _searching = false;
         _searchHits = hits;
+        _searchSource = hits.isEmpty ? null : 'iTunes';
         _searchError = hits.isEmpty ? '没有找到匹配的公开 RSS' : null;
       });
-    } catch (_) {
+      return;
+    } catch (error) {
+      itunesError = error;
+    }
+
+    final settings = ref.read(podcastIndexSettingsProvider).value;
+    if (settings != null && settings.hasCredentials) {
+      try {
+        final hits = await ref.read(podcastIndexClientProvider).search(
+              query: query,
+              apiKey: settings.apiKey,
+              apiSecret: settings.apiSecret,
+              hideExplicit: hideExplicit,
+            );
+        if (!mounted) return;
+        setState(() {
+          _searching = false;
+          _searchHits = [for (final hit in hits) PodcastDiscoveryHit.fromIndex(hit)];
+          _searchSource = hits.isEmpty ? null : 'Podcast Index';
+          _searchError = hits.isEmpty ? '没有找到匹配的公开 RSS' : null;
+        });
+        return;
+      } catch (_) {
+        // 落到下面的统一提示。
+      }
+    }
+
+    // 3) 本机目录（GetPodcast 精选 + xyzrank 榜单前 1000）：国内直连可拉、零配置。
+    //    放在最后，但它不需要任何密钥，是「什么都不配也能搜到东西」的那一级。
+    //    目录按需刷新（缓存过期时在应用内拉，见 podcastCatalogProvider）。
+    final catalog = await ref.read(podcastCatalogProvider.future);
+    final catalogHits = PodcastCatalogLogic.search(catalog, query);
+    if (catalogHits.isNotEmpty) {
       if (!mounted) return;
       setState(() {
         _searching = false;
-        _searchError = '搜索失败，请稍后再试';
+        _searchHits = [for (final entry in catalogHits) entry.toHit()];
+        _searchSource = '本机目录（收录 ${catalog.length} 个中文节目）';
+        _searchError = null;
       });
+      return;
     }
+
+    if (!mounted) return;
+    // 走到这里说明 iTunes 一定抛过（只有 catch 会给它赋值）。
+    final reason = NetworkStatusLogic.humanize(itunesError);
+    final hasKeys = settings != null && settings.hasCredentials;
+    setState(() {
+      _searching = false;
+      _searchHits = const [];
+      _searchError = [
+        reason,
+        if (hasKeys) 'Podcast Index 也没有结果' else 'Podcast Index 未填密钥',
+        if (catalog.isEmpty)
+          '本机目录也没拉到（网络受限）'
+        else
+          '本机目录的 ${catalog.length} 个中文节目里没有匹配的',
+        if (!hasKeys) '可在下方「高级：Podcast Index」填免费密钥',
+      ].join('；');
+    });
   }
 
   Future<void> _searchPodcastIndex() async {
@@ -277,11 +345,11 @@ class _PodcastDiscoveryScreenState extends ConsumerState<PodcastDiscoveryScreen>
             border: OutlineInputBorder(),
           ),
           textInputAction: TextInputAction.search,
-          onSubmitted: (_) => _searchItunes(),
+          onSubmitted: (_) => _search(),
         ),
         const SizedBox(height: 12),
         FilledButton.icon(
-          onPressed: _searching ? null : _searchItunes,
+          onPressed: _searching ? null : _search,
           icon: _searching
               ? const SizedBox(
                   width: 16,
@@ -351,6 +419,15 @@ class _PodcastDiscoveryScreenState extends ConsumerState<PodcastDiscoveryScreen>
             style: TextStyle(color: Theme.of(context).colorScheme.error),
           ),
         ],
+        if (_searchSource != null && _searchHits.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Text(
+            '来自 $_searchSource',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
+          ),
+        ],
         const SizedBox(height: 8),
         for (final hit in _searchHits)
           _DiscoveryHitTile(
@@ -392,7 +469,7 @@ class _PodcastDiscoveryScreenState extends ConsumerState<PodcastDiscoveryScreen>
           return Padding(
             padding: const EdgeInsets.only(bottom: 8),
             child: Text(
-              '中文热榜来自 xyzrank 公开 JSON，点订阅才写入本机。版权库会标成无法订阅。',
+              '中文热榜来自 xyzrank 公开 JSON，点订阅才写入本机。第三方转接源会标成无法订阅。',
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                   ),
@@ -490,7 +567,7 @@ class _DiscoveryHitTile extends StatelessWidget {
           if (hit.author.isNotEmpty) hit.author,
           if (hit.genre.isNotEmpty) hit.genre,
           if (hit.explicit) '可能含不适宜内容',
-          if (hit.denied) '版权库 / 转接源',
+          if (hit.denied) '第三方转接源',
           if (hit.feedUrl != null) hit.feedUrl!,
         ].join(' · '),
         maxLines: 2,

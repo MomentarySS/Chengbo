@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>播客两页瘦身 · before / after</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#f7f5f0;
+    --card:#ffffff;
+    --line:#e9e3d6;
+    --line-soft:#f0ebe0;
+    --ink:#14171e;
+    --ink-2:#3a4256;
+    --muted:#7c7a72;
+    --primary:#2f6f5e;
+    --primary-soft:rgba(47,111,94,.08);
+    --warn:#c97b3f;
+    --warn-soft:rgba(201,123,63,.1);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--cream);color:var(--ink);
+    font-family:"Outfit","PingFang SC","Microsoft YaHei",sans-serif;
+    font-size:14.5px;line-height:1.6;-webkit-font-smoothing:antialiased;
+  }
+  body::before{content:"";position:fixed;inset:0;pointer-events:none;
+    background:
+      radial-gradient(600px 400px at 8% -4%, rgba(47,111,94,.05), transparent 70%),
+      radial-gradient(500px 360px at 96% 6%, rgba(201,123,63,.05), transparent 70%);}
+  .wrap{max-width:1000px;margin:0 auto;padding:56px 24px 80px;position:relative}
+  h1{font-family:"DM Serif Display",Georgia,serif;font-weight:400;font-size:32px;line-height:1.25;letter-spacing:-.005em;margin:0 0 12px}
+  h2{font-family:"DM Serif Display",Georgia,serif;font-weight:400;font-size:23px;letter-spacing:-.005em;margin:0 0 6px}
+  .eyebrow{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--primary);font-weight:600;margin:0 0 14px}
+  .lede{color:var(--ink-2);max-width:68ch;margin:0}
+  .sub{color:var(--muted);margin:2px 0 18px;max-width:72ch}
+  section{margin-top:48px}
+  code,.mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12.5px}
+  code{background:var(--primary-soft);color:var(--primary);padding:1px 5px;border-radius:5px}
+  .tag{display:inline-block;font-size:11px;font-weight:600;letter-spacing:.04em;border-radius:999px;padding:2px 9px}
+  .tag.before{background:var(--warn-soft);color:var(--warn)}
+  .tag.after{background:var(--primary-soft);color:var(--primary)}
+
+  /* ---------- 高度账 ---------- */
+  .bench{display:grid;grid-template-columns:112px 1fr 96px;gap:12px;align-items:center;padding:7px 0}
+  .bench-label{font-size:13px;color:var(--ink-2)}
+  .bench-track{height:18px;background:var(--line-soft);border-radius:6px;overflow:hidden}
+  .bench-fill{height:100%;border-radius:6px}
+  .bench-fill.before{background:var(--warn);opacity:.85}
+  .bench-fill.after{background:var(--primary)}
+  .bench-val{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--muted);text-align:right}
+
+  /* ---------- 手机 ---------- */
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:24px;align-items:start}
+  @media(max-width:760px){.pair{grid-template-columns:1fr}}
+  .phone{width:100%;aspect-ratio:390/760;border-radius:24px;overflow:hidden;
+    border:1px solid var(--line);background:#fff;display:flex;flex-direction:column;
+    font-size:11px;line-height:1.35;color:#1b2022;position:relative}
+  .phone .bar{display:flex;align-items:center;gap:6px;padding:10px 12px 6px;flex:0 0 auto}
+  .phone .bar .t{font-size:14px;font-weight:600;flex:1;text-align:center}
+  .phone .chips{display:flex;gap:6px;padding:2px 12px 8px;flex:0 0 auto}
+  .phone .chip{border:1px solid #d5d9d6;border-radius:999px;padding:3px 10px;font-size:10px;color:#3c4440;white-space:nowrap}
+  .phone .chip.on{background:#e6e8f2;border-color:#c6cade;font-weight:600}
+  .phone .desc{padding:0 12px 8px;color:#3c4440;font-size:10.5px;line-height:1.5;flex:0 0 auto}
+  .phone .desc .more{color:#2f6f5e;font-weight:600}
+  .phone .row{display:flex;align-items:center;gap:8px;padding:7px 12px;border-top:1px solid #eef0ee;flex:0 0 auto}
+  .phone .row .rt{flex:1;min-width:0}
+  .phone .row .rt b{display:block;font-size:11.5px;font-weight:600}
+  .phone .row .rt span{display:block;font-size:9.5px;color:#7d8a83;margin-top:1px}
+  .phone .sw{width:26px;height:15px;border-radius:999px;border:1.5px solid #9aa5a0;flex:0 0 auto;position:relative}
+  .phone .sw i{position:absolute;left:2px;top:2px;width:9px;height:9px;border-radius:50%;background:#9aa5a0}
+  .phone .ep{display:flex;gap:8px;padding:8px 12px;border-top:1px solid #eef0ee;flex:0 0 auto}
+  .phone .ep .ic{flex:0 0 auto;padding-top:1px}
+  .phone .ep .eb{flex:1;min-width:0}
+  .phone .ep .eb b{display:block;font-size:11.5px;font-weight:500;line-height:1.4}
+  .phone .ep .eb span{display:block;font-size:9.5px;color:#7d8a83;margin-top:2px}
+  .phone .ep .eb .pb{height:3px;border-radius:2px;background:#e3e7e4;margin-top:4px;overflow:hidden}
+  .phone .ep .eb .pb i{display:block;height:100%;width:32%;background:#2f6f5e}
+  .phone .ep .tr{flex:0 0 auto;color:#9aa5a0;padding-top:2px}
+  .phone .grow{flex:1 1 auto}
+  .phone .chev{display:flex;padding:10px 12px 2px;flex:0 0 auto}
+  .phone .cover{margin:0 22px;border-radius:12px;flex:0 0 auto;
+    background:linear-gradient(140deg,#8fd08a,#3f9ad6 60%,#f3d67a);
+    display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.85)}
+  .phone .cover.tall{aspect-ratio:1}
+  .phone .cover.short{aspect-ratio:1.28}
+  .phone .meta{text-align:center;padding:10px 18px 0;flex:0 0 auto}
+  .phone .meta b{display:block;font-size:15px;font-weight:700;line-height:1.3}
+  .phone .meta b.sm{font-size:13px}
+  .phone .meta span{display:block;font-size:10px;color:#7d8a83;margin-top:3px}
+  .phone .acts{display:flex;gap:6px;padding:9px 14px 0;flex:0 0 auto;flex-wrap:wrap}
+  .phone .act{border:1px solid #d5d9d6;border-radius:999px;padding:4px 9px;font-size:10px;color:#3c4440;
+    display:flex;align-items:center;gap:4px;white-space:nowrap}
+  .phone .act.icon{padding:5px 8px}
+  .phone .seek{padding:12px 16px 0;flex:0 0 auto}
+  .phone .seek .tr2{height:3px;border-radius:2px;background:#e3e7e4;position:relative}
+  .phone .seek .tr2 i{position:absolute;left:0;top:0;bottom:0;width:12%;background:#2c3a34;border-radius:2px}
+  .phone .seek .tr2 u{position:absolute;left:12%;top:-4px;width:11px;height:11px;border-radius:50%;background:#2c3a34}
+  .phone .seek .tm{display:flex;justify-content:space-between;font-size:10px;color:#3c4440;margin-top:6px}
+  .phone .trans{display:flex;align-items:center;justify-content:space-evenly;padding:10px 8px 16px;flex:0 0 auto}
+  .frame{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px 14px 14px;
+    box-shadow:0 2px 8px rgba(0,0,0,.04)}
+  .frame-head{display:flex;align-items:baseline;gap:9px;margin:0 0 12px}
+  .frame-head b{font-size:14.5px;font-weight:600}
+
+  /* ---------- 清单 ---------- */
+  table{width:100%;border-collapse:collapse;font-size:13.5px}
+  th,td{text-align:left;padding:10px 12px 10px 0;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+  td.save{font-family:"JetBrains Mono",monospace;font-size:12.5px;color:var(--primary);white-space:nowrap}
+  td.risk{color:var(--muted);font-size:12.5px}
+  .dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--warn);margin-right:7px;vertical-align:2px}
+  footer{margin-top:56px;padding-top:20px;border-top:1px solid var(--line);color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <p class="eyebrow">澄波 · 播客详情页 + 播放器页</p>
+  <h1>把「仪表盘」压下去，把内容顶上来</h1>
+  <p class="lede">两个页面都不缺功能，缺的是<strong>层级</strong>：低频设置和重复入口占了最高频的位置。下面先给高度账，再给 before / after，最后是每条的取舍。所有数字按 760dp 屏估算。</p>
+
+  <section>
+    <h2>首屏高度账</h2>
+    <p class="sub">详情页头部 chrome 现在吃掉半屏；播放器页内容正好占满整屏，一点余量都没有。</p>
+    <div class="bench">
+      <span class="bench-label">详情页 chrome</span>
+      <div class="bench-track"><div class="bench-fill before" style="width:52%"></div></div>
+      <span class="bench-val">394px · 52%</span>
+    </div>
+    <div class="bench">
+      <span class="bench-label"></span>
+      <div class="bench-track"><div class="bench-fill after" style="width:30%"></div></div>
+      <span class="bench-val">228px · 30%</span>
+    </div>
+    <div class="bench" style="margin-top:10px">
+      <span class="bench-label">播放器内容</span>
+      <div class="bench-track"><div class="bench-fill before" style="width:99%"></div></div>
+      <span class="bench-val">754px · 99%</span>
+    </div>
+    <div class="bench">
+      <span class="bench-label"></span>
+      <div class="bench-track"><div class="bench-fill after" style="width:75%"></div></div>
+      <span class="bench-val">573px · 75%</span>
+    </div>
+    <p class="sub" style="margin-top:12px">橙 = 现状，绿 = 建议后。详情页多出约 <strong>2 条单集</strong>的可见空间；播放器页从「刚好塞满」回到有余量。</p>
+  </section>
+
+  <section>
+    <h2>播客详情页</h2>
+    <p class="sub">三个下载开关收成一行入口 + 简介收起 + 标题限行，首屏从 2.5 条变 4–5 条。</p>
+    <div class="pair">
+
+      <div class="frame">
+        <div class="frame-head"><span class="tag before">BEFORE</span><b>头部 chrome 394px</b></div>
+        <div class="phone">
+          <div class="bar">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
+            <span class="t">能力有限电台</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h13M3 12h9M3 18h11"/><path d="m17 15 2 2 3-3"/></svg>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+          </div>
+          <div class="chips">
+            <span class="chip on"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><path d="m5 13 4 4L19 7"/></svg> 全部</span><span class="chip">未听</span><span class="chip">已下载</span><span class="chip">收藏</span>
+          </div>
+          <div class="desc">能力有限电台是一档关注于情感 社会事件与人之间链接的泛文化类播客，<br>我们每周2更新节目 公众号 能力有限FM</div>
+          <div class="row">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 21h16"/></svg>
+            <span class="rt"><b>全部下载</b><span>打开后按序下载本节目全部单集</span></span>
+            <span class="sw"><i></i></span>
+          </div>
+          <div class="row">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/></svg>
+            <span class="rt"><b>自动下载最新一集</b><span>有更新时只下最新一集，默认关</span></span>
+            <span class="sw"><i></i></span>
+          </div>
+          <div class="row">
+            <span class="rt" style="font-size:10.5px">仅WiFi下载</span>
+            <span class="sw"><i></i></span>
+            <span class="chip" style="margin-left:6px">最近几集 <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:0"><path d="m6 9 6 6 6-6"/></svg></span>
+          </div>
+          <div class="ep">
+            <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M10 8.5 16 12l-6 3.5z" fill="currentColor" stroke="none"/></svg></span>
+            <span class="eb"><b>雨季温柔攻略，干爽心情拥抱夏天</b><span>8:11 · 已播放 0:57</span><span class="pb"><i></i></span></span>
+          </div>
+          <div class="ep">
+            <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M10 8.5 16 12l-6 3.5z" fill="currentColor" stroke="none"/></svg></span>
+            <span class="eb"><b>菲尔茨双星闪耀：从陈景润到王虹，天才难逃的百年宿命上集</b><span>36:09</span></span>
+            <span class="tr"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></span>
+          </div>
+          <div class="ep">
+            <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M10 8.5 16 12l-6 3.5z" fill="currentColor" stroke="none"/></svg></span>
+            <span class="eb"><b>精明游者指南：大众热潮与小众秘境的旅行策略</b><span>54:34</span></span>
+            <span class="tr"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg></span>
+          </div>
+          <div class="grow"></div>
+        </div>
+      </div>
+
+      <div class="frame">
+        <div class="frame-head"><span class="tag after">AFTER</span><b>头部 chrome 228px</b></div>
+        <div class="phone">
+          <div class="bar">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7M19 12H5"/></svg>
+            <span class="t">能力有限电台</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="19" r="1.6"/></svg>
+          </div>
+          <div class="chips">
+            <span class="chip on"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-1px"><path d="m5 13 4 4L19 7"/></svg> 全部</span><span class="chip">未听</span><span class="chip">已下载</span><span class="chip">收藏</span>
+          </div>
+          <div class="desc">能力有限电台是一档关注于情感 社会事件与人之间链接的泛文化类播客，<br>我们每周2更新节目 <span class="more">展开</span></div>
+          <div class="row">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 21h16"/></svg>
+            <span class="rt"><b>下载设置</b><span>全部下载 · 关</span></span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg>
+          </div>
+          <div class="ep">
+            <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M10 8.5 16 12l-6 3.5z" fill="currentColor" stroke="none"/></svg></span>
+            <span class="eb"><b>雨季温柔攻略，干爽心情拥抱夏天</b><span>8:11 · 已播放 0:57</span><span class="pb"><i></i></span></span>
+          </div>
+          <div class="ep">
+            <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M10 8.5 16 12l-6 3.5z" fill="currentColor" stroke="none"/></svg></span>
+            <span class="eb"><b>菲尔茨双星闪耀：从陈景润到王虹，天才难逃的百年宿命上集</b><span>36:09</span></span>
+          </div>
+          <div class="ep">
+            <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M10 8.5 16 12l-6 3.5z" fill="currentColor" stroke="none"/></svg></span>
+            <span class="eb"><b>精明游者指南：大众热潮与小众秘境的旅行策略</b><span>54:34</span></span>
+          </div>
+          <div class="ep">
+            <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M10 8.5 16 12l-6 3.5z" fill="currentColor" stroke="none"/></svg></span>
+            <span class="eb"><b>杨笠：我说的普通而自信，为什么能让你们破防多年啊</b><span>1:02:11</span></span>
+          </div>
+          <div class="grow"></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>播客播放器页</h2>
+    <p class="sub">两行 chip 收成一行图标；跳过片头/尾与停止让位；封面和标题各收一档。</p>
+    <div class="pair">
+
+      <div class="frame">
+        <div class="frame-head"><span class="tag before">BEFORE</span><b>内容 754px（占满整屏）</b></div>
+        <div class="phone">
+          <div class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></div>
+          <div class="cover tall"><svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg></div>
+          <div class="meta">
+            <b>雨季温柔攻略，干爽心情拥抱夏天</b>
+            <span>能力有限电台</span>
+          </div>
+          <div class="acts">
+            <span class="act"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 21h16"/></svg>下载</span>
+            <span class="act"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9"/></svg>睡眠定时</span>
+            <span class="act"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M6 5h2v14H6zM18 5v14l-9-7z"/></svg>跳过片头/尾</span>
+            <span class="act"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12v16H6z"/><path d="M9 4v16"/></svg>书签</span>
+            <span class="act"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="7" y="7" width="10" height="10" rx="1"/></svg>停止</span>
+          </div>
+          <div class="seek">
+            <div class="tr2"><i></i><u></u></div>
+            <div class="tm"><span>00:58</span><span>08:11</span></div>
+          </div>
+          <div class="trans">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            <b style="font-size:13px">−15</b>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            <b style="font-size:13px">+15</b>
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h13M3 12h9M3 18h11"/><circle cx="19" cy="16" r="3"/><path d="M22 16V8l-3 1"/></svg>
+          </div>
+          <div class="grow"></div>
+        </div>
+      </div>
+
+      <div class="frame">
+        <div class="frame-head"><span class="tag after">AFTER</span><b>内容 573px（余量 ~25%）</b></div>
+        <div class="phone">
+          <div class="chev"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></div>
+          <div class="cover short"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/></svg></div>
+          <div class="meta">
+            <b class="sm">雨季温柔攻略，干爽心情拥抱夏天</b>
+            <span>能力有限电台</span>
+          </div>
+          <div class="acts">
+            <span class="act icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m7 10 5 5 5-5"/><path d="M4 21h16"/></svg></span>
+            <span class="act icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9"/></svg></span>
+            <span class="act icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4h12v16H6z"/><path d="M9 4v16"/></svg></span>
+          </div>
+          <div class="seek">
+            <div class="tr2"><i></i><u></u></div>
+            <div class="tm"><span>00:58</span><span>08:11</span></div>
+          </div>
+          <div class="trans">
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+            <b style="font-size:13px">−15</b>
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+            <b style="font-size:13px">+15</b>
+            <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M3 6h13M3 12h9M3 18h11"/><circle cx="19" cy="16" r="3"/><path d="M22 16V8l-3 1"/></svg>
+          </div>
+          <div class="grow"></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section>
+    <h2>逐条改动与取舍</h2>
+    <p class="sub">按收益排。前四条是低风险项，后四条会动导航或入口，需要你点头。</p>
+    <table>
+      <thead><tr><th style="width:34%">改动</th><th style="width:14%">省</th><th>取舍</th></tr></thead>
+      <tbody>
+        <tr><td><strong>详情页</strong>：三个下载开关收成一行「下载设置」入口</td><td class="save">~145px</td><td class="risk">低频项从常驻变一次点击——它们本来就是设一次就不动的</td></tr>
+        <tr><td><strong>详情页</strong>：单集标题加 <code>maxLines: 2</code></td><td class="save">~24px/行</td><td class="risk">长标题要长按看全（长按菜单里有完整标题）</td></tr>
+        <tr><td><strong>播放器</strong>：5 个 chip 收成一行图标</td><td class="save">~72px</td><td class="risk">可发现性下降，靠 tooltip 与无障碍标签兜</td></tr>
+        <tr><td><strong>播放器</strong>：封面加 <code>maxHeight</code>（屏高 38%）</td><td class="save">~70px</td><td class="risk">封面视觉权重下降；矮屏时收益更大</td></tr>
+        <tr><td><strong>播放器</strong>：<code>跳过片头/尾</code> 移出（按节目的持久设置）</td><td class="save">—</td><td class="risk"><span class="dot"></span>入口变远；需决定搬到详情页「下载设置」还是设置里</td></tr>
+        <tr><td><strong>播放器</strong>：<code>停止</code> 去掉（迷你条 ✕ 已覆盖）</td><td class="save">—</td><td class="risk"><span class="dot"></span>全屏页少一个停止入口；需确认你不依赖它</td></tr>
+        <tr><td><strong>详情页</strong>：<code>仅WiFi下载</code> 移到设置</td><td class="save">~48px</td><td class="risk"><span class="dot"></span>它是全局开关，本页不再出现；下载前少一个可见开关</td></tr>
+        <tr><td><strong>详情页</strong>：顶栏去掉 <code>选择多项</code> 图标</td><td class="save">—</td><td class="risk"><span class="dot"></span>批量下载从 1 次点击变成长按 + 1 次点击</td></tr>
+      </tbody>
+    </table>
+    <p class="sub" style="margin-top:14px">不改代码也能缓解一部分：设置 → 外观 → <strong>紧凑列表</strong>已经存在（你截图里是关的），开了能压单集行密度。</p>
+  </section>
+
+  <footer>
+    挑几条告诉我，我按你选的做。前四条（下载开关收纳 / 标题限行 / chip 收成图标行 / 封面限高）风险最低，可以一次做掉；带 <span class="dot"></span> 的四条会动导航与入口，等你确认。
+  </footer>
+
+</div>
+</body>
+</html>

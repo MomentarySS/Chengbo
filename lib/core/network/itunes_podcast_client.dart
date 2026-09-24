@@ -26,14 +26,26 @@ class ItunesPodcastClient {
     Object? lastError;
     for (var attempt = 0; attempt < 2; attempt++) {
       try {
-        final response = await _dio.getUri<Map<String, dynamic>>(
+        final response = await _dio.getUri<dynamic>(
           ItunesPodcastLogic.searchUri(term: trimmed),
           options: Options(responseType: ResponseType.json),
         );
+        final data = response.data;
+        if (data is! Map<String, dynamic>) {
+          // 拿到的是 String 而不是 JSON —— 裸连（不开代理）时实测如此：请求被
+          // 网络拦下，返回的是 HTML 或空内容。以前这里会抛
+          // `type 'String' is not a subtype of type 'Map<String, dynamic>?'`
+          // 这种看不懂的错，用户不知道该怎么办。
+          throw const ItunesPodcastException(
+            'iTunes 返回的不是 JSON（多半被网络拦下）—— 开代理后重试',
+          );
+        }
         return ItunesPodcastLogic.parseResults(
-          response.data,
+          data,
           hideExplicit: hideExplicit,
         );
+      } on ItunesPodcastException {
+        rethrow;
       } on DioException catch (error) {
         lastError = error;
         final code = error.response?.statusCode;

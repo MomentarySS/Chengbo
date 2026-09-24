@@ -40,7 +40,9 @@ class _PodcastManagementScreenState extends ConsumerState<PodcastManagementScree
       feedUrl: draft.url,
     );
     try {
-      final detail = await ref.read(podcastServiceProvider).fetchFeed(feed);
+      final detail = await ref
+          .read(podcastServiceProvider)
+          .fetchFeed(feed, forNewSubscription: true);
       await ref.read(subscribedFeedsProvider.notifier).addFeed(
             PodcastFeed(
               id: feed.id,

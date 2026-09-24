@@ -42,7 +42,6 @@ class RadioNowPlayingSheet extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final sleepActive = ref.watch(sleepTimerProvider).isActive;
     final accent =
         StationArtwork.gradientColors(name: current.title, tags: [current.subtitle]);
     final wash = context.chengboSkin.nowPlayingWash(
@@ -75,7 +74,8 @@ class RadioNowPlayingSheet extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   const NowPlayingTopBar(),
-                  const SizedBox(height: 8),
+                  // 倒计时占顶部这条固定高度的窄带（不占锚点的空间）。
+                  const SleepTimerStatusBand(),
                   Expanded(child: _StationCard(current: current)),
                   const SizedBox(height: 20),
                   _StationHeader(
@@ -105,16 +105,6 @@ class RadioNowPlayingSheet extends ConsumerWidget {
                         style: textTheme.bodySmall?.copyWith(
                           color: colorScheme.primary,
                           fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  if (sleepActive)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 12),
-                      child: SleepTimerCountdown(
-                        style: context.chengboSkin.countdownStyle(
-                          textTheme.labelLarge,
-                          colorScheme.primary,
                         ),
                       ),
                     ),

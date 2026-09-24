@@ -19,11 +19,17 @@ abstract final class PodcastFeedLogic {
       'application/rss+xml, application/atom+xml, application/xml;q=0.9, text/xml;q=0.8, */*;q=0.1';
 
   /// 去掉空白、补协议，并把常见节目页改成公开 RSS。网页地址抛 [PodcastFeedException]。
-  static String resolveUrl(String raw) {
+  ///
+  /// [enforceCatalogPolicy] 只在**新增订阅**时传 true。拦截是「不允许新订阅」的
+  /// 策略，不该作用在读取路径上 —— 否则用户已经订阅的节目会变成打不开的死链。
+  static String resolveUrl(String raw, {bool enforceCatalogPolicy = false}) {
     final url = _normalize(raw);
     final page = pageRejection(url);
     if (page != null) {
       throw PodcastFeedException(page, saveAddress: false);
+    }
+    if (enforceCatalogPolicy && isDeniedCatalogFeed(url)) {
+      throw const PodcastFeedException(catalogDeniedMessage, saveAddress: false);
     }
     return rewrite(url);
   }
@@ -72,27 +78,37 @@ abstract final class PodcastFeedLogic {
       return 'https://feed.firstory.me/rss/user/${firstory.group(1)}';
     }
 
+    // 喜马拉雅专辑页 → 平台自己的 RSS 出口（实测返回标准 RSS 2.0）。
+    final ximalaya = RegExp(r'^/album/(\d+)/?$', caseSensitive: false).firstMatch(path);
+    if (ximalaya != null && (host == 'www.ximalaya.com' || host == 'ximalaya.com')) {
+      return 'https://www.ximalaya.com/album/${ximalaya.group(1)}.xml';
+    }
+
     return url;
   }
 
-  static const catalogDeniedMessage = '无法在澄波订阅。这是版权点播库或转接源，请用作者公开的 RSS';
+  /// 第三方转接源拦截：**只有 RSSHub 的公开实例域名 `rsshub.app`**。
+  ///
+  /// - 喜马拉雅 `album`、荔枝 `rss.lizhi.fm`、蜻蜓 `c.qingting.fm` 都**不在**名单里 ——
+  ///   实测它们返回的都是平台自己提供的标准 RSS 2.0（`<rss version="2.0">`），
+  ///   性质与「第三方转接」不同。v2.2 起放开（同时更新了 `ROADMAP.md` 的边界）。
+  /// - 这条拦的是**域名**，所以自建 / 镜像实例（`rsshub.example.com`、Vercel 或
+  ///   Workers 部署）不受影响。它实际起的作用是给随手粘贴 `rsshub.app` 的用户
+  ///   一条**说得清原因的提示**，而不是准入闸门。
+  /// - 文案按现状写：2026-09 实测该域名已自行对阅读器返回 403
+  ///   （「will gradually restrict access to rsshub.app for some feed readers」）。
+  static const catalogDeniedMessage =
+      '无法在澄波订阅。rsshub.app 已限制第三方阅读器访问，请用作者公开的 RSS';
 
-  /// 喜马拉雅 album、RSSHub、荔枝转接。发现页与手动粘贴共用。
   static bool isDeniedCatalogFeed(String url) {
     final uri = Uri.tryParse(url.trim());
     if (uri == null || uri.host.isEmpty) return false;
     final host = uri.host.toLowerCase();
-    final path = uri.path.toLowerCase();
-    if (host == 'rsshub.app' || host.endsWith('.rsshub.app')) return true;
-    if (host == 'rss.lizhi.fm' || host == 'lizhi.fm' || host.endsWith('.lizhi.fm')) {
-      return true;
-    }
-    if (host == 'ximalaya.com' || host.endsWith('.ximalaya.com')) {
-      return path.contains('/album');
-    }
-    return false;
+    return host == 'rsshub.app' || host.endsWith('.rsshub.app');
   }
 
+  /// 这是「网页、不是 RSS」的判断。**不含第三方转接源策略** —— 那条只在
+  /// 新增订阅时由 [resolveUrl] 按需施加。
   static String? pageRejection(String url) {
     final uri = Uri.tryParse(url);
     if (uri == null || uri.host.isEmpty) {
@@ -113,7 +129,6 @@ abstract final class PodcastFeedLogic {
     if (host == 'podcast.kkbox.com') {
       return '这是 KKBOX 节目页，不是 RSS。请贴托管站的 Feed 地址';
     }
-    if (isDeniedCatalogFeed(url)) return catalogDeniedMessage;
     return null;
   }
 
