@@ -123,8 +123,9 @@ class _PodcastDiscoveryScreenState extends ConsumerState<PodcastDiscoveryScreen>
       }
     }
 
-    // 3) 本机目录（GetPodcast）：国内直连可拉、零配置。覆盖只有两百多个中文节目，
-    //    所以放在最后 —— 但它不需要任何密钥，是「什么都不配也能搜到东西」的那一级。
+    // 3) 本机目录（GetPodcast 精选 + xyzrank 榜单前 1000）：国内直连可拉、零配置。
+    //    放在最后，但它不需要任何密钥，是「什么都不配也能搜到东西」的那一级。
+    //    目录按需刷新（缓存过期时在应用内拉，见 podcastCatalogProvider）。
     final catalog = await ref.read(podcastCatalogProvider.future);
     final catalogHits = PodcastCatalogLogic.search(catalog, query);
     if (catalogHits.isNotEmpty) {
