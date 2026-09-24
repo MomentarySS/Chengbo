@@ -13,7 +13,7 @@ Format follows [Keep a Changelog](https://keepachangelog.com/zh-CN/), and the pr
 效果图见 [docs/design/podcast-density-design.html](../../docs/design/podcast-density-design.html)。
 
 ### Added
-- **发现播客搜索三级兜底**：iTunes → Podcast Index（填过免费密钥自动兜底）→ **本机 GetPodcast 目录**（拉一次存本机、搜索走本机，约 250 个中文节目）。结果上方标明来源；三级都不行时报**真实原因**并给出可照做的下一步
+- **发现播客搜索三级兜底**：iTunes → Podcast Index（填过免费密钥自动兜底）→ **本机目录**（GetPodcast 精选 + xyzrank 榜单前 1000，约 1250 个中文节目；拉一次存本机、搜索走本机）。结果上方标明来源与收录条目数；三级都不行时报**真实原因**并给出可照做的下一步
 - **拉取失败回落本机缓存**：订阅的源暂时打不开时，详情页改用本机快照渲染（最多 40 集），并在筛选行下方说明「源暂时打不开，下面是本机缓存」+ 重试 —— 以前是整页报错，连已缓存的单集都够不着
 - **详情页「节目设置」面板**：三个下载策略 + 跳过片头/尾收进一个面板（分「下载」「播放」两组），入口行只留一行状态摘要；面板里另有「仅WiFi下载」的**只读**状态行（开关本体在 设置 → 播放与收听）
 - **`scripts/git-proxy.ps1`**：探测本机代理端口（Clash / NekoBox 等）再执行 git / gh，失败时区分「没人代理」与「代理通了但目标不可达」
