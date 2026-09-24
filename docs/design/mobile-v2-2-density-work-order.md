@@ -510,12 +510,40 @@ flutter test      # 基线 143/143；本工单新增后总数 = 143 + 新增
 
 **守卫**（`test/podcast_density_test.dart`）：用「拉取必失败的 `PodcastService`」+ 预置的缓存快照，断言缓存里的单集渲染出来、提示出现；另一条断言**没有缓存时仍然整页报错**。有牙验证：把回落改成直接抛错 → 「没有回落到缓存列表」失败。
 
+### 11.8 发现播客搜索：三级兜底（commit `5ccc0d5` + `e3d19be`）
+
+**真机反馈**：「发现播客那里的搜索是用不了的」，提示「搜索失败，请稍后再试」。二分测试（热榜能出内容、搜索不能）+ **手机浏览器能打开同一个 iTunes 接口** → 网络可达，问题在应用侧/境内可达性。
+
+**实测（都用应用的 UA）**：
+
+| 候选 | 结果 | 结论 |
+|---|---|---|
+| iTunes | 这台 PC 200；手机报失败 | 覆盖最好但境内常不通 |
+| **Podcast Index** | 401（主机可达，缺密钥）| 可用，需免费密钥；**应用本来就集成** |
+| xyzrank（热榜源）| 200 | **没有搜索端点**（`/api/search`、`/api/podcasts/search`、`q`/`keyword` 全无效）|
+| **getpodcast.xyz** | 200，内嵌 `window.__INITIAL_DATA__`（`featured` 228 + `rightNow` 20 + `promoted` 4，带 `rssUrl`/`tags`/`isPaid`）| 可用、零配置；覆盖约 250 个中文节目 |
+| 小宇宙 API | 401（要鉴权）| 不可用 |
+| 喜马拉雅 / 蜻蜓 搜索 API | 400 / 404 | 端点需逆向 |
+
+**改法（两级在线 + 一级本机）**：
+
+1. **iTunes** —— 覆盖最好，先试；
+2. **Podcast Index** —— 填过密钥就**自动兜底**（以前要手动点「用 Podcast Index 搜索」）；
+3. **本机目录（GetPodcast）** —— `PodcastCatalogLogic` 拉 `getpodcast.xyz` 页面、从 `window.__INITIAL_DATA__` 抠出 JSON（**按花括号配对、跳过字符串内的括号与转义**；该站没有独立 JSON 端点，`/data.json` 等全是 404），存本机、**搜索走本机**（国内直连、离线可用）；跳过 `isPaid` 专辑（其 RSS 通常只给试听），每周刷新一次，**不进备份**（与 `podcast_feed_cache_json` 同理）。
+
+结果上方标明来源（`来自 iTunes` / `来自 Podcast Index` / `来自本机目录（仅收录两百多个中文节目）`）；三级都不行时把**真实原因**说出来并给出可照做的下一步（去填 Podcast Index 免费密钥），不再只说「搜索失败，请稍后再试」。
+
+**已知代价**：本机目录只覆盖那约 250 个中文节目（冷门/新节目搜不到），且依赖第三方页面结构 —— 结构变了会退化成空目录，搜索回到「报真实原因」。
+
+**守卫**：`layer_test`（`extractInitialData` 抠取 + `parseInitialData` 合并/去重/跳付费 + `search` 排序 + 缓存往返与新鲜度）；`key_screens_test` 三条 widget 测试（无密钥时的可照做提示 / 自动兜底到 Podcast Index 并标来源 / 兜底到本机目录）。
+
 ---
 
 ## 12. 变更记录
 
 | 日期 | 版本 | 变更 |
 |---|---|---|
+| 2026-09-24 | 1.11 | **§11.8 发现播客搜索三级兜底**（`5ccc0d5` + `e3d19be`）：iTunes → Podcast Index（有密钥自动兜底）→ 本机 GetPodcast 目录（拉一次存本机、搜索走本机，约 250 个中文节目）。三级都不行时报**真实原因**并给出可照做的下一步。实测确认 xyzrank 无搜索端点、小宇宙要鉴权、喜马/蜻蜓端点需逆向。`flutter test` **165/165**、`flutter analyze` **15 info**。守卫：1 条纯逻辑测试 + 3 条 widget 测试 |
 | 2026-09-24 | 1.10 | **§11.7 拉取失败回落本机缓存**（commit `4c11b8c`）：源不可达时详情页不再整页报错，改用 `feedCacheProvider` 的快照渲染（最多 40 集，音频地址通常还能播），并在筛选行下方显示「源暂时打不开，下面是本机缓存」+ 重试。回落前先 `reload()` 缓存（冷启动时 notifier 可能还没加载完，直接读 state 会静默失效）；没有缓存时仍抛错。`flutter test` **161/161**、`flutter analyze` **16 info**。两条新守卫（回落生效 / 无缓存仍报错）已做有牙验证 |
 | 2026-09-24 | 1.9 | **§11.5 补充：RSSHub 拦截保留但文案改准**（commit `fa2998d`）。查清两件事：① 该规则**只匹配域名 `rsshub.app`**，自建 / 镜像实例从来不受影响 —— 它实际是「提示」而不是闸门；② 实测 `rsshub.app` **自己已对阅读器返回 403**（`will gradually restrict access to rsshub.app for some feed readers`）→ 放开也拿不到 feed，只会让报错变模糊。所以保留拦截、把文案改成「已限制第三方阅读器访问」。`flutter test` **159/159**、`flutter analyze` **16 info** |
 | 2026-09-24 | 1.8 | **§11.6 倒计时收进共享顶部窄带**（commit `1f3bd56`）：`SleepTimerStatusBand` —— 顶部栏与视觉锚点之间的固定 24px 窄带，两页共用；电台页底部那份删除，两页都不再直接构造倒计时。高度固定是为了避免「开定时 → 锚点重新分配空间 → 封面跳一下」。`flutter test` **159/159**、`flutter analyze` **16 info**。两条新守卫（窄带高度恒定 / 两页一致）都做过有牙验证 |
