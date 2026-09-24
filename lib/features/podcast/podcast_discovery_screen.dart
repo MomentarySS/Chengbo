@@ -4,6 +4,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/network/network_status.dart';
 import '../../core/network/podcast_discovery.dart';
+import '../../core/network/podcast_catalog.dart';
 import '../../core/network/podcast_feed_logic.dart';
 import '../../core/network/podcast_index_client.dart';
 import '../../core/providers/app_providers.dart';
@@ -122,6 +123,21 @@ class _PodcastDiscoveryScreenState extends ConsumerState<PodcastDiscoveryScreen>
       }
     }
 
+    // 3) 本机目录（GetPodcast）：国内直连可拉、零配置。覆盖只有两百多个中文节目，
+    //    所以放在最后 —— 但它不需要任何密钥，是「什么都不配也能搜到东西」的那一级。
+    final catalog = await ref.read(podcastCatalogProvider.future);
+    final catalogHits = PodcastCatalogLogic.search(catalog, query);
+    if (catalogHits.isNotEmpty) {
+      if (!mounted) return;
+      setState(() {
+        _searching = false;
+        _searchHits = [for (final entry in catalogHits) entry.toHit()];
+        _searchSource = '本机目录（仅收录两百多个中文节目）';
+        _searchError = null;
+      });
+      return;
+    }
+
     if (!mounted) return;
     // 走到这里说明 iTunes 一定抛过（只有 catch 会给它赋值）。
     final reason = NetworkStatusLogic.humanize(itunesError);
@@ -129,8 +145,9 @@ class _PodcastDiscoveryScreenState extends ConsumerState<PodcastDiscoveryScreen>
       _searching = false;
       _searchHits = const [];
       _searchError = settings != null && settings.hasCredentials
-          ? 'iTunes 与 Podcast Index 都没搜成功：$reason'
-          : 'iTunes 在境内常连不上（$reason）。可在下方「高级：Podcast Index」填免费密钥后重试';
+          ? 'iTunes（$reason）与 Podcast Index 都没搜到，本机目录里也没有匹配的节目'
+          : 'iTunes 在境内常连不上（$reason），本机目录里也没有匹配的节目。'
+              '可在下方「高级：Podcast Index」填免费密钥后重试';
     });
   }
 

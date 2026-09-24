@@ -17,6 +17,8 @@ import '../../core/podcast/podcast_opml.dart';
 import '../../core/models/radio_station.dart';
 import '../../core/network/itunes_podcast_client.dart';
 import '../../core/network/podcast_feed_logic.dart';
+import '../../core/network/podcast_catalog.dart';
+import '../../core/network/podcast_catalog_client.dart';
 import '../../core/network/podcast_index.dart';
 import '../../core/network/podcast_index_client.dart';
 import '../../core/network/podcast_service.dart';
@@ -266,6 +268,27 @@ class PodcastIndexSettingsNotifier extends StateNotifier<AsyncValue<PodcastIndex
 final podcastIndexClientProvider = Provider<PodcastIndexClient>((ref) => PodcastIndexClient());
 
 final itunesPodcastClientProvider = Provider<ItunesPodcastClient>((ref) => ItunesPodcastClient());
+
+final podcastCatalogClientProvider =
+    Provider<PodcastCatalogClient>((ref) => PodcastCatalogClient());
+
+/// 本机播客目录（GetPodcast）。拉一次存本机，搜索时读本机 —— 不依赖搜索 API，
+/// 国内直连可拉。拉不动时用旧缓存（哪怕是过期的），目录只是搜索兜底，不该报错。
+final podcastCatalogProvider = FutureProvider<List<PodcastCatalogEntry>>((ref) async {
+  final storage = await ref.watch(appStorageProvider.future);
+  final cached = PodcastCatalogLogic.decode(storage.getPodcastCatalogRaw());
+  if (cached != null && !PodcastCatalogLogic.isStale(cached.fetchedAt, DateTime.now())) {
+    return cached.entries;
+  }
+  try {
+    final entries = await ref.watch(podcastCatalogClientProvider).fetch();
+    if (entries.isEmpty) return cached?.entries ?? const [];
+    await storage.setPodcastCatalogRaw(PodcastCatalogLogic.encode(entries, DateTime.now()));
+    return entries;
+  } catch (_) {
+    return cached?.entries ?? const [];
+  }
+});
 
 final xyzrankCatalogClientProvider =
     Provider<XyzrankCatalogClient>((ref) => XyzrankCatalogClient());

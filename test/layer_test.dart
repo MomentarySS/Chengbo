@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:audio_service/audio_service.dart';
@@ -38,6 +39,7 @@ import 'package:chengbo/core/network/station_probe.dart';
 import 'package:chengbo/core/station/station_catalog_selection.dart';
 import 'package:chengbo/core/station/station_hide.dart';
 import 'package:chengbo/core/station/station_skip.dart';
+import 'package:chengbo/core/network/podcast_catalog.dart';
 import 'package:chengbo/core/network/podcast_discovery.dart';
 import 'package:chengbo/core/network/podcast_feed_logic.dart';
 import 'package:chengbo/core/podcast/episode_bookmark.dart';
@@ -1605,6 +1607,53 @@ void main() {
       summary(ready: 1, downloading: 2, allEnabled: true, latestEnabled: true, skipIntroSeconds: 120),
       '正在下载 3/12 · 全部下载 开 · 自动下载最新 开 · 跳过片头 2:00',
     );
+  });
+
+  test('PodcastCatalogLogic extracts __INITIAL_DATA__ and searches the local catalog', () {
+    const html = '<script>window.__INITIAL_DATA__ = {"featured":'
+        '[{"title":"岩中花述","rssUrl":"https://a/1.xml","author":"GIADA","tags":["艺术"]},'
+        '{"title":"付费专辑","rssUrl":"https://a/2.xml","isPaid":true},'
+        '{"title":"","rssUrl":"https://a/3.xml"},'
+        '{"title":"重复的","rssUrl":"https://a/1.xml"}],'
+        '"rightNow":[{"title":"声动早咖啡","rssUrl":"https://a/4.xml"}],'
+        '"generatedAt":"x"};</script><p>{"not":"data"}</p>';
+
+    final json = PodcastCatalogLogic.extractInitialData(html);
+    expect(json, isNotNull);
+    expect(jsonDecode(json!), isA<Map<String, dynamic>>());
+    // 页面里没有这段数据时要返回 null，而不是抛。
+    expect(PodcastCatalogLogic.extractInitialData('<html></html>'), isNull);
+
+    final entries = PodcastCatalogLogic.parseInitialData(jsonDecode(json));
+    expect(
+      entries.map((entry) => entry.title),
+      ['岩中花述', '声动早咖啡'],
+      reason: '付费专辑 / 空标题 / 重复 rssUrl 都该被跳过，rightNow 要合并进来',
+    );
+
+    // 搜索排序：标题精确 > 前缀 > 包含 > 作者 > 标签。
+    const catalog = [
+      PodcastCatalogEntry(title: '科技早8点', rssUrl: 'https://a/k.xml', author: '编辑部', tags: ['科技']),
+      PodcastCatalogEntry(title: '新闻酸菜馆', rssUrl: 'https://a/n.xml', author: '老张', tags: ['新闻']),
+      PodcastCatalogEntry(title: '八点新闻', rssUrl: 'https://a/b.xml', author: '新闻组'),
+      PodcastCatalogEntry(title: '新闻', rssUrl: 'https://a/e.xml'),
+    ];
+    expect(
+      PodcastCatalogLogic.search(catalog, '新闻').map((entry) => entry.title),
+      ['新闻', '新闻酸菜馆', '八点新闻'],
+    );
+    expect(PodcastCatalogLogic.search(catalog, '科技').map((entry) => entry.title), ['科技早8点']);
+    expect(PodcastCatalogLogic.search(catalog, '老张').map((entry) => entry.title), ['新闻酸菜馆']);
+    expect(PodcastCatalogLogic.search(catalog, '   '), isEmpty);
+
+    // 缓存往返 + 新鲜度。
+    final encoded = PodcastCatalogLogic.encode(entries, DateTime(2026, 9, 24));
+    final cached = PodcastCatalogLogic.decode(encoded);
+    expect(cached?.entries.map((entry) => entry.title), ['岩中花述', '声动早咖啡']);
+    expect(PodcastCatalogLogic.isStale(cached!.fetchedAt, DateTime(2026, 9, 25)), isFalse);
+    expect(PodcastCatalogLogic.isStale(cached.fetchedAt, DateTime(2026, 10, 5)), isTrue);
+    expect(PodcastCatalogLogic.decode(''), isNull);
+    expect(PodcastCatalogLogic.decode('{"entries":[]}'), isNull);
   });
 
   test('PodcastPlaybackLogic.skipDurationLabel formats mm:ss', () {

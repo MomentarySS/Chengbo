@@ -10,6 +10,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:chengbo/core/brand.dart';
 import 'package:chengbo/core/network/itunes_podcast_client.dart';
 import 'package:chengbo/core/network/network_status.dart';
+import 'package:chengbo/core/network/podcast_catalog.dart';
 import 'package:chengbo/core/network/podcast_discovery.dart';
 import 'package:chengbo/core/network/podcast_index.dart';
 import 'package:chengbo/core/network/podcast_index_client.dart';
@@ -235,7 +236,11 @@ void main() {
     await tester.pumpWidget(
       _app(
         const PodcastDiscoveryScreen(),
-        extra: [itunesPodcastClientProvider.overrideWith((ref) => _FailingItunes())],
+        extra: [
+          itunesPodcastClientProvider.overrideWith((ref) => _FailingItunes()),
+          // 目录也空：这条测的是「三级都不行」时的提示。
+          podcastCatalogProvider.overrideWith((ref) async => const []),
+        ],
       ),
     );
     await tester.pumpAndSettle();
@@ -259,6 +264,7 @@ void main() {
         extra: [
           itunesPodcastClientProvider.overrideWith((ref) => _FailingItunes()),
           podcastIndexClientProvider.overrideWith((ref) => _FakeIndexClient()),
+          podcastCatalogProvider.overrideWith((ref) async => const []),
         ],
       ),
     );
@@ -269,6 +275,32 @@ void main() {
 
     expect(find.text('索引里的节目'), findsOneWidget, reason: '没有自动兜底到 Podcast Index');
     expect(find.text('来自 Podcast Index'), findsOneWidget, reason: '没标明结果来自哪个目录');
+  });
+
+  testWidgets('两个在线目录都不行时，用本机目录兜底（零配置）', (tester) async {
+    const catalog = [
+      PodcastCatalogEntry(
+        title: '目录里的节目',
+        rssUrl: 'https://example.com/cat.xml',
+        author: '目录作者',
+      ),
+    ];
+    await tester.pumpWidget(
+      _app(
+        const PodcastDiscoveryScreen(),
+        extra: [
+          itunesPodcastClientProvider.overrideWith((ref) => _FailingItunes()),
+          podcastCatalogProvider.overrideWith((ref) async => catalog),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).first, '目录');
+    await tester.testTextInput.receiveAction(TextInputAction.search);
+    await tester.pumpAndSettle();
+
+    expect(find.text('目录里的节目'), findsOneWidget, reason: '没有兜底到本机目录');
+    expect(find.textContaining('本机目录'), findsOneWidget, reason: '没标明结果来自本机目录');
   });
 
   testWidgets('appearance compact list switch defaults off', (tester) async {

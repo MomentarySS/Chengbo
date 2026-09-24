@@ -45,7 +45,7 @@ class DevicePrefValue {
       'stringList' when value is List => DevicePrefValue.stringList(
           [
             for (final item in value)
-              if (item is String) item
+              if (item is String) item,
           ],
         ),
       _ => null,
@@ -77,6 +77,8 @@ abstract final class DeviceBackupLogic {
     'podcast_index_api_secret',
     'podcast_downloads_json',
     'podcast_feed_cache_json',
+    // GetPodcast 本机目录：可再拉的缓存，别塞进备份 JSON。
+    'podcast_catalog_json',
   };
 
   static bool includeKey(String key) {

@@ -69,6 +69,7 @@ class AppStorage {
   static const _newEpisodeLastCheckKey = 'new_episode_last_check_ms';
   static const _newEpisodeGuidsKey = 'new_episode_last_guids_json';
   static const _feedCacheKey = 'podcast_feed_cache_json';
+  static const _podcastCatalogKey = 'podcast_catalog_json';
   static const _listenedEpisodeGuidsKey = 'listened_episode_guids';
   static const _favoriteEpisodeGuidsKey = 'favorite_episode_guids';
   static const _hideListenedKey = 'hide_listened_episodes';
@@ -720,6 +721,13 @@ class AppStorage {
 
   Future<void> setFeedCache(Map<String, CachedFeedSnapshot> cache) async {
     await _prefs.setString(_feedCacheKey, FeedCacheLogic.encodeMap(cache));
+  }
+
+  /// GetPodcast 本机目录（搜索兜底用）。**不进备份** —— 它是可再拉的缓存。
+  String? getPodcastCatalogRaw() => _prefs.getString(_podcastCatalogKey);
+
+  Future<void> setPodcastCatalogRaw(String raw) async {
+    await _prefs.setString(_podcastCatalogKey, raw);
   }
 
   Map<String, Object> snapshotForBackup() {
