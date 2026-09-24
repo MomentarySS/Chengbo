@@ -15,6 +15,9 @@ abstract final class NewEpisodeLogic {
   static const minInterval = Duration(hours: 6);
   static const maxFeedsPerRun = 12;
 
+  static bool shouldNotifyFeed({required bool globallyEnabled, required bool muted}) =>
+      globallyEnabled && !muted;
+
   static bool shouldRefresh({
     required DateTime now,
     DateTime? lastCheckAt,

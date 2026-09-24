@@ -9,8 +9,10 @@ import '../../core/platform/desk_tray_sync.dart';
 import '../../core/platform/desk_widget_sync.dart';
 import '../../core/platform/notification_permission.dart';
 import '../../core/providers/app_providers.dart';
+import '../../core/platform/desk_window_mode.dart';
 import '../../core/theme.dart';
 import '../../shared/widgets/desk_mini_bar.dart';
+import '../../shared/widgets/desk_sidebar_window.dart';
 import '../../shared/widgets/mini_player.dart';
 import '../../shared/widgets/now_playing_route.dart';
 import '../../shared/widgets/offline_banner.dart';
@@ -141,7 +143,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     ref.watch(deskLaunchAtStartupProvider);
     ref.watch(podcastSkipStepProvider);
     ref.watch(lastSleepValueProvider);
-    final deskCompact = ref.watch(deskCompactProvider).value ?? false;
+    final deskWindowMode = ref.watch(deskWindowModeProvider).value ?? DeskWindowMode.main;
     final useRail = MediaQuery.sizeOf(context).width >= ChengboTheme.railBreakpoint;
 
     void openNowPlaying() {
@@ -169,17 +171,22 @@ class _HomeShellState extends ConsumerState<HomeShell> {
       ),
     );
 
-    if (deskCompact) {
+    if (deskWindowMode == DeskWindowMode.miniBar) {
       return ShakeSleepListener(
         child: SkinFrame(
           child: Material(
             type: MaterialType.transparency,
             child: DeskMiniBar(
-              onExit: () => ref.read(deskCompactProvider.notifier).setEnabled(false),
+              onExit: () => ref.read(deskWindowModeProvider.notifier).setMode(DeskWindowMode.main),
+              onSidebar: () => ref.read(deskWindowModeProvider.notifier).setMode(DeskWindowMode.sidebar),
             ),
           ),
         ),
       );
+    }
+
+    if (deskWindowMode == DeskWindowMode.sidebar) {
+      return const DeskSidebarWindow();
     }
 
     if (useRail) {

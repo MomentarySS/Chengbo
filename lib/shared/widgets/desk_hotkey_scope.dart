@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/models/radio_station.dart';
 import '../../core/platform/desk_hotkey.dart';
+import '../../core/platform/desk_window_mode.dart';
 import '../../core/providers/app_providers.dart';
 
 /// 窗口有焦点时处理空格 / 方向键。仅 Windows。
@@ -46,6 +47,8 @@ class _DeskHotkeyScopeState extends ConsumerState<DeskHotkeyScope> {
       podcastSkipEnabled:
           ref.read(currentPlaybackProvider)?.kind == PlaybackKind.podcast,
       repeat: event is KeyRepeatEvent,
+      controlPressed: HardwareKeyboard.instance.isControlPressed,
+      shiftPressed: HardwareKeyboard.instance.isShiftPressed,
     );
     switch (action) {
       case DeskHotkeyAction.toggle:
@@ -54,6 +57,13 @@ class _DeskHotkeyScopeState extends ConsumerState<DeskHotkeyScope> {
         unawaited(ref.read(playerControllerProvider).skipPodcast(-1));
       case DeskHotkeyAction.skipForward:
         unawaited(ref.read(playerControllerProvider).skipPodcast(1));
+      case DeskHotkeyAction.toggleSurface:
+        final mode = ref.read(deskWindowModeProvider).value ?? DeskWindowMode.main;
+        unawaited(
+          ref.read(deskWindowModeProvider.notifier).setMode(
+            mode == DeskWindowMode.miniBar ? DeskWindowMode.sidebar : DeskWindowMode.miniBar,
+          ),
+        );
       case DeskHotkeyAction.none:
         return false;
     }

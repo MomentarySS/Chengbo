@@ -154,6 +154,7 @@ class SubscribedFeedsNotifier extends StateNotifier<AsyncValue<List<PodcastFeed>
     await _ref.read(podcastDownloadsProvider.notifier).deleteForFeed(id);
     await _ref.read(feedCacheProvider.notifier).remove(id);
     await _ref.read(podcastBookmarksProvider.notifier).pruneFeed(id);
+    await _ref.read(newEpisodeMutedFeedIdsProvider.notifier).remove(id);
   }
 
   Future<void> updateFeedMeta(PodcastFeed feed) async {
@@ -928,6 +929,12 @@ class FeedCacheNotifier extends StateNotifier<Map<String, CachedFeedSnapshot>> {
     await storage.setFeedCache(latest);
   }
 
+  Future<PodcastDetail> refreshFeed(PodcastFeed feed) async {
+    final detail = await _ref.read(podcastServiceProvider).fetchFeed(feed);
+    await put(detail);
+    return detail;
+  }
+
   Future<void> remove(String feedId) async {
     final storage = await _ref.read(appStorageProvider.future);
     final latest = await storage.getFeedCache();
@@ -935,6 +942,41 @@ class FeedCacheNotifier extends StateNotifier<Map<String, CachedFeedSnapshot>> {
     if (!mounted) return;
     state = latest;
     await storage.setFeedCache(latest);
+  }
+}
+
+final refreshingFeedIdsProvider = StateProvider<Set<String>>((ref) => const {});
+
+final newEpisodeMutedFeedIdsProvider = StateNotifierProvider<MutedNewEpisodeFeedsNotifier,
+    AsyncValue<Set<String>>>((ref) {
+  return MutedNewEpisodeFeedsNotifier(ref);
+});
+
+class MutedNewEpisodeFeedsNotifier extends StateNotifier<AsyncValue<Set<String>>> {
+  MutedNewEpisodeFeedsNotifier(this._ref) : super(const AsyncLoading()) {
+    _load();
+  }
+
+  final Ref _ref;
+
+  Future<void> _load() async {
+    final storage = await _ref.read(appStorageProvider.future);
+    state = AsyncData(await storage.getMutedNewEpisodeFeedIds());
+  }
+
+  Future<void> toggle(String feedId) async {
+    final next = Set<String>.from(state.value ?? const {});
+    if (!next.add(feedId)) next.remove(feedId);
+    state = AsyncData(next);
+    final storage = await _ref.read(appStorageProvider.future);
+    await storage.setMutedNewEpisodeFeedIds(next);
+  }
+
+  Future<void> remove(String feedId) async {
+    final next = Set<String>.from(state.value ?? const {})..remove(feedId);
+    state = AsyncData(next);
+    final storage = await _ref.read(appStorageProvider.future);
+    await storage.setMutedNewEpisodeFeedIds(next);
   }
 }
 

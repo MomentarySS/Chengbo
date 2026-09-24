@@ -5,11 +5,14 @@ import 'package:flutter/material.dart';
 abstract final class DeskCompactLogic {
   static const compactWidth = 456.0;
   static const compactHeight = 100.0;
+  static const sidebarWidth = 720.0;
+  static const sidebarHeight = 540.0;
   static const artSize = 72.0;
   static const barHeight = 64.0;
   static const playSize = 52.0;
 
   static Size get compactSize => const Size(compactWidth, compactHeight);
+  static Size get sidebarSize => const Size(sidebarWidth, sidebarHeight);
 
   static bool get offeredOnThisPlatform {
     if (kIsWeb) return false;

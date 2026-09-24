@@ -17,6 +17,7 @@ import 'package:chengbo/core/network/podcast_index_client.dart';
 import 'package:chengbo/core/network/station_probe.dart';
 import 'package:chengbo/core/network/stream_url_tester.dart';
 import 'package:chengbo/core/network/xyzrank_catalog_client.dart';
+import 'package:chengbo/core/models/radio_station.dart';
 import 'package:chengbo/core/providers/app_providers.dart';
 import 'package:chengbo/core/storage/app_storage.dart';
 import 'package:chengbo/core/storage/podcast_download_store.dart';
@@ -29,6 +30,7 @@ import 'package:chengbo/features/radio/station_catalog_setup_screen.dart';
 import 'package:chengbo/features/settings/about_screen.dart';
 import 'package:chengbo/features/settings/appearance_screen.dart';
 import 'package:chengbo/features/settings/data_management_screen.dart';
+import 'package:chengbo/features/settings/unreachable_stations_screen.dart';
 import 'package:chengbo/shared/widgets/empty_state.dart';
 import 'package:chengbo/shared/widgets/station_probe_status.dart';
 
@@ -88,6 +90,12 @@ class _FailingItunes extends ItunesPodcastClient {
   }) async {
     throw const ItunesPodcastException('iTunes 搜索失败: 连接超时');
   }
+}
+
+class _SuccessfulStreamTester extends StreamUrlTester {
+  @override
+  Future<StreamTestResult> test(String rawUrl, {CancelToken? cancelToken}) async =>
+      const StreamTestResult(true, '连接正常 · audio/mpeg');
 }
 
 class _FakeIndexClient extends PodcastIndexClient {
@@ -171,6 +179,34 @@ void main() {
     await tester.tap(find.text(StationProbeLogic.cancelLabel));
     expect(cancelled, isTrue);
   });
+
+  testWidgets('unreachable station can be tested without changing its saved source', (tester) async {
+    const station = RadioStation(
+      id: 'broken',
+      name: '测试电台',
+      streamUrl: 'https://example.com/radio',
+    );
+    await tester.pumpWidget(
+      _app(
+        const UnreachableStationsScreen(),
+        extra: [
+          unreachableStationsProvider.overrideWith((ref) => const [station]),
+          streamUrlTesterProvider.overrideWith((ref) => _SuccessfulStreamTester()),
+        ],
+      ),
+    );
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(find.text(station.streamUrl), findsOneWidget);
+    await tester.tap(find.byTooltip('检测此台'));
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 100));
+    expect(find.text('连接正常 · audio/mpeg'), findsOneWidget);
+    expect(find.text(station.streamUrl), findsNothing);
+    final storage = AppStorage(await SharedPreferences.getInstance());
+    expect(await storage.getStationPatches(), isEmpty);
+  });
+
 
   testWidgets('catalog setup requires at least one pick', (tester) async {
     await tester.pumpWidget(_app(const StationCatalogSetupScreen(firstLaunch: true)));

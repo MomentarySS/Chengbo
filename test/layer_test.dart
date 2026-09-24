@@ -31,7 +31,9 @@ import 'package:chengbo/core/network/new_episode.dart';
 import 'package:chengbo/core/platform/desk_compact.dart';
 import 'package:chengbo/core/platform/desk_hotkey.dart';
 import 'package:chengbo/core/platform/desk_launch.dart';
+import 'package:chengbo/core/platform/desk_sidebar_window_controller.dart';
 import 'package:chengbo/core/platform/desk_tray.dart';
+import 'package:chengbo/core/platform/desk_window_mode.dart';
 import 'package:chengbo/core/models/podcast.dart';
 import 'package:chengbo/core/models/radio_station.dart';
 import 'package:chengbo/core/network/catalog_fetch_logic.dart';
@@ -1848,6 +1850,28 @@ void main() {
     expect(queue.items, hasLength(1));
   });
 
+  test('PlayQueue batch add preserves existing order, dedupes and prioritizes downloads stably', () {
+    PlaybackItem episode(String guid) => PlaybackItem(
+          id: guid,
+          title: guid,
+          streamUrl: 'https://example.com/$guid.mp3',
+          kind: PlaybackKind.podcast,
+          episodeGuid: guid,
+        );
+    final existing = episode('existing');
+    final queue = PlayQueue(items: [existing]);
+    final result = queue.addAll(
+      [episode('a'), episode('downloaded'), episode('b'), episode('existing')],
+      downloadedGuids: const {'downloaded'},
+      downloadedFirst: true,
+    );
+    expect(
+      result.items.map((item) => item.episodeGuid),
+      ['existing', 'downloaded', 'a', 'b'],
+    );
+    expect(queue.items.map((item) => item.episodeGuid), ['existing']);
+  });
+
   test('AppStorage treats empty podcast list as a saved record', () async {
     SharedPreferences.setMockInitialValues({});
     final storage = await AppStorage.create();
@@ -1987,6 +2011,56 @@ void main() {
     expect(DeskCompactLogic.subtitle(offered: true), contains('浮在桌面上'));
     expect(DeskCompactLogic.subtitle(offered: false), contains('没有桌面窗口'));
     expect(DeskCompactLogic.compactSize, const Size(456, 100));
+    expect(DeskCompactLogic.sidebarSize, const Size(720, 540));
+  });
+
+  test('DeskWindowMode restores launch preference without skipping first setup', () {
+    expect(DeskWindowModeLogic.parse('sidebar'), DeskWindowMode.sidebar);
+    expect(DeskWindowModeLogic.parse('unknown'), DeskWindowMode.main);
+    expect(
+      DeskWindowModeLogic.resolveOnLaunch(
+        mode: DeskWindowMode.main,
+        launchCompact: true,
+        catalogConfigured: true,
+      ),
+      DeskWindowMode.miniBar,
+    );
+    expect(
+      DeskWindowModeLogic.resolveOnLaunch(
+        mode: DeskWindowMode.sidebar,
+        launchCompact: true,
+        catalogConfigured: false,
+      ),
+      DeskWindowMode.main,
+    );
+    expect(
+      DeskWindowModeLogic.resolveOnLaunch(
+        mode: DeskWindowMode.sidebar,
+        launchCompact: false,
+        catalogConfigured: true,
+      ),
+      DeskWindowMode.sidebar,
+    );
+  });
+
+  test('DeskSidebarWindowController snaps only near a work-area edge', () {
+    const work = Rect.fromLTWH(0, 0, 1920, 1080);
+    expect(
+      DeskSidebarWindowController.snapTarget(
+        workArea: work,
+        position: const Offset(8, 200),
+        size: const Size(720, 540),
+      ),
+      const Offset(0, 200),
+    );
+    expect(
+      DeskSidebarWindowController.snapTarget(
+        workArea: work,
+        position: const Offset(500, 200),
+        size: const Size(720, 540),
+      ),
+      isNull,
+    );
   });
 
   test('DeskTrayLogic routes tray menu and only offers Windows', () {
@@ -1999,6 +2073,7 @@ void main() {
     expect(DeskTrayLogic.toggleLabel(playing: false), '播放');
     expect(DeskTrayLogic.actionForMenuKey(DeskTrayLogic.showKey), DeskTrayAction.restore);
     expect(DeskTrayLogic.actionForMenuKey(DeskTrayLogic.toggleKey), DeskTrayAction.toggle);
+    expect(DeskTrayLogic.actionForMenuKey(DeskTrayLogic.sidebarKey), DeskTrayAction.sidebar);
     expect(DeskTrayLogic.actionForMenuKey(DeskTrayLogic.quitKey), DeskTrayAction.quit);
     expect(DeskTrayLogic.actionForMenuKey('other'), DeskTrayAction.none);
     expect(DeskTrayLogic.subtitle(), contains('托盘'));
@@ -2024,6 +2099,15 @@ void main() {
         repeat: true,
       ),
       DeskHotkeyAction.none,
+    );
+    expect(
+      DeskHotkeyLogic.actionForKey(
+        key: LogicalKeyboardKey.keyS,
+        editableFocused: false,
+        controlPressed: true,
+        shiftPressed: true,
+      ),
+      DeskHotkeyAction.toggleSurface,
     );
     expect(
       DeskHotkeyLogic.actionForKey(
@@ -2070,7 +2154,7 @@ void main() {
       ),
       DeskHotkeyAction.none,
     );
-    expect(DeskHotkeyLogic.subtitle(), contains('空格'));
+    expect(DeskHotkeyLogic.subtitle(), contains('Ctrl+Shift+S'));
   });
 
   test('DeskLaunchLogic keeps startup off by default and builds Run key args', () {
@@ -2116,6 +2200,11 @@ void main() {
     expect(await storage.getDeskCompactEnabled(), isFalse);
     await storage.setDeskCompactEnabled(true);
     expect(await storage.getDeskCompactEnabled(), isTrue);
+    await storage.setDeskWindowMode('sidebar');
+    expect(storage.getDeskWindowMode(), 'sidebar');
+    expect(await storage.getDeskCompactEnabled(), isFalse);
+    await storage.setDeskSidebarPosition(24, 48);
+    expect(storage.getDeskSidebarPosition(), [24.0, 48.0]);
     expect(await storage.getDeskLaunchAtStartupEnabled(), isFalse);
     await storage.setDeskLaunchAtStartupEnabled(true);
     expect(await storage.getDeskLaunchAtStartupEnabled(), isTrue);
@@ -2134,6 +2223,9 @@ void main() {
     expect(await storage.getNewEpisodeNotificationsEnabled(), isFalse);
     await storage.setNewEpisodeNotificationsEnabled(true);
     expect(await storage.getNewEpisodeNotificationsEnabled(), isTrue);
+    expect(await storage.getMutedNewEpisodeFeedIds(), isEmpty);
+    await storage.setMutedNewEpisodeFeedIds({'feed-a'});
+    expect(await storage.getMutedNewEpisodeFeedIds(), {'feed-a'});
   });
 
   test('ShakeSleepLogic needs an active timer, a shake, and cooldown', () {
@@ -2367,6 +2459,9 @@ void main() {
       ),
       isTrue,
     );
+    expect(NewEpisodeLogic.shouldNotifyFeed(globallyEnabled: false, muted: false), isFalse);
+    expect(NewEpisodeLogic.shouldNotifyFeed(globallyEnabled: true, muted: true), isFalse);
+    expect(NewEpisodeLogic.shouldNotifyFeed(globallyEnabled: true, muted: false), isTrue);
     expect(
       NewEpisodeLogic.shouldRefresh(now: now, lastCheckAt: null),
       isTrue,

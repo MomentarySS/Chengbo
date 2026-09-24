@@ -40,9 +40,7 @@ class NewEpisodeChecker {
       final enabled = await storage.getNewEpisodeNotificationsEnabled();
       final hits = await scanNewEpisodes(storage: storage, force: force);
       if (!enabled) return;
-      for (final hit in hits) {
-        await showNewEpisodeNotification(hit);
-      }
+      await _notifyUnmuted(storage, hits);
     } finally {
       _running = false;
     }
@@ -63,6 +61,19 @@ class NewEpisodeChecker {
         await Workmanager().cancelByUniqueName(newEpisodeWorkName);
       }
     } catch (_) {}
+  }
+}
+
+Future<void> _notifyUnmuted(AppStorage storage, List<NewEpisodeHit> hits) async {
+  final muted = await storage.getMutedNewEpisodeFeedIds();
+  for (final hit in hits) {
+    if (!NewEpisodeLogic.shouldNotifyFeed(
+      globallyEnabled: true,
+      muted: muted.contains(hit.feed.id),
+    )) {
+      continue;
+    }
+    await showNewEpisodeNotification(hit);
   }
 }
 
@@ -133,9 +144,7 @@ void newEpisodeCallbackDispatcher() {
         return true;
       }
       final hits = await scanNewEpisodes(storage: storage);
-      for (final hit in hits) {
-        await showNewEpisodeNotification(hit);
-      }
+      await _notifyUnmuted(storage, hits);
     } catch (_) {}
     return true;
   });

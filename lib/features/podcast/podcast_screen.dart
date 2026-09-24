@@ -1200,18 +1200,89 @@ class _InboxSection extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final theme = Theme.of(context);
     final current = ref.watch(currentPlaybackProvider);
+    final downloadState = ref.watch(podcastDownloadsProvider);
+    final downloadedGuids = {
+      for (final item in items)
+        if (downloadState.statusFor(item.episode.guid) == EpisodeDownloadStatus.ready)
+          item.episode.guid,
+    };
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
-          child: Text(
-            '未听',
-            style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+          child: Row(
+            children: [
+              Text(
+                '未听',
+                style: theme.textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+              ),
+              const Spacer(),
+              PopupMenuButton<_InboxQueueMode>(
+                tooltip: '批量加入播放队列',
+                onSelected: (mode) => _addInboxToQueue(
+                  context,
+                  ref,
+                  items,
+                  downloadedGuids: downloadedGuids,
+                  downloadedFirst: mode == _InboxQueueMode.downloadedFirst,
+                ),
+                itemBuilder: (context) => [
+                  const PopupMenuItem(
+                    value: _InboxQueueMode.inboxOrder,
+                    child: Text('按未听顺序加入队列'),
+                  ),
+                  PopupMenuItem(
+                    value: _InboxQueueMode.downloadedFirst,
+                    enabled: downloadedGuids.isNotEmpty,
+                    child: Text(downloadedGuids.isEmpty ? '已下载优先（暂无下载）' : '已下载单集优先'),
+                  ),
+                ],
+                child: const Padding(
+                  padding: EdgeInsets.all(8),
+                  child: Icon(Icons.playlist_add),
+                ),
+              ),
+            ],
           ),
         ),
         for (final item in items) _tile(context, ref, item, current),
       ],
+    );
+  }
+
+  Future<void> _addInboxToQueue(
+    BuildContext context,
+    WidgetRef ref,
+    List<InboxItem> items, {
+    required Set<String> downloadedGuids,
+    required bool downloadedFirst,
+  }) async {
+    final playbackItems = [
+      for (final item in items)
+        PlaybackItem.fromPodcastEpisode(
+          podcastTitle: item.feed.title,
+          episodeTitle: item.episode.title,
+          audioUrl: item.episode.audioUrl,
+          episodeGuid: item.episode.guid,
+          artworkUrl: item.episode.imageUrl ?? item.feed.imageUrl,
+          duration: item.episode.duration,
+          feedId: item.feed.id,
+        ),
+    ];
+    final added = await ref.read(playQueueProvider.notifier).addAll(
+          playbackItems,
+          downloadedGuids: downloadedGuids,
+          downloadedFirst: downloadedFirst,
+        );
+    if (!context.mounted) return;
+    final skipped = items.length - added;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          skipped == 0 ? '已加入 $added 集' : '已加入 $added 集，$skipped 集已在队列中',
+        ),
+      ),
     );
   }
 
@@ -1272,6 +1343,11 @@ class _FeedItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final summary = PodcastPlaybackLogic.stripHtml(feed.description);
+    final snapshot = ref.watch(feedCacheProvider)[feed.id];
+    final refreshing = ref.watch(refreshingFeedIdsProvider).contains(feed.id);
+    final mutedFeeds = ref.watch(newEpisodeMutedFeedIdsProvider);
+    final muted = mutedFeeds.value?.contains(feed.id) ?? false;
+    final globalNotifications = ref.watch(newEpisodeNotificationsProvider);
     return Dismissible(
       key: ValueKey('podcast-feed-${feed.id}'),
       direction: DismissDirection.endToStart,
@@ -1287,14 +1363,38 @@ class _FeedItem extends ConsumerWidget {
       confirmDismiss: (_) => confirmDeletePodcast(context, feed),
       onDismissed: (_) => ref.read(subscribedFeedsProvider.notifier).removeFeed(feed.id),
       child: GestureDetector(
-        onSecondaryTap: () => _showFeedMenu(context, ref, feed),
+        onSecondaryTap: () => _showFeedMenu(context, ref, feed, globalNotifications),
         child: ListTile(
           leading: StationArtwork(url: feed.imageUrl, size: 48, icon: Icons.podcasts),
           title: Text(feed.title),
           subtitle: Text(
-            summary.isEmpty ? feed.feedUrl : summary,
+            [
+              summary.isEmpty ? feed.feedUrl : summary,
+              if (snapshot != null) '最近更新：${_formatFeedRefreshTime(snapshot.fetchedAt)}',
+            ].join('\n'),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
+          ),
+          trailing: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (muted)
+                const Padding(
+                  padding: EdgeInsets.only(right: 4),
+                  child: Icon(Icons.notifications_off_outlined, size: 18),
+                ),
+              IconButton(
+                tooltip: '立即刷新',
+                onPressed: refreshing ? null : () => _refreshFeed(context, ref, feed),
+                icon: refreshing
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.refresh),
+              ),
+            ],
           ),
           onTap: () {
             Navigator.of(context).push(
@@ -1303,13 +1403,21 @@ class _FeedItem extends ConsumerWidget {
               ),
             );
           },
-          onLongPress: () => _showFeedMenu(context, ref, feed),
+          onLongPress: () => _showFeedMenu(context, ref, feed, globalNotifications),
         ),
       ),
     );
   }
 
-  void _showFeedMenu(BuildContext context, WidgetRef ref, PodcastFeed feed) {
+  void _showFeedMenu(
+    BuildContext context,
+    WidgetRef ref,
+    PodcastFeed feed,
+    AsyncValue<bool> globalNotificationState,
+  ) {
+    final mutedState = ref.read(newEpisodeMutedFeedIdsProvider);
+    final muted = mutedState.value?.contains(feed.id) ?? false;
+    final snapshot = ref.read(feedCacheProvider)[feed.id];
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
@@ -1324,6 +1432,38 @@ class _FeedItem extends ConsumerWidget {
               children: [
                 Text(feed.title, style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: 12),
+                ListTile(
+                  leading: Icon(
+                    muted ? Icons.notifications_off_outlined : Icons.notifications_active_outlined,
+                    color: colorScheme.onSurfaceVariant,
+                  ),
+                  title: Text(muted ? '开启此节目通知' : '关闭此节目通知'),
+                  subtitle: Text(
+                    globalNotificationState.when(
+                      data: (enabled) => enabled ? '全局新一集通知已开启' : '全局新一集通知当前已关闭',
+                      loading: () => '正在读取全局通知状态…',
+                      error: (_, __) => '无法读取全局通知状态',
+                    ),
+                  ),
+                  enabled: !mutedState.isLoading,
+                  onTap: () async {
+                    Navigator.pop(sheetContext);
+                    await ref.read(newEpisodeMutedFeedIdsProvider.notifier).toggle(feed.id);
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.schedule_outlined, color: colorScheme.onSurfaceVariant),
+                  title: const Text('最近成功更新'),
+                  subtitle: Text(snapshot == null ? '尚无本机缓存' : _formatFeedRefreshTime(snapshot.fetchedAt)),
+                ),
+                ListTile(
+                  leading: Icon(Icons.refresh, color: colorScheme.primary),
+                  title: const Text('立即刷新'),
+                  onTap: () {
+                    Navigator.pop(sheetContext);
+                    _refreshFeed(context, ref, feed);
+                  },
+                ),
                 ListTile(
                   leading: Icon(Icons.play_arrow_rounded, color: colorScheme.primary),
                   title: const Text('播放最新'),
@@ -1384,4 +1524,36 @@ class _FeedItem extends ConsumerWidget {
       },
     );
   }
+
+  Future<void> _refreshFeed(BuildContext context, WidgetRef ref, PodcastFeed feed) async {
+    final refreshing = Set<String>.from(ref.read(refreshingFeedIdsProvider))..add(feed.id);
+    ref.read(refreshingFeedIdsProvider.notifier).state = refreshing;
+    try {
+      final detail = await ref.read(feedCacheProvider.notifier).refreshFeed(feed);
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('「${feed.title}」已更新，共 ${detail.episodes.length} 集')),
+        );
+      }
+    } catch (error) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('刷新失败：${NetworkStatusLogic.humanize(error)}')),
+        );
+      }
+    } finally {
+      final latest = Set<String>.from(ref.read(refreshingFeedIdsProvider))..remove(feed.id);
+      ref.read(refreshingFeedIdsProvider.notifier).state = latest;
+    }
+  }
+}
+
+enum _InboxQueueMode { inboxOrder, downloadedFirst }
+
+String _formatFeedRefreshTime(DateTime time) {
+  final local = time.toLocal();
+  final now = DateTime.now();
+  final date = '${local.month.toString().padLeft(2, '0')}-${local.day.toString().padLeft(2, '0')}';
+  final clock = '${local.hour.toString().padLeft(2, '0')}:${local.minute.toString().padLeft(2, '0')}';
+  return local.year == now.year ? '$date $clock' : '${local.year}-$date $clock';
 }

@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-enum DeskHotkeyAction { toggle, skipBack, skipForward, none }
+enum DeskHotkeyAction { toggle, skipBack, skipForward, toggleSurface, none }
 
 /// Windows 键盘：空格播停，左右方向键按当前跳秒档快退/快进。
 abstract final class DeskHotkeyLogic {
@@ -17,7 +17,7 @@ abstract final class DeskHotkeyLogic {
   static bool get offeredOnThisPlatform => offered();
 
   static String subtitle() =>
-      '空格播停（输入或按钮焦点时不抢）；← / → 仅播客按跳秒档';
+      '空格播停；← / → 播客跳秒；Ctrl+Shift+S 切换窗口形态';
 
   static bool isEditableContext(BuildContext? context) {
     if (context == null) return false;
@@ -43,8 +43,14 @@ abstract final class DeskHotkeyLogic {
     bool repeat = false,
     bool activateControlFocused = false,
     bool podcastSkipEnabled = true,
+    bool controlPressed = false,
+    bool shiftPressed = false,
   }) {
     if (editableFocused) return DeskHotkeyAction.none;
+    if (key == LogicalKeyboardKey.keyS && controlPressed && shiftPressed) {
+      if (repeat) return DeskHotkeyAction.none;
+      return DeskHotkeyAction.toggleSurface;
+    }
     if (key == LogicalKeyboardKey.space) {
       if (repeat || activateControlFocused) return DeskHotkeyAction.none;
       return DeskHotkeyAction.toggle;

@@ -1,8 +1,9 @@
 import 'package:flutter/foundation.dart';
 
 import '../brand.dart';
+import 'desk_window_mode.dart';
 
-enum DeskTrayAction { restore, toggle, quit, none }
+enum DeskTrayAction { restore, toggle, main, miniBar, sidebar, quit, none }
 
 /// Windows 托盘：关窗口隐藏进托盘，音频继续。不含原生调用，便于单测。
 abstract final class DeskTrayLogic {
@@ -10,9 +11,21 @@ abstract final class DeskTrayLogic {
   static const showKey = 'show';
   static const toggleKey = 'toggle';
   static const quitKey = 'quit';
+  static const mainKey = 'mode_main';
+  static const miniBarKey = 'mode_mini';
+  static const sidebarKey = 'mode_sidebar';
 
-  static const showLabel = '打开澄波';
+  static const showLabel = '打开当前窗口';
   static const quitLabel = '退出';
+
+  static String modeLabel(DeskWindowMode mode, DeskWindowMode selected) {
+    final label = switch (mode) {
+      DeskWindowMode.main => '完整窗口',
+      DeskWindowMode.miniBar => '浮条',
+      DeskWindowMode.sidebar => '侧栏窗口',
+    };
+    return mode == selected ? '✓ $label' : label;
+  }
 
   static bool offered({
     TargetPlatform? platform,
@@ -38,6 +51,9 @@ abstract final class DeskTrayLogic {
     return switch (key) {
       showKey => DeskTrayAction.restore,
       toggleKey => DeskTrayAction.toggle,
+      mainKey => DeskTrayAction.main,
+      miniBarKey => DeskTrayAction.miniBar,
+      sidebarKey => DeskTrayAction.sidebar,
       quitKey => DeskTrayAction.quit,
       _ => DeskTrayAction.none,
     };

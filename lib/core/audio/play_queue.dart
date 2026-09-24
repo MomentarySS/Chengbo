@@ -24,6 +24,33 @@ class PlayQueue {
     return PlayQueue(items: [...items, item]);
   }
 
+  PlayQueue addAll(
+    Iterable<PlaybackItem> incoming, {
+    Set<String> downloadedGuids = const {},
+    bool downloadedFirst = false,
+  }) {
+    final itemsToAdd = incoming.toList();
+    if (downloadedFirst && downloadedGuids.isNotEmpty) {
+      final ready = <PlaybackItem>[];
+      final pending = <PlaybackItem>[];
+      for (final item in itemsToAdd) {
+        (item.episodeGuid != null && downloadedGuids.contains(item.episodeGuid)
+                ? ready
+                : pending)
+            .add(item);
+      }
+      itemsToAdd
+        ..clear()
+        ..addAll(ready)
+        ..addAll(pending);
+    }
+    var next = this;
+    for (final item in itemsToAdd) {
+      next = next.add(item);
+    }
+    return next;
+  }
+
   PlayQueue remove(int index) {
     final next = [...items]..removeAt(index);
     return PlayQueue(items: next);

@@ -18,9 +18,10 @@ import 'station_artwork.dart';
 
 /// QQ 音乐式桌面浮条：圆封面探出条外，中间一排控制，× 回到完整窗口。
 class DeskMiniBar extends ConsumerWidget {
-  const DeskMiniBar({super.key, required this.onExit});
+  const DeskMiniBar({super.key, required this.onExit, required this.onSidebar});
 
   final VoidCallback onExit;
+  final VoidCallback onSidebar;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -243,6 +244,12 @@ class DeskMiniBar extends ConsumerWidget {
                                 onLongPress: isPodcast
                                     ? () => ref.read(podcastSkipStepProvider.notifier).cycle()
                                     : null,
+                              ),
+                              IconButton(
+                                tooltip: '切换到侧栏',
+                                visualDensity: VisualDensity.compact,
+                                icon: Icon(Icons.view_sidebar_outlined, color: colorScheme.onSurfaceVariant),
+                                onPressed: onSidebar,
                               ),
                               IconButton(
                                 tooltip: '回到完整窗口',

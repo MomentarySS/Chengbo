@@ -14,9 +14,11 @@ import '../brand.dart';
 import '../models/radio_station.dart';
 import '../network/network_status.dart';
 import '../platform/cast_controller.dart';
-import '../platform/desk_launch.dart';
 import '../platform/desk_launch_native.dart';
 import '../platform/desk_window.dart';
+import '../platform/desk_window_mode.dart';
+import '../platform/desk_sidebar_window_controller.dart';
+import 'package:window_manager/window_manager.dart';
 import '../podcast/podcast_listened.dart';
 import '../storage/podcast_download_store.dart';
 import '../theme.dart';
@@ -407,6 +409,25 @@ class PlayQueueNotifier extends StateNotifier<AsyncValue<PlayQueue>> {
     await storage.setPlayQueue(next);
   }
 
+  Future<int> addAll(
+    Iterable<PlaybackItem> items, {
+    Set<String> downloadedGuids = const {},
+    bool downloadedFirst = false,
+  }) async {
+    final current = state.value ?? const PlayQueue();
+    final next = current.addAll(
+      items,
+      downloadedGuids: downloadedGuids,
+      downloadedFirst: downloadedFirst,
+    );
+    final added = next.items.length - current.items.length;
+    if (added <= 0) return 0;
+    state = AsyncData(next);
+    final storage = await _ref.read(appStorageProvider.future);
+    await storage.setPlayQueue(next);
+    return added;
+  }
+
   Future<void> remove(int index) async {
     final current = state.value ?? const PlayQueue();
     final next = current.remove(index);
@@ -657,26 +678,69 @@ class DeskCompactNotifier extends StateNotifier<AsyncValue<bool>> {
 
   Future<void> _load() async {
     final storage = await _ref.read(appStorageProvider.future);
-    final compact = await storage.getDeskCompactEnabled();
-    final launchCompact = await storage.getDeskLaunchCompactEnabled();
-    final catalogConfigured = await storage.getStationCatalogConfigured();
-    final enabled = DeskLaunchLogic.compactOnLaunch(
-      compactEnabled: compact,
-      launchCompact: launchCompact,
-      catalogConfigured: catalogConfigured,
-    );
-    if (enabled && !compact) {
-      await storage.setDeskCompactEnabled(true);
-    }
+    final saved = storage.getDeskWindowMode();
+    final enabled = saved == null
+        ? await storage.getDeskCompactEnabled()
+        : DeskWindowModeLogic.parse(saved) == DeskWindowMode.miniBar;
     state = AsyncData(enabled);
-    await DeskWindow.apply(compact: enabled);
   }
 
   Future<void> setEnabled(bool enabled) async {
     state = AsyncData(enabled);
+    await _ref.read(deskWindowModeProvider.notifier).setMode(
+          enabled ? DeskWindowMode.miniBar : DeskWindowMode.main,
+        );
+  }
+}
+
+final deskWindowModeProvider =
+    StateNotifierProvider<DeskWindowModeNotifier, AsyncValue<DeskWindowMode>>((ref) {
+  return DeskWindowModeNotifier(ref);
+});
+
+class DeskWindowModeNotifier extends StateNotifier<AsyncValue<DeskWindowMode>> {
+  DeskWindowModeNotifier(this._ref) : super(const AsyncLoading()) {
+    _load();
+  }
+
+  final Ref _ref;
+
+  Future<void> _load() async {
     final storage = await _ref.read(appStorageProvider.future);
-    await storage.setDeskCompactEnabled(enabled);
-    await DeskWindow.apply(compact: enabled);
+    final saved = storage.getDeskWindowMode();
+    final storedMode = saved == null
+        ? ((await storage.getDeskCompactEnabled())
+            ? DeskWindowMode.miniBar
+            : DeskWindowMode.main)
+        : DeskWindowModeLogic.parse(saved);
+    final resolved = DeskWindowModeLogic.resolveOnLaunch(
+      mode: storedMode,
+      launchCompact: await storage.getDeskLaunchCompactEnabled(),
+      catalogConfigured: await storage.getStationCatalogConfigured(),
+    );
+    state = AsyncData(resolved);
+    await DeskWindow.apply(mode: resolved);
+    if (resolved == DeskWindowMode.sidebar) {
+      final stored = storage.getDeskSidebarPosition();
+      final position = stored == null
+          ? await DeskSidebarWindowController.defaultPosition()
+          : await DeskSidebarWindowController.clampToWorkArea(Offset(stored[0], stored[1]));
+      if (position != null) await windowManager.setPosition(position);
+    }
+  }
+
+  Future<void> setMode(DeskWindowMode mode) async {
+    state = AsyncData(mode);
+    final storage = await _ref.read(appStorageProvider.future);
+    await storage.setDeskWindowMode(mode.name);
+    await DeskWindow.apply(mode: mode);
+    if (mode == DeskWindowMode.sidebar) {
+      final stored = storage.getDeskSidebarPosition();
+      final position = stored == null
+          ? await DeskSidebarWindowController.defaultPosition()
+          : await DeskSidebarWindowController.clampToWorkArea(Offset(stored[0], stored[1]));
+      if (position != null) await windowManager.setPosition(position);
+    }
   }
 }
 

@@ -11,6 +11,7 @@ import '../../core/platform/desk_compact.dart';
 import '../../core/platform/desk_hotkey.dart';
 import '../../core/platform/desk_launch.dart';
 import '../../core/platform/desk_tray.dart';
+import '../../core/platform/desk_window_mode.dart';
 import '../../core/platform/notification_permission.dart';
 import '../../core/providers/app_providers.dart';
 import '../podcast/podcast_providers.dart';
@@ -48,22 +49,22 @@ class PlaybackSettingsScreen extends ConsumerWidget {
                 ),
               ),
           if (DeskCompactLogic.offeredOnThisPlatform)
-            ref.watch(deskCompactProvider).when(
-                  data: (enabled) => SwitchListTile(
-                    secondary: const Icon(Icons.picture_in_picture_alt_outlined),
-                    title: const Text('桌面迷你窗'),
-                    subtitle: Text(DeskCompactLogic.subtitle(offered: true)),
-                    value: enabled,
-                    onChanged: (value) => ref.read(deskCompactProvider.notifier).setEnabled(value),
+            ref.watch(deskWindowModeProvider).when(
+                  data: (mode) => ListTile(
+                    leading: const Icon(Icons.desktop_windows_outlined),
+                    title: const Text('桌面窗口形态'),
+                    subtitle: Text(_windowModeLabel(mode)),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => _chooseWindowMode(context, ref, mode),
                   ),
                   loading: () => const ListTile(
-                    leading: Icon(Icons.picture_in_picture_alt_outlined),
-                    title: Text('桌面迷你窗'),
+                    leading: Icon(Icons.desktop_windows_outlined),
+                    title: Text('桌面窗口形态'),
                     trailing: SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2)),
                   ),
                   error: (error, _) => ListTile(
-                    leading: const Icon(Icons.picture_in_picture_alt_outlined),
-                    title: const Text('桌面迷你窗'),
+                    leading: const Icon(Icons.desktop_windows_outlined),
+                    title: const Text('桌面窗口形态'),
                     subtitle: Text('加载失败: $error'),
                   ),
                 ),
@@ -301,5 +302,39 @@ class PlaybackSettingsScreen extends ConsumerWidget {
             ),
       ),
     );
+  }
+
+  static String _windowModeLabel(DeskWindowMode mode) => switch (mode) {
+        DeskWindowMode.main => '完整窗口',
+        DeskWindowMode.miniBar => '浮条',
+        DeskWindowMode.sidebar => '侧栏窗口',
+      };
+
+  static Future<void> _chooseWindowMode(
+    BuildContext context,
+    WidgetRef ref,
+    DeskWindowMode current,
+  ) async {
+    final selected = await showModalBottomSheet<DeskWindowMode>(
+      context: context,
+      showDragHandle: true,
+      builder: (context) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (final mode in DeskWindowMode.values)
+              RadioListTile<DeskWindowMode>(
+                value: mode,
+                groupValue: current,
+                title: Text(_windowModeLabel(mode)),
+                onChanged: (value) => Navigator.of(context).pop(value),
+              ),
+          ],
+        ),
+      ),
+    );
+    if (selected != null) {
+      await ref.read(deskWindowModeProvider.notifier).setMode(selected);
+    }
   }
 }

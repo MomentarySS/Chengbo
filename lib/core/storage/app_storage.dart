@@ -53,6 +53,8 @@ class AppStorage {
   static const _podcastDownloadAllFeedsKey = 'podcast_download_all_feed_ids';
   static const _podcastDownloadLatestFeedsKey = 'podcast_download_latest_feed_ids';
   static const _deskCompactKey = 'desk_compact_enabled';
+  static const _deskWindowModeKey = 'desk_window_mode';
+  static const _deskSidebarPositionKey = 'desk_sidebar_position_json';
   static const _deskLaunchAtStartupKey = 'desk_launch_at_startup';
   static const _deskLaunchCompactKey = 'desk_launch_compact';
   static const _rememberLastListeningKey = 'remember_last_listening';
@@ -66,6 +68,7 @@ class AppStorage {
   static const _bluetoothResumeKey = 'bluetooth_resume_enabled';
   static const _listDensityCompactKey = 'list_density_compact';
   static const _newEpisodeNotifyKey = 'new_episode_notifications_enabled';
+  static const _mutedNewEpisodeFeedsKey = 'new_episode_muted_feed_ids';
   static const _newEpisodeLastCheckKey = 'new_episode_last_check_ms';
   static const _newEpisodeGuidsKey = 'new_episode_last_guids_json';
   static const _feedCacheKey = 'podcast_feed_cache_json';
@@ -566,6 +569,29 @@ class AppStorage {
     await _prefs.setBool(_deskCompactKey, enabled);
   }
 
+  String? getDeskWindowMode() => _prefs.getString(_deskWindowModeKey);
+
+  Future<void> setDeskWindowMode(String mode) async {
+    await _prefs.setString(_deskWindowModeKey, mode);
+    await setDeskCompactEnabled(mode == 'miniBar');
+  }
+
+  List<double>? getDeskSidebarPosition() {
+    final raw = _prefs.getString(_deskSidebarPositionKey);
+    if (raw == null) return null;
+    try {
+      final decoded = jsonDecode(raw);
+      if (decoded is List && decoded.length == 2 && decoded.every((v) => v is num)) {
+        return [for (final value in decoded) (value as num).toDouble()];
+      }
+    } catch (_) {}
+    return null;
+  }
+
+  Future<void> setDeskSidebarPosition(double x, double y) async {
+    await _prefs.setString(_deskSidebarPositionKey, jsonEncode([x, y]));
+  }
+
   Future<bool> getDeskLaunchAtStartupEnabled() async {
     return _prefs.getBool(_deskLaunchAtStartupKey) ?? false;
   }
@@ -691,6 +717,13 @@ class AppStorage {
 
   Future<void> setNewEpisodeNotificationsEnabled(bool enabled) async {
     await _prefs.setBool(_newEpisodeNotifyKey, enabled);
+  }
+
+  Future<Set<String>> getMutedNewEpisodeFeedIds() async =>
+      (_prefs.getStringList(_mutedNewEpisodeFeedsKey) ?? const <String>[]).toSet();
+
+  Future<void> setMutedNewEpisodeFeedIds(Set<String> ids) async {
+    await _prefs.setStringList(_mutedNewEpisodeFeedsKey, ids.toList());
   }
 
   Future<DateTime?> getNewEpisodeLastCheckAt() async {
