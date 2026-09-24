@@ -29,6 +29,9 @@ class _PodcastDiscoveryScreenState extends ConsumerState<PodcastDiscoveryScreen>
   var _searching = false;
   var _subscribingUrl = '';
   String? _searchError;
+
+  /// 结果来自哪个目录（iTunes / Podcast Index / 本机目录），用来在结果上方标明。
+  String? _searchSource;
   List<PodcastDiscoveryHit> _searchHits = const [];
 
   var _rankLoading = false;
@@ -57,7 +60,14 @@ class _PodcastDiscoveryScreenState extends ConsumerState<PodcastDiscoveryScreen>
     super.dispose();
   }
 
-  Future<void> _searchItunes() async {
+  /// 搜索按「覆盖优先、可达性兜底」分两级，并把**真实原因**说出来：
+  ///
+  /// 1. iTunes —— 覆盖最好，但境内常连不上（实测手机浏览器能开、应用里常失败）；
+  /// 2. Podcast Index —— 国内可达（api.podcastindex.org 实测可达），需要免费密钥，
+  ///    在「高级：Podcast Index」里填过就自动兜底。
+  ///
+  /// 两级都不行时，报错要能照做（提示去填密钥），而不是笼统的「搜索失败」。
+  Future<void> _search() async {
     final query = _queryController.text.trim();
     if (query.isEmpty || _searching) return;
     if (await ref.read(networkMonitorProvider).isOffline) {
@@ -68,9 +78,12 @@ class _PodcastDiscoveryScreenState extends ConsumerState<PodcastDiscoveryScreen>
     setState(() {
       _searching = true;
       _searchError = null;
+      _searchSource = null;
     });
+
+    final hideExplicit = ref.read(podcastIndexSettingsProvider).value?.hideExplicit ?? true;
+    Object? itunesError;
     try {
-      final hideExplicit = ref.read(podcastIndexSettingsProvider).value?.hideExplicit ?? true;
       final hits = await ref.read(itunesPodcastClientProvider).search(
             query: query,
             hideExplicit: hideExplicit,
@@ -79,15 +92,46 @@ class _PodcastDiscoveryScreenState extends ConsumerState<PodcastDiscoveryScreen>
       setState(() {
         _searching = false;
         _searchHits = hits;
+        _searchSource = hits.isEmpty ? null : 'iTunes';
         _searchError = hits.isEmpty ? '没有找到匹配的公开 RSS' : null;
       });
-    } catch (_) {
-      if (!mounted) return;
-      setState(() {
-        _searching = false;
-        _searchError = '搜索失败，请稍后再试';
-      });
+      return;
+    } catch (error) {
+      itunesError = error;
     }
+
+    final settings = ref.read(podcastIndexSettingsProvider).value;
+    if (settings != null && settings.hasCredentials) {
+      try {
+        final hits = await ref.read(podcastIndexClientProvider).search(
+              query: query,
+              apiKey: settings.apiKey,
+              apiSecret: settings.apiSecret,
+              hideExplicit: hideExplicit,
+            );
+        if (!mounted) return;
+        setState(() {
+          _searching = false;
+          _searchHits = [for (final hit in hits) PodcastDiscoveryHit.fromIndex(hit)];
+          _searchSource = hits.isEmpty ? null : 'Podcast Index';
+          _searchError = hits.isEmpty ? '没有找到匹配的公开 RSS' : null;
+        });
+        return;
+      } catch (_) {
+        // 落到下面的统一提示。
+      }
+    }
+
+    if (!mounted) return;
+    // 走到这里说明 iTunes 一定抛过（只有 catch 会给它赋值）。
+    final reason = NetworkStatusLogic.humanize(itunesError);
+    setState(() {
+      _searching = false;
+      _searchHits = const [];
+      _searchError = settings != null && settings.hasCredentials
+          ? 'iTunes 与 Podcast Index 都没搜成功：$reason'
+          : 'iTunes 在境内常连不上（$reason）。可在下方「高级：Podcast Index」填免费密钥后重试';
+    });
   }
 
   Future<void> _searchPodcastIndex() async {
@@ -277,11 +321,11 @@ class _PodcastDiscoveryScreenState extends ConsumerState<PodcastDiscoveryScreen>
             border: OutlineInputBorder(),
           ),
           textInputAction: TextInputAction.search,
-          onSubmitted: (_) => _searchItunes(),
+          onSubmitted: (_) => _search(),
         ),
         const SizedBox(height: 12),
         FilledButton.icon(
-          onPressed: _searching ? null : _searchItunes,
+          onPressed: _searching ? null : _search,
           icon: _searching
               ? const SizedBox(
                   width: 16,
@@ -349,6 +393,15 @@ class _PodcastDiscoveryScreenState extends ConsumerState<PodcastDiscoveryScreen>
           Text(
             _searchError!,
             style: TextStyle(color: Theme.of(context).colorScheme.error),
+          ),
+        ],
+        if (_searchSource != null && _searchHits.isNotEmpty) ...[
+          const SizedBox(height: 8),
+          Text(
+            '来自 $_searchSource',
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
+                ),
           ),
         ],
         const SizedBox(height: 8),

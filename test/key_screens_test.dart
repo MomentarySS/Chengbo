@@ -11,6 +11,8 @@ import 'package:chengbo/core/brand.dart';
 import 'package:chengbo/core/network/itunes_podcast_client.dart';
 import 'package:chengbo/core/network/network_status.dart';
 import 'package:chengbo/core/network/podcast_discovery.dart';
+import 'package:chengbo/core/network/podcast_index.dart';
+import 'package:chengbo/core/network/podcast_index_client.dart';
 import 'package:chengbo/core/network/station_probe.dart';
 import 'package:chengbo/core/network/stream_url_tester.dart';
 import 'package:chengbo/core/network/xyzrank_catalog_client.dart';
@@ -71,6 +73,35 @@ class _FakeItunes extends ItunesPodcastClient {
         feedUrl: 'https://www.ximalaya.com/album/123.xml',
         author: '喜马',
       ),
+    ];
+  }
+}
+
+class _FailingItunes extends ItunesPodcastClient {
+  _FailingItunes() : super(dio: Dio());
+
+  @override
+  Future<List<PodcastDiscoveryHit>> search({
+    required String query,
+    required bool hideExplicit,
+  }) async {
+    throw const ItunesPodcastException('iTunes 搜索失败: 连接超时');
+  }
+}
+
+class _FakeIndexClient extends PodcastIndexClient {
+  _FakeIndexClient() : super(dio: Dio());
+
+  @override
+  Future<List<PodcastIndexHit>> search({
+    required String query,
+    required String apiKey,
+    required String apiSecret,
+    required bool hideExplicit,
+    int Function()? unixTime,
+  }) async {
+    return const [
+      PodcastIndexHit(title: '索引里的节目', feedUrl: 'https://example.com/index.xml'),
     ];
   }
 }
@@ -198,6 +229,46 @@ void main() {
     await tester.pump(const Duration(milliseconds: 600));
     await tester.pump();
     expect(find.text('热榜节目', skipOffstage: false), findsOneWidget);
+  });
+
+  testWidgets('iTunes 搜不了且没填 Podcast Index 密钥时，提示要能照做', (tester) async {
+    await tester.pumpWidget(
+      _app(
+        const PodcastDiscoveryScreen(),
+        extra: [itunesPodcastClientProvider.overrideWith((ref) => _FailingItunes())],
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).first, '新闻');
+    await tester.testTextInput.receiveAction(TextInputAction.search);
+    await tester.pumpAndSettle();
+
+    // 不能只说「搜索失败，请稍后再试」—— 要告诉用户去哪儿填密钥。
+    expect(find.textContaining('免费密钥'), findsOneWidget);
+    expect(find.textContaining('连接超时'), findsOneWidget);
+  });
+
+  testWidgets('iTunes 搜不了但填了 Podcast Index 密钥时自动兜底', (tester) async {
+    SharedPreferences.setMockInitialValues({
+      'podcast_index_api_key': 'k',
+      'podcast_index_api_secret': 's',
+    });
+    await tester.pumpWidget(
+      _app(
+        const PodcastDiscoveryScreen(),
+        extra: [
+          itunesPodcastClientProvider.overrideWith((ref) => _FailingItunes()),
+          podcastIndexClientProvider.overrideWith((ref) => _FakeIndexClient()),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).first, '新闻');
+    await tester.testTextInput.receiveAction(TextInputAction.search);
+    await tester.pumpAndSettle();
+
+    expect(find.text('索引里的节目'), findsOneWidget, reason: '没有自动兜底到 Podcast Index');
+    expect(find.text('来自 Podcast Index'), findsOneWidget, reason: '没标明结果来自哪个目录');
   });
 
   testWidgets('appearance compact list switch defaults off', (tester) async {
