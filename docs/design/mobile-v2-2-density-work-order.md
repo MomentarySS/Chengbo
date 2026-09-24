@@ -492,12 +492,19 @@ flutter test      # 基线 143/143；本工单新增后总数 = 143 + 新增
 
 有牙验证：把窄带改成 `timer.isActive ? height + 20 : height` → 「窄带高度跟着定时状态变了」失败；把电台页换回 `SizedBox(height: 8)` → 「radio_now_playing.dart 没改用共享的顶部窄带」失败。
 
+**补充（commit `fa2998d`）**：用户问「三类全放开有什么影响、RSSHub 拦截拦掉了什么」，查清后选了「保留拦截 + 改文案」：
+
+- 该规则**只匹配域名 `rsshub.app`**（含子域）→ **自建 / 镜像 RSSHub 实例从来不受影响**（`rsshub.example.com`、Vercel / Workers 部署都当普通 feed 订阅）。它实际起的作用是给随手粘贴该域名的用户一条**说得清原因的提示**，不是准入闸门。
+- 2026-09 实测该域名**自己已对阅读器返回 403**（正文：`Due to cost considerations, we will gradually restrict access to rsshub.app for some feed readers`）→ 就算放开也拿不到 feed，只会把报错从「说清原因」变成笼统的「RSS 解析失败」。
+- 所以文案改成 `无法在澄波订阅。rsshub.app 已限制第三方阅读器访问，请用作者公开的 RSS`，注释把「只拦域名 / 自建不受影响 / 该域名自身已 403」三点都记下，避免下一个人把这条读成有效闸门。
+
 ---
 
 ## 12. 变更记录
 
 | 日期 | 版本 | 变更 |
 |---|---|---|
+| 2026-09-24 | 1.9 | **§11.5 补充：RSSHub 拦截保留但文案改准**（commit `fa2998d`）。查清两件事：① 该规则**只匹配域名 `rsshub.app`**，自建 / 镜像实例从来不受影响 —— 它实际是「提示」而不是闸门；② 实测 `rsshub.app` **自己已对阅读器返回 403**（`will gradually restrict access to rsshub.app for some feed readers`）→ 放开也拿不到 feed，只会让报错变模糊。所以保留拦截、把文案改成「已限制第三方阅读器访问」。`flutter test` **159/159**、`flutter analyze` **16 info** |
 | 2026-09-24 | 1.8 | **§11.6 倒计时收进共享顶部窄带**（commit `1f3bd56`）：`SleepTimerStatusBand` —— 顶部栏与视觉锚点之间的固定 24px 窄带，两页共用；电台页底部那份删除，两页都不再直接构造倒计时。高度固定是为了避免「开定时 → 锚点重新分配空间 → 封面跳一下」。`flutter test` **159/159**、`flutter analyze` **16 info**。两条新守卫（窄带高度恒定 / 两页一致）都做过有牙验证 |
 | 2026-09-23 | 1.7 | **§11.5 订阅拦截收窄到只剩 RSSHub**（commit `74f3349`）：实测喜马拉雅 / 荔枝 / 蜻蜓 / 小宇宙四家返回的**都是平台自己的标准 RSS 2.0**，旧规则只看 host+path 从不看内容，导致已订阅的 3 个喜马拉雅 + 1 个荔枝节目打开即整页报错。改法：名单只留 `rsshub.app`；拦截**不再作用于读取路径**（`resolveUrl` 只在新增订阅时施加）；喜马裸专辑页自动补 `.xml`；文案与发现页标签改成「第三方转接源」；`ROADMAP.md` 边界同步。`flutter test` **157/157**、`flutter analyze` **16 info**（比基线低 7）。有牙验证：把 `resolveUrl` 改回「总是拦」→ 读取路径断言失败 |
 | 2026-09-23 | 1.6 | **§11.4 仅WiFi下载只读状态行**（commit `732131f`）：在「节目设置」面板的「下载」分组末尾加一行不可点的 `仅WiFi下载 · 开/关`，副文指向设置页 —— 开关本身仍在 `设置 → 播放与收听`（全局开关不复制进按节目面板），但下载路径上终于看得见它的状态。值未加载完显示 `…`（不显示「关」）。副作用：该行 `watch` 了 provider → 原竞态 widget 测试失去牙齿，改用 `resolveDownloadWifiOnly(AsyncLoading, …)` 单元测试顶上（已做有牙验证）。`flutter test` **157/157**、`flutter analyze` **17 info** |
