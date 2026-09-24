@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -8,6 +9,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:chengbo/core/audio/sleep_timer.dart';
 import 'package:chengbo/core/models/podcast.dart';
 import 'package:chengbo/core/network/network_status.dart';
+import 'package:chengbo/core/network/podcast_feed_logic.dart';
+import 'package:chengbo/core/network/podcast_service.dart';
+import 'package:chengbo/core/podcast/feed_cache.dart';
 import 'package:chengbo/core/providers/app_providers.dart';
 import 'package:chengbo/core/storage/app_storage.dart';
 import 'package:chengbo/core/storage/podcast_download_store.dart';
@@ -59,6 +63,16 @@ class _OnlineMonitor extends NetworkMonitor {
   Stream<bool> changes() => Stream<bool>.value(false);
 }
 
+/// 拉取必定失败的源：用来验证「回落到本机缓存」。
+class _FailingPodcastService extends PodcastService {
+  _FailingPodcastService() : super(dio: Dio());
+
+  @override
+  Future<PodcastDetail> fetchFeed(PodcastFeed feed, {bool forNewSubscription = false}) async {
+    throw const PodcastFeedException('模拟源不可达');
+  }
+}
+
 /// 移动网络：仅WiFi下载必须拦住。
 class _CellularMonitor extends NetworkMonitor {
   @override
@@ -71,7 +85,7 @@ class _CellularMonitor extends NetworkMonitor {
   Stream<bool> changes() => Stream<bool>.value(false);
 }
 
-List<Override> _overrides() {
+List<Override> _overrides({bool stubDetail = true}) {
   return [
     appStorageProvider.overrideWith((ref) async => AppStorage(await SharedPreferences.getInstance())),
     networkMonitorProvider.overrideWith((ref) => _OnlineMonitor()),
@@ -80,13 +94,13 @@ List<Override> _overrides() {
       final storage = await ref.watch(appStorageProvider.future);
       return PodcastDownloadStore(storage, Directory.systemTemp);
     }),
-    podcastDetailProvider(_feed).overrideWith((ref) async => _detail),
+    if (stubDetail) podcastDetailProvider(_feed).overrideWith((ref) async => _detail),
   ];
 }
 
-Widget _app({List<Override> extra = const []}) {
+Widget _app({List<Override> extra = const [], bool stubDetail = true}) {
   return ProviderScope(
-    overrides: [..._overrides(), ...extra],
+    overrides: [..._overrides(stubDetail: stubDetail), ...extra],
     child: MaterialApp(
       theme: ChengboTheme.light(),
       home: const PodcastDetailScreen(feed: _feed),
@@ -256,8 +270,53 @@ void main() {
       expect(tester.takeException(), isNull);
     });
 
-    testWidgets('仅WiFi下载 从详情页消失，改挂到播放与收听', (tester) async {
-      await tester.pumpWidget(_app());
+    testWidgets('源拉不动时回落到本机缓存列表，并说明这是缓存', (tester) async {
+      // 已订阅的节目不该因为源暂时不可达就整页打不开 —— 缓存里的单集通常还能播。
+      final cached = CachedFeedSnapshot(
+        feedId: _feed.id,
+        fetchedAt: DateTime(2026, 9, 20),
+        episodes: const [
+          CachedEpisode(
+            guid: 'cached-1',
+            title: '缓存里的那一集',
+            audioUrl: 'https://example.com/cached.mp3',
+          ),
+        ],
+      );
+      SharedPreferences.setMockInitialValues({
+        FeedCacheLogic.storageKey: FeedCacheLogic.encodeMap({_feed.id: cached}),
+      });
+
+      await tester.pumpWidget(
+        _app(
+          stubDetail: false,
+          extra: [podcastServiceProvider.overrideWith((ref) => _FailingPodcastService())],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('缓存里的那一集'), findsOneWidget, reason: '没有回落到缓存列表');
+      expect(find.text('源暂时打不开，下面是本机缓存'), findsOneWidget, reason: '没说明这是缓存');
+      expect(find.text('重试'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('源拉不动且没有缓存时，仍然整页报错', (tester) async {
+      // 回落只该在**有缓存**时生效；没有缓存就得让用户看到错误与重试。
+      await tester.pumpWidget(
+        _app(
+          stubDetail: false,
+          extra: [podcastServiceProvider.overrideWith((ref) => _FailingPodcastService())],
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('RSS 解析失败'), findsOneWidget);
+      expect(find.text('源暂时打不开，下面是本机缓存'), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('仅WiFi下载 从详情页消失，改挂到播放与收听', (tester) async {      await tester.pumpWidget(_app());
       await tester.pumpAndSettle();
       expect(find.text('仅WiFi下载'), findsNothing);
 

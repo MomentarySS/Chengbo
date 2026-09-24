@@ -559,6 +559,33 @@ class _PodcastDetailScreenState extends ConsumerState<PodcastDetailScreen> {
           return Column(
             children: [
               if (!_selecting) const _EpisodeFilterBar(),
+              // 源拉不动、列表来自本机缓存时明说一句 —— 否则用户会以为这是刚拉的。
+              if (!_selecting && ref.watch(detailFromCacheProvider(feed.id)))
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 0, 8, 4),
+                  child: Row(
+                    children: [
+                      Icon(
+                        Icons.cloud_off_outlined,
+                        size: 16,
+                        color: Theme.of(context).colorScheme.onSurfaceVariant,
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          '源暂时打不开，下面是本机缓存',
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: Theme.of(context).colorScheme.onSurfaceVariant,
+                              ),
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () => ref.invalidate(podcastDetailProvider(feed)),
+                        child: const Text('重试'),
+                      ),
+                    ],
+                  ),
+                ),
               Expanded(
                 child: RefreshIndicator(
             onRefresh: () async {

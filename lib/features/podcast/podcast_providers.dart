@@ -360,11 +360,34 @@ class PodcastDownloadLatestFeedsNotifier extends StateNotifier<AsyncValue<Set<St
 
 final podcastDetailProvider =
     FutureProvider.family<PodcastDetail, PodcastFeed>((ref, feed) async {
-  final detail = await ref.watch(podcastServiceProvider).fetchFeed(feed);
-  await ref.read(subscribedFeedsProvider.notifier).updateFeedMeta(detail.feed);
-  await ref.read(feedCacheProvider.notifier).put(detail);
-  return detail;
+  try {
+    final detail = await ref.watch(podcastServiceProvider).fetchFeed(feed);
+    await ref.read(subscribedFeedsProvider.notifier).updateFeedMeta(detail.feed);
+    await ref.read(feedCacheProvider.notifier).put(detail);
+    ref.read(detailFromCacheProvider(feed.id).notifier).state = false;
+    return detail;
+  } catch (_) {
+    // 拉取失败时回落到**本机缓存**：已订阅的节目不该因为源暂时不可达就整页打不开
+    // （缓存里的单集地址通常还能播）。缓存里也没有，才把错误抛上去。
+    //
+    // 先从存储重读一次缓存：冷启动时 `feedCacheProvider` 可能还没加载完，直接读
+    // state 会拿到空 map，回落就失效了。
+    await ref.read(feedCacheProvider.notifier).reload();
+    final snapshot = ref.read(feedCacheProvider)[feed.id];
+    if (snapshot == null || snapshot.episodes.isEmpty) rethrow;
+    ref.read(detailFromCacheProvider(feed.id).notifier).state = true;
+    return PodcastDetail(
+      feed: feed,
+      episodes: [for (final episode in snapshot.episodes) episode.toEpisode()],
+    );
+  }
 });
+
+/// 某个节目的详情页当前是不是「本机缓存兜底」的列表（源拉不动）。
+///
+/// 由 [podcastDetailProvider] 在回落后写入；页面据此显示一条提示 —— 否则用户会
+/// 以为看到的是刚拉下来的列表。
+final detailFromCacheProvider = StateProvider.family<bool, String>((ref, feedId) => false);
 
 /// 当前播客单集章节：有 JSON 地址时才现拉，失败则用 Feed 里的 Podlove 章节。
 final playingEpisodeChaptersProvider = FutureProvider<List<PodcastChapter>>((ref) async {
