@@ -2154,6 +2154,40 @@ void main() {
       ),
       DeskHotkeyAction.none,
     );
+    expect(
+      DeskHotkeyLogic.actionForKey(
+        key: LogicalKeyboardKey.arrowDown,
+        editableFocused: false,
+        sidebarKeyboardNavigation: true,
+      ),
+      DeskHotkeyAction.none,
+    );
+    expect(
+      DeskHotkeyLogic.actionForKey(
+        key: LogicalKeyboardKey.arrowRight,
+        editableFocused: false,
+        sidebarKeyboardNavigation: true,
+      ),
+      DeskHotkeyAction.none,
+    );
+    expect(
+      DeskHotkeyLogic.actionForKey(
+        key: LogicalKeyboardKey.space,
+        editableFocused: false,
+        sidebarKeyboardNavigation: true,
+      ),
+      DeskHotkeyAction.none,
+    );
+    expect(
+      DeskHotkeyLogic.actionForKey(
+        key: LogicalKeyboardKey.keyS,
+        editableFocused: false,
+        controlPressed: true,
+        shiftPressed: true,
+        sidebarKeyboardNavigation: true,
+      ),
+      DeskHotkeyAction.toggleSurface,
+    );
     expect(DeskHotkeyLogic.subtitle(), contains('Ctrl+Shift+S'));
   });
 

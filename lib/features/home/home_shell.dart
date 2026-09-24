@@ -186,7 +186,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     }
 
     if (deskWindowMode == DeskWindowMode.sidebar) {
-      return const DeskSidebarWindow();
+      return const DeskSidebarKeyboardNavigation(child: DeskSidebarWindow());
     }
 
     if (useRail) {

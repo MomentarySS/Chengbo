@@ -17,7 +17,7 @@ abstract final class DeskHotkeyLogic {
   static bool get offeredOnThisPlatform => offered();
 
   static String subtitle() =>
-      '空格播停；← / → 播客跳秒；Ctrl+Shift+S 切换窗口形态';
+      '空格播停；← / → 播客跳秒；侧栏用方向键导航；Ctrl+Shift+S 切换窗口形态';
 
   static bool isEditableContext(BuildContext? context) {
     if (context == null) return false;
@@ -45,11 +45,20 @@ abstract final class DeskHotkeyLogic {
     bool podcastSkipEnabled = true,
     bool controlPressed = false,
     bool shiftPressed = false,
+    bool sidebarKeyboardNavigation = false,
   }) {
     if (editableFocused) return DeskHotkeyAction.none;
     if (key == LogicalKeyboardKey.keyS && controlPressed && shiftPressed) {
       if (repeat) return DeskHotkeyAction.none;
       return DeskHotkeyAction.toggleSurface;
+    }
+    if (sidebarKeyboardNavigation &&
+        (key == LogicalKeyboardKey.space ||
+            key == LogicalKeyboardKey.arrowUp ||
+            key == LogicalKeyboardKey.arrowDown ||
+            key == LogicalKeyboardKey.arrowLeft ||
+            key == LogicalKeyboardKey.arrowRight)) {
+      return DeskHotkeyAction.none;
     }
     if (key == LogicalKeyboardKey.space) {
       if (repeat || activateControlFocused) return DeskHotkeyAction.none;

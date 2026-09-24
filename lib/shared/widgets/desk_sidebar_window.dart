@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:window_manager/window_manager.dart';
 
@@ -172,11 +173,13 @@ class DeskSidebarWindow extends ConsumerWidget {
                         itemCount: queue.length.clamp(0, 2),
                         itemBuilder: (context, index) {
                           final item = queue[index];
-                          return ListTile(
+                          return _DeskSidebarActionTile(
                             dense: true,
-                            contentPadding: EdgeInsets.zero,
-                            title: Text(item.title, maxLines: 1, overflow: TextOverflow.ellipsis),
-                            subtitle: Text(item.subtitle, maxLines: 1, overflow: TextOverflow.ellipsis),
+                            title: item.title,
+                            subtitle: item.subtitle,
+                            actionTooltip: '从队列移除',
+                            actionIcon: Icons.remove_circle_outline,
+                            onAction: () => ref.read(playQueueProvider.notifier).remove(index),
                             onTap: () => ref.read(playerControllerProvider).play(item),
                           );
                         },
@@ -203,17 +206,19 @@ class DeskSidebarWindow extends ConsumerWidget {
                         itemCount: favorites.length,
                         itemBuilder: (context, index) {
                           final station = favorites[index];
-                          return ListTile(
+                          return _DeskSidebarActionTile(
                             dense: true,
-                            contentPadding: EdgeInsets.zero,
+                            title: station.name,
+                            subtitle: station.category,
                             leading: StationArtwork(
                               url: station.favicon,
                               name: station.name,
                               tags: station.tags,
                               size: 36,
                             ),
-                            title: Text(station.name, maxLines: 1, overflow: TextOverflow.ellipsis),
-                            subtitle: Text(station.category, maxLines: 1),
+                            actionTooltip: '取消收藏',
+                            actionIcon: Icons.favorite,
+                            onAction: () => ref.read(favoriteIdsProvider.notifier).toggle(station.id),
                             onTap: () => ref.read(playerControllerProvider)
                                 .play(PlaybackItem.fromStation(station)),
                           );
@@ -222,6 +227,100 @@ class DeskSidebarWindow extends ConsumerWidget {
               ),
             ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Focus traversal and directional navigation for the Windows sidebar.
+class DeskSidebarKeyboardNavigation extends StatelessWidget {
+  const DeskSidebarKeyboardNavigation({super.key, required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    return FocusTraversalGroup(
+      policy: ReadingOrderTraversalPolicy(),
+      child: Shortcuts(
+        shortcuts: const {
+          SingleActivator(LogicalKeyboardKey.arrowDown): NextFocusIntent(),
+          SingleActivator(LogicalKeyboardKey.arrowUp): PreviousFocusIntent(),
+        },
+        child: child,
+      ),
+    );
+  }
+}
+
+/// A compact list row that reveals its secondary action on hover or keyboard focus.
+class _DeskSidebarActionTile extends StatefulWidget {
+  const _DeskSidebarActionTile({
+    required this.title,
+    required this.subtitle,
+    required this.actionTooltip,
+    required this.actionIcon,
+    required this.onAction,
+    required this.onTap,
+    this.leading,
+    this.dense = false,
+  });
+
+  final String title;
+  final String subtitle;
+  final Widget? leading;
+  final String actionTooltip;
+  final IconData actionIcon;
+  final VoidCallback onAction;
+  final VoidCallback onTap;
+  final bool dense;
+
+  @override
+  State<_DeskSidebarActionTile> createState() => _DeskSidebarActionTileState();
+}
+
+class _DeskSidebarActionTileState extends State<_DeskSidebarActionTile> {
+  bool _hovered = false;
+  bool _focused = false;
+
+  bool get _showAction => _hovered || _focused;
+
+  @override
+  Widget build(BuildContext context) {
+    final showAction = _showAction;
+    return Focus(
+      canRequestFocus: false,
+      onFocusChange: (focused) => setState(() => _focused = focused),
+      child: MouseRegion(
+        onEnter: (_) => setState(() => _hovered = true),
+        onExit: (_) => setState(() => _hovered = false),
+        child: ListTile(
+          dense: widget.dense,
+          contentPadding: EdgeInsets.zero,
+          leading: widget.leading,
+          title: Text(widget.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+          subtitle: Text(widget.subtitle, maxLines: 1, overflow: TextOverflow.ellipsis),
+          trailing: AnimatedOpacity(
+            duration: const Duration(milliseconds: 120),
+            opacity: showAction ? 1 : 0,
+            child: ExcludeFocus(
+              excluding: !showAction,
+              child: ExcludeSemantics(
+                excluding: !showAction,
+                child: IgnorePointer(
+                  ignoring: !showAction,
+                  child: IconButton(
+                    tooltip: widget.actionTooltip,
+                    visualDensity: VisualDensity.compact,
+                    onPressed: widget.onAction,
+                    icon: Icon(widget.actionIcon),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          onTap: widget.onTap,
         ),
       ),
     );

@@ -40,12 +40,15 @@ class _DeskHotkeyScopeState extends ConsumerState<DeskHotkeyScope> {
     if (!mounted) return false;
     if (event is! KeyDownEvent && event is! KeyRepeatEvent) return false;
     final focusContext = FocusManager.instance.primaryFocus?.context;
+    final sidebarNavigation =
+        ref.read(deskWindowModeProvider).value == DeskWindowMode.sidebar;
     final action = DeskHotkeyLogic.actionForKey(
       key: event.logicalKey,
       editableFocused: DeskHotkeyLogic.isEditableContext(focusContext),
       activateControlFocused: DeskHotkeyLogic.isActivateControlContext(focusContext),
-      podcastSkipEnabled:
+      podcastSkipEnabled: !sidebarNavigation &&
           ref.read(currentPlaybackProvider)?.kind == PlaybackKind.podcast,
+      sidebarKeyboardNavigation: sidebarNavigation,
       repeat: event is KeyRepeatEvent,
       controlPressed: HardwareKeyboard.instance.isControlPressed,
       shiftPressed: HardwareKeyboard.instance.isShiftPressed,
