@@ -18,27 +18,23 @@ class ChengboApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
     final useDynamic = ref.watch(dynamicColorProvider).value ?? true;
-    final pack = AppSkinLogic.pack(ref.watch(appSkinProvider));
-    final dynamicEnabled = pack.isDefault && useDynamic;
-    final effectiveMode = pack.lockDark ? ThemeMode.dark : themeMode;
+    final effectiveMode = themeMode;
 
     return DynamicColorBuilder(
       builder: (lightDynamic, darkDynamic) {
         final accent = SystemTheme.accentColor.accent;
         final light = ChengboTheme.light(
-          pack: pack,
           scheme: DynamicThemeLogic.resolve(
             brightness: Brightness.light,
-            enabled: dynamicEnabled,
+            enabled: useDynamic,
             platformScheme: lightDynamic?.harmonized(),
             accent: accent,
           ),
         );
         final dark = ChengboTheme.dark(
-          pack: pack,
           scheme: DynamicThemeLogic.resolve(
             brightness: Brightness.dark,
-            enabled: dynamicEnabled,
+            enabled: useDynamic,
             platformScheme: darkDynamic?.harmonized(),
             accent: accent,
           ),

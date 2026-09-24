@@ -5,15 +5,13 @@ import '../../core/providers/app_providers.dart';
 import '../../core/theme.dart';
 import '../../core/audio/cast_session.dart';
 
-/// 外观设置：氛围包、浅深色、动态色、列表密度。
+/// 外观设置：浅深色、动态色、列表密度。
 class AppearanceScreen extends ConsumerWidget {
   const AppearanceScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final themeMode = ref.watch(themeModeProvider);
-    final skinId = ref.watch(appSkinProvider);
-    final pack = AppSkinLogic.pack(skinId);
     final colorScheme = Theme.of(context).colorScheme;
 
     return Scaffold(
@@ -21,30 +19,6 @@ class AppearanceScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.only(bottom: 96),
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-            child: Text(
-              '氛围',
-              style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: colorScheme.primary,
-                    fontWeight: FontWeight.w600,
-                  ),
-            ),
-          ),
-          for (final item in AppSkinPack.all)
-            RadioListTile<AppSkinId>(
-              value: item.id,
-              groupValue: skinId,
-              onChanged: (value) {
-                if (value != null) ref.read(appSkinProvider.notifier).setSkin(value);
-              },
-              secondary: CircleAvatar(
-                backgroundColor: item.seed,
-                radius: 12,
-              ),
-              title: Text(item.displayName),
-              subtitle: Text(item.subtitle),
-            ),
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
             child: Text(
@@ -65,39 +39,24 @@ class AppearanceScreen extends ConsumerWidget {
                   ButtonSegment<ThemeMode>(
                     value: mode,
                     label: Text(ThemeModeLogic.label(mode)),
-                    enabled: !pack.lockDark,
+                    enabled: true,
                   ),
               ],
-              selected: {pack.lockDark ? ThemeMode.dark : themeMode},
+              selected: {themeMode},
               onSelectionChanged: (selected) {
-                if (pack.lockDark) return;
                 ref.read(themeModeProvider.notifier).setTheme(selected.first);
               },
             ),
           ),
-          if (pack.lockDark)
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-              child: Text(
-                '致敬氛围固定深色，切回澄波后恢复浅色 / 深色 / 跟随系统',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-              ),
-            ),
           ref.watch(dynamicColorProvider).when(
                 data: (enabled) => SwitchListTile(
                   secondary: const Icon(Icons.palette_outlined),
                   title: const Text('壁纸 / 系统配色'),
-                  subtitle: Text(
-                    pack.isDefault
-                        ? 'Android 12+ 按壁纸变色；Windows 用系统强调色；关闭则用澄波蓝'
-                        : '氛围包使用自带配色，切回澄波后可再开',
+                  subtitle: const Text(
+                    'Android 12+ 按壁纸变色；Windows 用系统强调色；关闭则用澄波蓝',
                   ),
-                  value: pack.isDefault && enabled,
-                  onChanged: pack.isDefault
-                      ? (value) => ref.read(dynamicColorProvider.notifier).setEnabled(value)
-                      : null,
+                  value: enabled,
+                  onChanged: (value) => ref.read(dynamicColorProvider.notifier).setEnabled(value),
                 ),
                 loading: () => const ListTile(
                   leading: Icon(Icons.palette_outlined),

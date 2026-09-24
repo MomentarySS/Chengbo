@@ -49,7 +49,6 @@ class MiniPlayer extends ConsumerWidget {
             final hasError = state?.processingState == AudioProcessingState.error;
             final isPodcast = current.kind == PlaybackKind.podcast;
             final colorScheme = Theme.of(context).colorScheme;
-            final skin = context.chengboSkin;
             final tags = isPodcast ? const ['播客'] : [current.subtitle];
             final sleepActive = ref.watch(sleepTimerProvider).isActive;
             final showRemaining =
@@ -61,18 +60,15 @@ class MiniPlayer extends ConsumerWidget {
                 padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
                 child: DecoratedBox(
                   decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(skin.playerRadius),
-                    boxShadow: skin.playerGlowShadows(),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: Material(
-                  elevation: skin.isDefault ? 6 : 0,
+                  elevation: 6,
                   shadowColor: colorScheme.shadow.withValues(alpha: 0.22),
                   color: colorScheme.surfaceContainerHigh,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(skin.playerRadius),
-                    side: skin.isDefault
-                        ? BorderSide.none
-                        : BorderSide(color: colorScheme.primary.withValues(alpha: 0.4)),
+                    borderRadius: BorderRadius.circular(12),
+                    side: BorderSide.none,
                   ),
                   clipBehavior: Clip.antiAlias,
                   child: Column(

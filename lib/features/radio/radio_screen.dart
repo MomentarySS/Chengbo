@@ -167,44 +167,22 @@ class _RadioScreenState extends ConsumerState<RadioScreen> {
             },
           ),
 
-        // --- Category filter chips ---
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
-          child: Row(
-            children: [
-              for (var index = 0; index < categories.length; index++) ...[
-                if (index > 0) const SizedBox(width: 8),
-                FilterChip(
-                  showCheckmark: false,
-                  label: Text(categories[index]),
-                  selected: category == categories[index],
-                  onSelected: (_) =>
-                      ref.read(stationCategoryProvider.notifier).state = categories[index],
-                ),
-              ],
-            ],
-          ),
+        _RadioFilterTabStrip(
+          labels: categories,
+          selected: category,
+          onSelected: (value) => ref.read(stationCategoryProvider.notifier).state = value,
         ),
 
-        // --- Bitrate filter chips ---
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-          child: Row(
-            children: [
-              for (final filter in _bitrateFilters) ...[
-                if (filter != _bitrateFilters.first) const SizedBox(width: 8),
-                FilterChip(
-                  showCheckmark: false,
-                  label: Text(filter.label),
-                  selected: bitrateFloor == filter.floor,
-                  onSelected: (_) =>
-                      ref.read(stationBitrateFloorProvider.notifier).state = filter.floor,
-                ),
-              ],
-            ],
-          ),
+        // --- Bitrate filter ---
+        _RadioFilterTabStrip(
+          labels: [for (final filter in _bitrateFilters) filter.label],
+          selected: _bitrateFilters
+              .firstWhere((filter) => bitrateFloor == filter.floor)
+              .label,
+          onSelected: (label) {
+            final filter = _bitrateFilters.firstWhere((item) => item.label == label);
+            ref.read(stationBitrateFloorProvider.notifier).state = filter.floor;
+          },
         ),
 
         // --- Station list ---
@@ -361,6 +339,84 @@ class _SearchHistoryDropdown extends ConsumerWidget {
                 ),
               )),
         ],
+      ),
+    );
+  }
+}
+
+class _RadioFilterTabStrip extends StatelessWidget {
+  const _RadioFilterTabStrip({
+    required this.labels,
+    required this.selected,
+    required this.onSelected,
+  });
+
+  final List<String> labels;
+  final String selected;
+  final ValueChanged<String> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return SizedBox(
+      height: 48,
+      width: double.infinity,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          border: Border(bottom: BorderSide(color: colors.outlineVariant)),
+        ),
+        child: SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (final label in labels)
+                Semantics(
+                  button: true,
+                  selected: selected == label,
+                  label: label,
+                  child: IntrinsicWidth(
+                    child: InkWell(
+                      onTap: () => onSelected(label),
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(minWidth: 48),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Expanded(
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 12),
+                                child: Center(
+                                  child: Text(
+                                    label,
+                                    maxLines: 1,
+                                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                                          color: selected == label
+                                              ? colors.primary
+                                              : colors.onSurfaceVariant,
+                                          fontWeight: selected == label ? FontWeight.w600 : null,
+                                        ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            AnimatedContainer(
+                              duration: const Duration(milliseconds: 160),
+                              curve: Curves.easeOut,
+                              height: 2,
+                              color: selected == label ? colors.primary : Colors.transparent,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
       ),
     );
   }

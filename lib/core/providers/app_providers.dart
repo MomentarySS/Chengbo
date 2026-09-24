@@ -921,29 +921,6 @@ class ThemeModeNotifier extends StateNotifier<ThemeMode> {
   }
 }
 
-final appSkinProvider = StateNotifierProvider<AppSkinNotifier, AppSkinId>((ref) {
-  return AppSkinNotifier(ref);
-});
-
-class AppSkinNotifier extends StateNotifier<AppSkinId> {
-  AppSkinNotifier(this._ref) : super(AppSkinId.chengbo) {
-    _load();
-  }
-
-  final Ref _ref;
-
-  Future<void> _load() async {
-    final storage = await _ref.read(appStorageProvider.future);
-    state = AppSkinLogic.parse(await storage.getAppSkinId());
-  }
-
-  Future<void> setSkin(AppSkinId id) async {
-    state = id;
-    final storage = await _ref.read(appStorageProvider.future);
-    await storage.setAppSkinId(AppSkinLogic.persist(id));
-  }
-}
-
 final dynamicColorProvider =
     StateNotifierProvider<DynamicColorNotifier, AsyncValue<bool>>((ref) {
   return DynamicColorNotifier(ref);

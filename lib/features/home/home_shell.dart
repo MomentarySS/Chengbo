@@ -17,7 +17,6 @@ import '../../shared/widgets/mini_player.dart';
 import '../../shared/widgets/now_playing_route.dart';
 import '../../shared/widgets/offline_banner.dart';
 import '../../shared/widgets/shake_sleep_listener.dart';
-import '../../shared/widgets/skin_overlay.dart';
 import '../listening/listening_screen.dart';
 import '../podcast/podcast_providers.dart';
 import '../podcast/podcast_screen.dart';
@@ -173,13 +172,11 @@ class _HomeShellState extends ConsumerState<HomeShell> {
 
     if (deskWindowMode == DeskWindowMode.miniBar) {
       return ShakeSleepListener(
-        child: SkinFrame(
-          child: Material(
-            type: MaterialType.transparency,
-            child: DeskMiniBar(
-              onExit: () => ref.read(deskWindowModeProvider.notifier).setMode(DeskWindowMode.main),
-              onSidebar: () => ref.read(deskWindowModeProvider.notifier).setMode(DeskWindowMode.sidebar),
-            ),
+        child: Material(
+          type: MaterialType.transparency,
+          child: DeskMiniBar(
+            onExit: () => ref.read(deskWindowModeProvider.notifier).setMode(DeskWindowMode.main),
+            onSidebar: () => ref.read(deskWindowModeProvider.notifier).setMode(DeskWindowMode.sidebar),
           ),
         ),
       );
@@ -191,44 +188,40 @@ class _HomeShellState extends ConsumerState<HomeShell> {
 
     if (useRail) {
       return ShakeSleepListener(
-        child: SkinFrame(
-          child: Scaffold(
-            backgroundColor: Colors.transparent,
-            body: Row(
-              children: [
-                NavigationRail(
-                  selectedIndex: _index,
-                  onDestinationSelected: _selectPage,
-                  labelType: NavigationRailLabelType.all,
-                  destinations: _destinations
-                      .map(
-                        (item) => NavigationRailDestination(
-                          icon: item.icon,
-                          selectedIcon: item.selectedIcon,
-                          label: Text(item.label),
-                        ),
-                      )
-                      .toList(),
-                ),
-                const VerticalDivider(width: 1),
-                Expanded(child: body),
-              ],
-            ),
+        child: Scaffold(
+          backgroundColor: Theme.of(context).colorScheme.surface,
+          body: Row(
+            children: [
+              NavigationRail(
+                selectedIndex: _index,
+                onDestinationSelected: _selectPage,
+                labelType: NavigationRailLabelType.all,
+                destinations: _destinations
+                    .map(
+                      (item) => NavigationRailDestination(
+                        icon: item.icon,
+                        selectedIcon: item.selectedIcon,
+                        label: Text(item.label),
+                      ),
+                    )
+                    .toList(),
+              ),
+              const VerticalDivider(width: 1),
+              Expanded(child: body),
+            ],
           ),
         ),
       );
     }
 
     return ShakeSleepListener(
-      child: SkinFrame(
-        child: Scaffold(
-          backgroundColor: Colors.transparent,
-          body: body,
-          bottomNavigationBar: NavigationBar(
-            selectedIndex: _index,
-            onDestinationSelected: _selectPage,
-            destinations: _destinations,
-          ),
+      child: Scaffold(
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        body: body,
+        bottomNavigationBar: NavigationBar(
+          selectedIndex: _index,
+          onDestinationSelected: _selectPage,
+          destinations: _destinations,
         ),
       ),
     );

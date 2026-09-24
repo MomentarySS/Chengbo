@@ -688,35 +688,16 @@ void main() {
     );
   });
 
-  test('AppSkinLogic parses unknown as 澄波 and homage packs lock dark', () {
-    expect(AppSkinLogic.parse(null), AppSkinId.chengbo);
-    expect(AppSkinLogic.parse('nope'), AppSkinId.chengbo);
-    expect(AppSkinLogic.parse('wasteland'), AppSkinId.wasteland);
-    expect(AppSkinLogic.parse('tokyo3'), AppSkinId.tokyo3);
-    expect(AppSkinLogic.parse('nightCity'), AppSkinId.nightCity);
-    expect(AppSkinLogic.persist(AppSkinId.tokyo3), 'tokyo3');
-
-    expect(AppSkinPack.chengbo.lockDark, isFalse);
-    expect(AppSkinPack.wasteland.lockDark, isTrue);
-    expect(AppSkinPack.tokyo3.lockDark, isTrue);
-    expect(AppSkinPack.nightCity.lockDark, isTrue);
-
-    expect(AppSkinPack.wasteland.colorScheme(Brightness.dark).brightness, Brightness.dark);
-    expect(AppSkinPack.tokyo3.colorScheme(Brightness.dark).primary, const Color(0xFFC6FF2A));
-    expect(AppSkinPack.nightCity.colorScheme(Brightness.dark).primary, const Color(0xFFE8DE00));
-    expect(AppSkinPack.wasteland.copy.emptyStations, isNot(AppSkinPack.chengbo.copy.emptyStations));
-    expect(AppSkinPack.tokyo3.copy.probing, '正在同步');
-    expect(ChengboTheme.dark(pack: AppSkinPack.tokyo3).brightness, Brightness.dark);
+  test('Chengbo themes keep light and dark modes and shared player styling', () {
+    expect(ChengboTheme.light().brightness, Brightness.light);
+    expect(ChengboTheme.dark().brightness, Brightness.dark);
     expect(
-      ChengboTheme.light(pack: AppSkinPack.wasteland).extension<ChengboSkinTheme>()?.id,
-      AppSkinId.wasteland,
+      ChengboTheme.light().extension<ChengboSkinTheme>()?.playerRadius,
+      12,
     );
-    final wastelandTheme = ChengboTheme.dark(pack: AppSkinPack.wasteland);
-    expect(wastelandTheme.chipTheme.selectedColor, wastelandTheme.colorScheme.secondaryContainer);
-    expect(wastelandTheme.chipTheme.selectedColor, isNot(wastelandTheme.colorScheme.primary));
     expect(
-      ChengboTheme.dark(pack: AppSkinPack.nightCity).navigationBarTheme.indicatorColor,
-      ChengboTheme.dark(pack: AppSkinPack.nightCity).colorScheme.secondaryContainer,
+      ChengboTheme.dark().navigationBarTheme.indicatorColor,
+      ChengboTheme.dark().colorScheme.secondaryContainer,
     );
     expect(ChengboTheme.light().visualDensity, VisualDensity.standard);
     expect(ChengboTheme.dark().visualDensity, VisualDensity.standard);
@@ -3397,7 +3378,7 @@ void main() {
   });
 
   test('AppStorage persists skip step and last sleep timer', () async {
-    SharedPreferences.setMockInitialValues({});
+    SharedPreferences.setMockInitialValues({'app_skin_id': 'tokyo3'});
     final storage = await AppStorage.create();
     expect(storage.getPodcastSkipStepSeconds(), 15);
     await storage.setPodcastSkipStepSeconds(30);
@@ -3409,9 +3390,7 @@ void main() {
     expect(storage.getSleepTimerLast()?.isUntilEnd, isTrue);
     await storage.setSleepTimerLast(SleepLastValue.episodes(3));
     expect(storage.getSleepTimerLast()?.count, 3);
-    expect(await storage.getAppSkinId(), isNull);
-    await storage.setAppSkinId('tokyo3');
-    expect(await storage.getAppSkinId(), 'tokyo3');
+    expect((await SharedPreferences.getInstance()).getString('app_skin_id'), isNull);
   });
 
   test('PodcastChapterLogic parses Podlove, JSON, and prefers JSON', () {

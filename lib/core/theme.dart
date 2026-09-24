@@ -85,25 +85,13 @@ abstract final class ChengboTheme {
   static const railBreakpoint = 900.0;
   static const listBottomPadding = 16.0;
 
-  static ThemeData light({ColorScheme? scheme, AppSkinPack pack = AppSkinPack.chengbo}) {
-    if (!pack.isDefault) {
-      return _build(pack.colorScheme(Brightness.dark), pack);
-    }
-    return _build(
-      scheme ?? DynamicThemeLogic.fallback(brightness: Brightness.light),
-      pack,
-    );
-  }
+  static ThemeData light({ColorScheme? scheme}) => _build(
+        scheme ?? DynamicThemeLogic.fallback(brightness: Brightness.light),
+      );
 
-  static ThemeData dark({ColorScheme? scheme, AppSkinPack pack = AppSkinPack.chengbo}) {
-    if (!pack.isDefault) {
-      return _build(pack.colorScheme(Brightness.dark), pack);
-    }
-    return _build(
-      scheme ?? DynamicThemeLogic.fallback(brightness: Brightness.dark),
-      pack,
-    );
-  }
+  static ThemeData dark({ColorScheme? scheme}) => _build(
+        scheme ?? DynamicThemeLogic.fallback(brightness: Brightness.dark),
+      );
 
   static SystemUiOverlayStyle overlayFor(Brightness brightness, Color surface) {
     final lightIcons = brightness == Brightness.dark;
@@ -116,23 +104,22 @@ abstract final class ChengboTheme {
     );
   }
 
-  static ThemeData _build(ColorScheme scheme, AppSkinPack pack) {
+  static ThemeData _build(ColorScheme scheme) {
     final brightness = scheme.brightness;
-    final skin = ChengboSkinTheme.fromPack(pack);
 
     return ThemeData(
       useMaterial3: true,
       colorScheme: scheme,
       visualDensity: VisualDensity.standard,
-      extensions: [skin],
+      extensions: const [ChengboSkinTheme()],
       filledButtonTheme: FilledButtonThemeData(
-        style: FilledButton.styleFrom(shape: pack.controlShape),
+        style: FilledButton.styleFrom(shape: const StadiumBorder()),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
-        style: OutlinedButton.styleFrom(shape: pack.controlShape),
+        style: OutlinedButton.styleFrom(shape: const StadiumBorder()),
       ),
       textButtonTheme: TextButtonThemeData(
-        style: TextButton.styleFrom(shape: pack.controlShape),
+        style: TextButton.styleFrom(shape: const StadiumBorder()),
       ),
       appBarTheme: AppBarTheme(
         centerTitle: false,
@@ -199,14 +186,14 @@ abstract final class ChengboTheme {
         backgroundColor: scheme.surface,
         labelStyle: TextStyle(color: scheme.onSurface),
         secondaryLabelStyle: TextStyle(color: scheme.onSecondaryContainer),
-        shape: pack.chipShape,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         side: BorderSide(color: scheme.outlineVariant),
       ),
       cardTheme: CardThemeData(
         elevation: 0,
         color: scheme.surfaceContainerLow,
         margin: EdgeInsets.zero,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(pack.isDefault ? 12 : pack.playerRadius)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
       dividerTheme: DividerThemeData(
         color: scheme.outlineVariant,
@@ -225,7 +212,7 @@ abstract final class ChengboTheme {
       dialogTheme: DialogThemeData(
         backgroundColor: scheme.surface,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(pack.isDefault ? 28 : 12),
+          borderRadius: BorderRadius.circular(28),
         ),
       ),
       iconButtonTheme: IconButtonThemeData(

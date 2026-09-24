@@ -29,7 +29,6 @@ class DeskMiniBar extends ConsumerWidget {
     final current = ref.watch(currentPlaybackProvider);
     final handlerAsync = ref.watch(audioHandlerProvider);
     final colorScheme = Theme.of(context).colorScheme;
-    final skin = context.chengboSkin;
 
     return handlerAsync.when(
       data: (handler) {
@@ -89,21 +88,13 @@ class DeskMiniBar extends ConsumerWidget {
                       child: DecoratedBox(
                         decoration: BoxDecoration(
                           color: colorScheme.surface,
-                          borderRadius: BorderRadius.circular(
-                            skin.isDefault ? DeskCompactLogic.barHeight / 2 : skin.playerRadius,
-                          ),
-                          border: skin.isDefault
-                              ? null
-                              : Border.all(color: colorScheme.primary.withValues(alpha: 0.4)),
+                          borderRadius: BorderRadius.circular(DeskCompactLogic.barHeight / 2),
                           boxShadow: [
-                            if (skin.isDefault)
-                              BoxShadow(
-                                color: colorScheme.shadow.withValues(alpha: 0.22),
-                                blurRadius: 22,
-                                offset: const Offset(0, 8),
-                              )
-                            else
-                              ...skin.playerGlowShadows(),
+                            BoxShadow(
+                              color: colorScheme.shadow.withValues(alpha: 0.22),
+                              blurRadius: 22,
+                              offset: const Offset(0, 8),
+                            ),
                           ],
                         ),
                         child: Padding(

@@ -89,6 +89,8 @@ class AppStorage {
 
   static Future<AppStorage> create() async {
     final prefs = await SharedPreferences.getInstance();
+    // Remove the now-retired selectable skin preference from older installs.
+    await prefs.remove(_appSkinKey);
     final legacyEpisodeState = _legacyPodcastEpisodeStateFromPrefs(prefs);
     final episodeStateStore = await PodcastEpisodeStateStore.create(
       initialState: legacyEpisodeState,
@@ -623,12 +625,6 @@ class AppStorage {
 
   Future<void> setDynamicColorEnabled(bool enabled) async {
     await _prefs.setBool(_dynamicColorKey, enabled);
-  }
-
-  Future<String?> getAppSkinId() async => _prefs.getString(_appSkinKey);
-
-  Future<void> setAppSkinId(String id) async {
-    await _prefs.setString(_appSkinKey, id);
   }
 
   Future<bool> getCastEnabled() async {

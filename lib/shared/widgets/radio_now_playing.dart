@@ -142,7 +142,7 @@ class RadioNowPlayingSheet extends ConsumerWidget {
 /// 底色取该台**确定性的**渐变（`StationArtwork.gradientColors`，与列表无封面占位
 /// 同一套 → 全应用一致），卡内是 2 字缩写 + 分类图标（同样共用
 /// `StationArtwork.monogram` / `categoryIcon`）。不依赖网络，也不受台标画质影响；
-/// 圆角跟随当前氛围包的 `playerRadius`，避免与致敬包的小圆角语言冲突。
+/// 与播客封面保持一致的圆角，规格由共享主题扩展统一提供。
 class _StationCard extends StatelessWidget {
   const _StationCard({required this.current});
 
