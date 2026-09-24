@@ -107,8 +107,8 @@
 
 | 编号 | 名称 | 工单 | 代码状态 |
 |---|---|---|---|
-| P1 | 播客详情页 + 播客播放器页瘦身（8 条）| [`mobile-v2-2-density-work-order.md`](./mobile-v2-2-density-work-order.md) | 🟡 **代码已实施**（7 commit `9238f2d`…`e6de631`），PR 待开 |
-| R3 | v2.2.0 收尾（版本 bump / CHANGELOG / ROADMAP / tag / `gh release` / `pack.ps1` 产物）| 待出 | ⏸ 最后一步，动前问用户 |
+| P1 | 播客详情页 + 播客播放器页瘦身（8 条 + 真机评审后 8 轮追加改动）| [`mobile-v2-2-density-work-order.md`](./mobile-v2-2-density-work-order.md) | ✅ **代码已完成并推送**（37 commit，PR #11 待合并）|
+| R3 | v2.2.0 收尾（版本 bump / CHANGELOG / ROADMAP / tag / `gh release` / `pack.ps1` 产物）| 见 P1 工单 §12 变更记录 | 🟡 **bump + CHANGELOG + ROADMAP 已做**；tag / `gh release` / 2.2.0 产物待用户点头 |
 
 ### 7.3 基线（P1 起点）与实施后
 
@@ -116,8 +116,8 @@
 |---|---|---|
 | main | `dd8990c` | `dd8990c`（未动）|
 | 分支 | `feat/podcast-density` | `feat/podcast-density` |
-| `flutter test` | 143/143 | **152/152**（+2 纯逻辑 +7 widget）|
-| `flutter analyze` | 23 info（既有基线，非修复目标）| **23 info**（持平；改到的文件 0 issue）|
+| `flutter test` | 143/143 | **165/165**（+22）|
+| `flutter analyze` | 23 info（既有基线，非修复目标）| **15 info**（比基线低 8）|
 
 ### 7.4 设计产物（效果图）
 
